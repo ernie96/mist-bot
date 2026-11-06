@@ -428,11 +428,12 @@ wheels = [
 
 [[package]]
 name = "py-spy"
-version = "0.4.2"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/93/d8/5b71371f50cf153b1307e5a11ac8a4ce4d85651dae946bd7e9a064146545/py_spy-0.4.2.tar.gz", hash = "sha256:90e600b27bb6bb40479637baca5a5b4bc2ba3395c93d889e672315d93042c4ae", size = 286374, upload-time = "2026-04-24T22:08:54.906Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/66/a94b309aa5a43be455c7132d53b7b61c20d2a554e6d0f487fa7c2f392d7d/py_spy-0.4.3.tar.gz", hash = "sha256:65ac4319f8c20dcd1e2ea219935c6b4fd98179b0b7faf59181eae2680a85fad4", size = 333376, upload-time = "2026-11-02T19:29:33.014Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6f/ed/1409cdb557e558a6c98003ab12fdd4284699e158c167c187cb0f124eea4c/py_spy-0.4.2-py2.py3-none-win_amd64.whl", hash = "sha256:8b06a353c177677e4e1701b288d8c58e2f8d4208ee81a8048d9f72ba800918f8", size = 1894002, upload-time = "2026-04-24T22:08:53.811Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/95/6ef39a234f17b05cc28efb4a584e93d36fdf633f306b8e10bbbe1409fc51/py_spy-0.4.3-py2.py3-none-win_amd64.whl", hash = "sha256:b14e00fddd4bfb12628e5c04b7d22c6754ae4c31bdfad0728adbe091ed26445f", size = 1919678, upload-time = "2026-11-02T19:29:29.902Z" },
+    { url = "https://files.pythonhosted.org/packages/da/51/d7b71770563ce783b3927addf31d3dee9db920487a4a54c49172081f55f6/py_spy-0.4.3-py2.py3-none-win_arm64.whl", hash = "sha256:7de40c2903602a7cca888c26cc5d37aed004a7fd07b5258d1a14356c00540974", size = 1803460, upload-time = "2026-11-02T19:29:31.541Z" },
 ]
 
 [[package]]
