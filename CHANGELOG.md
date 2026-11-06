@@ -2,6 +2,11 @@
 
 ## Not released yet
 
+**Bag**
+
+- A run no longer stops at once with an "unexpected error" about `load_seen` when the bag is 97 to
+  99% full as it starts.
+
 **Updates**
 
 - Updates now come from this project's own releases, ernie96/mist-bot, not from Uncle Farmer's.
