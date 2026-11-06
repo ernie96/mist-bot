@@ -26,7 +26,7 @@ from typing import Any
 
 from . import jsonio as json, paths, settings
 
-OUT = os.path.join(paths.DATA, "game_texts.json")
+OUT = paths.learned_file("game_texts.json")
 _FOREIGN = re.compile("[Ѐ-ӿ一-鿿぀-ヿ가-힯]")   # Cyrillic, CJK, kana, Hangul
 _ENGLISH = re.compile(r"\b(the|you|your|to|of|and|is|can|will|with|for|are|this|level|please|enter)\b", re.I)
 _NOT_ENGLISH = re.compile(r"\b(de|que|para|com|não|est|bir|ve|và|của|aap|hai|ke|ki|ko|mein|se|el|la|los|"
@@ -75,7 +75,7 @@ def build(game: str) -> int:
         for line in _txt_lines(os.path.join(game, "language", lang)):
             if _english(line):
                 add(line)
-    os.makedirs(paths.DATA, exist_ok=True)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"stamp": _stamp(game), "texts": texts}, f, ensure_ascii=False, indent=0)
     return len(texts)

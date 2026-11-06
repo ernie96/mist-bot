@@ -61,7 +61,7 @@ def use_dll(monkeypatch: pytest.MonkeyPatch) -> Install:
 def test_load_without_the_dll_file_returns_none(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(speech, "_tried", False)
     monkeypatch.setattr(speech, "_dll", None)
-    monkeypatch.setattr(paths, "APP", str(tmp_path))
+    monkeypatch.setattr(paths, "BUNDLE", str(tmp_path))
     assert speech._load() is None
 
 
@@ -69,7 +69,7 @@ def test_load_with_the_dll_file_loads_it(monkeypatch: pytest.MonkeyPatch, tmp_pa
     fake = FakeDll()
     monkeypatch.setattr(speech, "_tried", False)
     monkeypatch.setattr(speech, "_dll", None)
-    monkeypatch.setattr(paths, "APP", str(tmp_path))
+    monkeypatch.setattr(paths, "BUNDLE", str(tmp_path))
     monkeypatch.setattr(speech.os.path, "exists", stand_in(speech.os.path.exists, returning(True)))
     monkeypatch.setattr(speech.ctypes, "windll", SimpleNamespace(LoadLibrary=returning(fake)))
     assert speech._load() is fake
@@ -78,7 +78,7 @@ def test_load_with_the_dll_file_loads_it(monkeypatch: pytest.MonkeyPatch, tmp_pa
 def test_load_swallows_a_broken_dll(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(speech, "_tried", False)
     monkeypatch.setattr(speech, "_dll", None)
-    monkeypatch.setattr(paths, "APP", str(tmp_path))
+    monkeypatch.setattr(paths, "BUNDLE", str(tmp_path))
     monkeypatch.setattr(speech.os.path, "exists", stand_in(speech.os.path.exists, returning(True)))
 
     def boom(path: str) -> NoReturn:
@@ -91,7 +91,7 @@ def test_load_swallows_a_broken_dll(monkeypatch: pytest.MonkeyPatch, tmp_path: P
 def test_load_is_only_tried_once(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(speech, "_tried", False)
     monkeypatch.setattr(speech, "_dll", None)
-    monkeypatch.setattr(paths, "APP", str(tmp_path))
+    monkeypatch.setattr(paths, "BUNDLE", str(tmp_path))
     assert speech._load() is None
     assert speech._tried is True
     # A second call does not look at the filesystem again; it just reuses the (None) cache.

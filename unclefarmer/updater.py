@@ -25,8 +25,9 @@ update/ is the staging folder: only the download, the unpacked copy, the result 
 (who is using it) live there, and clean() empties and removes it once nothing uses it. Every step
 is written to logs/update.log with the app's other logs, so a cleanup never takes the log away.
 
-Only what a release ships is replaced: the exe and its _internal folder, agent/, data/, lang/,
-docs/ and the files beside the exe. Character profiles, plans, scripts, settings, logs, messages,
+Only what a release ships is replaced: the exe (a single-file build carries the rest inside it,
+and places its agent beside itself), or its _internal folder, agent/, data/, lang/, docs/ and
+the files beside the exe. Character profiles, plans, scripts, settings, logs, messages,
 results and anything learned (data/game_texts.json, agent/run) are never in a release, so they stay.
 
 The releases are public, so no login is needed. UNCLEFARMER_GITHUB_TOKEN (a read-only token)
@@ -43,7 +44,6 @@ import re
 import shutil
 import stat
 import subprocess
-import sys
 import threading
 import time
 import urllib.error
@@ -665,7 +665,7 @@ def run_apply(argv: list[str]) -> None:
     comes from argv, and the log goes to <app>/logs/update.log. busy.json names this process until
     it exits, so the restarted app waits for it before it empties the staging folder."""
     app, pid, version = argv[0], int(argv[1]), argv[2]
-    src = os.path.dirname(os.path.abspath(sys.executable))
+    src = paths.exe_folder()
     update = os.path.join(app, "update")
     os.makedirs(update, exist_ok=True)
     logs = os.path.join(app, "logs")

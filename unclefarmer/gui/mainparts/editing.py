@@ -461,8 +461,8 @@ class EditingMixin(FrameParts):
                 info(self, _("Restart Uncle Farmer to switch the language."))
 
     def open_user_guide(self) -> None:
-        """README.html beside the exe (build_exe.py makes it from docs/USER_GUIDE.md)."""
-        page = os.path.join(paths.APP, "README.html")
+        """README.html, inside the built exe (build_exe.py makes it from docs/USER_GUIDE.md)."""
+        page = os.path.join(paths.BUNDLE, "README.html")
         if not os.path.exists(page):
             page = os.path.join(paths.DOCS, "USER_GUIDE.md")       # running from source
         os.startfile(page)

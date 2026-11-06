@@ -154,8 +154,9 @@ py -3.14 -m venv .venv
 `requirements.txt` is what the app needs to run; `requirements-dev.txt` adds the checking tools
 (`python check.py`) and Nuitka (`python build_exe.py`).
 
-`uv run python build_exe.py` builds the shareable folder `dist\Uncle Farmer` with Nuitka; it also
-needs UPX (`winget install UPX.UPX`), found in the folder `UPX_DIR` names, else on PATH.
+`uv run python build_exe.py` builds one file, `dist\Uncle Farmer\UncleFarmer.exe`, with Nuitka.
+Put it in a folder of its own: it unpacks itself to your cache folder, puts the game agent in an
+`agent` folder beside itself, and keeps your settings, plans and results there too.
 `uv run python build_native.py` builds the optional C module that makes map searches 10-24 times
 faster; without it the same searches run in Python.
 

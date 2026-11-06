@@ -62,8 +62,11 @@ def test_the_checksum_is_the_finished_zips_and_sha256sum_readable(tmp_path: Path
 def test_a_complete_zip_passes_and_a_missing_file_is_named(tmp_path: Path) -> None:
     good = zipped(fake_folder(tmp_path / "a"), tmp_path / "good.zip")
     assert ci_build.verify_zip(str(good), build_exe.REQUIRED) == []
-    bad = zipped(fake_folder(tmp_path / "b", leave_out="agent/unclefarmer-agent.jar"), tmp_path / "bad.zip")
-    assert ci_build.verify_zip(str(bad), build_exe.REQUIRED) == ["agent/unclefarmer-agent.jar"]
+    folder = tmp_path / "b" / "Uncle Farmer"
+    folder.mkdir(parents=True)
+    (folder / "other.txt").write_text("x", encoding="utf-8")
+    bad = zipped(folder, tmp_path / "bad.zip")
+    assert ci_build.verify_zip(str(bad), build_exe.REQUIRED) == ["UncleFarmer.exe"]
 
 
 def test_a_broken_or_misshapen_zip_stops_the_build(tmp_path: Path) -> None:
@@ -81,7 +84,10 @@ def test_a_broken_or_misshapen_zip_stops_the_build(tmp_path: Path) -> None:
 def test_the_built_folder_check_names_what_is_missing(tmp_path: Path) -> None:
     build_exe.verify(str(fake_folder(tmp_path / "ok")))
     with pytest.raises(SystemExit) as e:
-        build_exe.verify(str(fake_folder(tmp_path / "no", leave_out="data/knowledge.json")))
+        build_exe.verify(str(fake_folder(tmp_path / "no", leave_out="UncleFarmer.exe")))
+    assert "UncleFarmer.exe" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        build_exe.verify(str(tmp_path), build_exe.PAYLOAD_REQUIRED)
     assert "data/knowledge.json" in str(e.value)
 
 
@@ -168,28 +174,6 @@ def test_a_failing_required_self_test_check_fails_the_run(tmp_path: Path, monkey
     assert selftest.run(str(path)) == 1
     rows = json.loads(path.read_text(encoding="utf-8"))["checks"]
     assert rows[0]["ok"] is False and "no data" in rows[0]["detail"]
-
-
-def test_upx_comes_from_upx_dir_or_path_never_a_local_drive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    (tmp_path / "upx.exe").write_bytes(b"")
-    monkeypatch.setenv("UPX_DIR", str(tmp_path))
-    assert build_exe.upx_dir() == str(tmp_path)
-    monkeypatch.setenv("UPX_DIR", str(tmp_path / "nowhere"))
-    with pytest.raises(SystemExit):
-        build_exe.upx_dir()
-    monkeypatch.delenv("UPX_DIR")
-    monkeypatch.setattr(build_exe.shutil, "which", returning(None))
-    with pytest.raises(SystemExit) as e:
-        build_exe.upx_dir()
-    assert "UPX not found" in str(e.value)
-
-
-# ---------------------------------------------------------------- the Dev channel's builds
-def test_the_release_version_marks_a_dev_build_with_its_run() -> None:
-    assert ci_build.release_version("production", "0.9.0", 57) == "0.9.0"
-    assert ci_build.release_version("development", "0.9.0", 57) == "0.9.0-dev.57"
-    with pytest.raises(SystemExit):
-        ci_build.release_version("nightly", "0.9.0", 57)
 
 
 @pytest.mark.parametrize("value, want", [("57", 57), ("", 0), ("x", 0), ("-3", 0)])

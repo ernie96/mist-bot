@@ -196,7 +196,7 @@ class CombatStats:
 
 def _prices() -> dict[str, int]:
     try:
-        with open(os.path.join(paths.DATA, "shards.json"), encoding="utf-8") as f:
+        with open(paths.data_file("shards.json"), encoding="utf-8") as f:
             shards: dict[str, dict[str, Any]] = json.load(f).get("shards", {})
         return {k.lower(): v.get("price", 0) for k, v in shards.items()}
     except (OSError, ValueError):

@@ -107,14 +107,16 @@ def test_in_a_build_the_app_folder_is_the_exes_wherever_it_starts(built: Path, m
 def test_a_build_keeps_every_folder_and_file_beside_the_exe(built: Path, monkeypatch: pytest.MonkeyPatch,
                                                             tmp_path: Path) -> None:
     """paths.py run as the built exe loads it (its marker in its globals), started from elsewhere:
-    settings, profiles, plans, scripts, logs, data and the agent keep their names, beside the exe."""
+    settings, profiles, plans, scripts, logs and the agent keep their names, beside the exe. What
+    ships stays with the module, wherever the build unpacked it."""
     monkeypatch.chdir(tmp_path)
     loaded = runpy.run_path(PATHS_PY, init_globals={"__compiled__": object()})
     assert same(loaded["APP"], built)
-    for name, rel in (("DATA", "data"), ("LANG", "lang"), ("DOCS", "docs"), ("AGENT_JAR", "agent/unclefarmer-agent.jar"),
-                      ("PROFILES", "profiles"), ("PLANS", "plans"), ("SCRIPTS", "scripts"), ("LOGS", "logs"),
-                      ("SETTINGS", "settings.json")):
+    for name, rel in (("AGENT_JAR", "agent/unclefarmer-agent.jar"), ("PROFILES", "profiles"), ("PLANS", "plans"),
+                      ("SCRIPTS", "scripts"), ("LOGS", "logs"), ("SETTINGS", "settings.json")):
         assert same(loaded[name], built / rel), name
+    for name, rel in (("DATA", "data"), ("LANG", "lang"), ("DOCS", "docs")):
+        assert same(loaded[name], Path(ROOT) / rel), name
     for made in ("profiles", "plans", "scripts", "logs"):
         assert (built / made).is_dir()
     assert not (tmp_path / "profiles").exists()      # nothing in the working folder

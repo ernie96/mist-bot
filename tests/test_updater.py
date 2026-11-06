@@ -12,6 +12,7 @@ import hashlib
 import os
 import re
 import stat
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -722,7 +723,7 @@ def test_a_whole_update_leaves_only_the_app_and_its_logs(home: Path, tmp_path: P
         folder = updater.unpack(updater.download(for_download(asset=z.name, size=len(body),
                                                               sha256=hashlib.sha256(body).hexdigest())))
     updater.start_apply(folder, "0.5.0")
-    monkeypatch.setattr(updater.sys, "executable", os.path.join(folder, updater.EXE))   # the copier's own exe
+    monkeypatch.setattr(sys, "executable", os.path.join(folder, updater.EXE))   # the copier's own exe
     updater.run_apply(launched[0][2:])
     # here the copier ran in this process; in a real update it is another one, which has exited
     held = updater.json.loads((home / "update" / updater.BUSY).read_text(encoding="utf-8"))

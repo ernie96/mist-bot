@@ -227,6 +227,7 @@ def install(folder: str) -> None:
     lines = [l for l in lines if not _ours(l)] + [agent_line()]
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(nl.join(lines) + nl)
+    paths.place_agent()
     os.makedirs(paths.AGENT_RUN, exist_ok=True)
 
 

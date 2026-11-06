@@ -19,7 +19,7 @@ def _load():
     global _dll, _tried
     if not _tried:
         _tried = True
-        path = os.path.join(paths.APP, "nvdaControllerClient64.dll")
+        path = os.path.join(paths.BUNDLE, "nvdaControllerClient64.dll")
         if os.path.exists(path):
             try:
                 _dll = ctypes.windll.LoadLibrary(path)

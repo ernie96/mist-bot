@@ -637,7 +637,7 @@ def shard_catalog() -> tuple[dict[str, dict[str, Any]], dict[str, list[float]]]:
     """{shard name: {"price", "makes"}} and {map: [x, y]} of the Shard Markets (data/shards.json,
     built from the market's own menus)."""
     try:
-        with open(os.path.join(paths.DATA, "shards.json"), encoding="utf-8") as f:
+        with open(paths.data_file("shards.json"), encoding="utf-8") as f:
             d: dict[str, Any] = json.load(f)
         return d.get("shards", {}), d.get("markets", {})
     except (OSError, ValueError):
@@ -1113,8 +1113,7 @@ def save_shard_prices(prices: Mapping[str, int]) -> list[tuple[str, int, int]]:
     file's own layout. Only valid prices of shards it has are written (read_market_prices); one that
     isn't a positive whole number is never written over a good one. Returns [(shard, old, new)] of
     the prices that changed."""
-    path = os.path.join(paths.DATA, SHARDS_FILE)
-    with open(path, encoding="utf-8") as f:
+    with open(paths.data_file(SHARDS_FILE), encoding="utf-8") as f:
         text = f.read()
     data: object = json.loads(text)
     shards: object = data.get("shards") if json.is_object(data) else None
@@ -1138,6 +1137,8 @@ def save_shard_prices(prices: Mapping[str, int]) -> list[tuple[str, int, int]]:
     if changed:
         if json.loads(text) != data:       # the edit must say exactly what was meant, or nothing is saved
             raise ValueError(_("{file}: the new prices didn't come out right - nothing saved", file=SHARDS_FILE))
+        path = paths.learned_file(SHARDS_FILE)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         json.save_text(path, text)
     return changed
 

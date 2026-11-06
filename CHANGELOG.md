@@ -2,6 +2,12 @@
 
 ## Not released yet
 
+**One file**
+
+- The build is now a single `UncleFarmer.exe`. It puts the game agent in an `agent` folder beside
+  itself the first time it starts, and your settings, plans and results stay beside it as before.
+  The first start takes longer, while it unpacks; later starts don't.
+
 **Gem Maker**
 
 - A lucky run where no gem breaks no longer keeps the Gem Maker going round. A combine that works
