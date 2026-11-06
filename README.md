@@ -6,7 +6,7 @@
 
 **A free, open-source farming bot for Mist World.**
 
-[![CI](https://github.com/afnannasir/uncle-farmer/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/afnannasir/uncle-farmer/actions/workflows/ci.yml)
+[![CI](https://github.com/ernie96/mist-bot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ernie96/mist-bot/actions/workflows/ci.yml)
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL%20v3-blue.svg)](LICENSE)
 ![Platform: Windows](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
 ![Requires NVDA](https://img.shields.io/badge/requires-NVDA-green.svg)
@@ -15,6 +15,10 @@
 </div>
 
 ---
+
+> **This is Mist Bot, a modified version of [Uncle Farmer](https://github.com/afnannasir/uncle-farmer) by its authors.** It has been
+> changed since 5 November 2026, and it builds to a single exe. It takes its updates from this
+> repository's releases. It stays under the same GPL v3 licence.
 
 Uncle Farmer walks your character to the farming map, fights, drinks potions at the right moment,
 looks after your pets, sorts your bag, does your daily chores, and goes home safely when you tell it
@@ -92,7 +96,7 @@ nothing.
 
 ## Getting started
 
-1. Download `UncleFarmer-<version>.zip` from this repository's [Releases](https://github.com/afnannasir/uncle-farmer/releases)
+1. Download `UncleFarmer-<version>.zip` from this repository's [Releases](https://github.com/ernie96/mist-bot/releases)
    and unzip it anywhere: it makes an `Uncle Farmer` folder.
 2. Run `UncleFarmer.exe`. The first time, it opens **Settings**: choose your Mist World folder (or
    start the game and press **Find the running game**) and press **Install**.
@@ -194,7 +198,7 @@ need to be in front. The Python app decides what to do next.
 This is a community project. It gets better every time someone helps, and you don't have to be a
 programmer to help:
 
-- 🐞 **Report a bug.** [Open an issue](https://github.com/afnannasir/uncle-farmer/issues): say what you did, what
+- 🐞 **Report a bug.** [Open an issue](https://github.com/ernie96/mist-bot/issues): say what you did, what
   you expected, and what happened. Attach the day's file from the `logs` folder if you can, and
   `logs/bootup.log` or `logs/teardown.log` if Uncle Farmer won't open or won't close.
 - 🛠️ **Fix something.** Pull requests are welcome, big or small. See [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -217,7 +221,7 @@ back:
 ## Contact 📧
 
 Questions, ideas, or anything else: [afnan.nasir2000@gmail.com](mailto:afnan.nasir2000@gmail.com). Bugs are best reported as an
-[issue](https://github.com/afnannasir/uncle-farmer/issues), so everyone can see the fix. Inside the app, Help, Contact the
+[issue](https://github.com/ernie96/mist-bot/issues), so everyone can see the fix. Inside the app, Help, Contact the
 developer shows the address too.
 
 ## Play fair

@@ -1,4 +1,4 @@
-"""Updates from the GitHub releases of Uncle Farmer, on one of two channels.
+"""Updates from this fork's GitHub releases (REPO), on one of two channels.
 
   master  stable releases: a tag "v<version>" (v0.2.0) with one asset, UncleFarmer-<version>.zip,
           published by hand (release.py). GitHub's "latest release", which never is a pre-release.
@@ -60,7 +60,7 @@ from . import __version__, applog, jsonio as json, paths
 # app never asks the network for one. Only ever a repository the project controls: a name nobody
 # controls any more could be taken by someone else, whose "release" every copy would then offer
 # and install.
-REPO = "afnannasir/uncle-farmer"
+REPO = "ernie96/mist-bot"
 LATEST = "https://api.github.com/repos/%s/releases/latest"      # % REPO, when asked
 RELEASES = "https://api.github.com/repos/%s/releases?per_page=%d"   # % (REPO, DEV_PAGE)
 DEV_PAGE = 30               # the newest releases looked through for dev builds (CI keeps 10)

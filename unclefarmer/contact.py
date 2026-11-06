@@ -7,7 +7,7 @@ translations only carry "{email}", never the address itself.
 from __future__ import annotations
 
 EMAIL = "afnan.nasir2000@gmail.com"
-ISSUES = "https://github.com/afnannasir/uncle-farmer/issues"
+ISSUES = "https://github.com/ernie96/mist-bot/issues"
 
 
 def mailto(subject: str = "") -> str:

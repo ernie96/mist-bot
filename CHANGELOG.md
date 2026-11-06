@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+**Updates**
+
+- Updates now come from this project's own releases, ernie96/mist-bot, not from Uncle Farmer's.
+
 **One file**
 
 - The build is now a single `UncleFarmer.exe`. It puts the game agent in an `agent` folder beside
