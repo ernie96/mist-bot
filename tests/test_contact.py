@@ -105,3 +105,26 @@ def test_the_address_is_never_in_the_translations() -> None:
     for name in ("unclefarmer.pot", "ur.po"):
         text = (lang / name).read_text(encoding="utf-8")
         assert contact.EMAIL not in text and contact.MASTODON not in text and contact.TELEGRAM not in text
+
+
+def test_the_window_offers_the_ways_to_donate() -> None:
+    assert contact.PAYPAL in gui_contact.message() and contact.KOFI in gui_contact.message()
+    assert contact.PAYPAL in gui_contact.donate_message() and contact.KOFI in gui_contact.donate_message()
+
+
+@pytest.mark.parametrize("link", [contact.PAYPAL, contact.KOFI])
+def test_donate_opens_the_page_or_shows_its_link(monkeypatch: pytest.MonkeyPatch, link: str) -> None:
+    opened, errors = browser(monkeypatch, works=True)
+    gui_contact.donate(None, link)
+    assert opened == [link] and errors == []
+    _opened, errors = browser(monkeypatch, works=False)
+    gui_contact.donate(None, link)
+    assert len(errors) == 1 and link in errors[0]
+
+
+def test_the_donation_links_are_never_in_the_translations() -> None:
+    from pathlib import Path
+    lang = Path(__file__).resolve().parent.parent / "lang"
+    for name in ("unclefarmer.pot", "ur.po"):
+        text = (lang / name).read_text(encoding="utf-8")
+        assert contact.PAYPAL not in text and contact.KOFI not in text

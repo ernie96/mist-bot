@@ -1,11 +1,12 @@
 # What's new
 
-## Not released yet
+## 1.0.2
 
-**Contact**
+**Contact, news and donations**
 
-- Help, Contact the developer now gives this project's email and Mastodon addresses, and Help, Join
-  the Telegram group opens this project's group.
+- Help, Contact the developer gives this project's email and Mastodon addresses.
+- Help, Telegram updates channel opens the channel where every new version is announced.
+- Help, Donate: donate with PayPal or Ko-fi, if you'd like to. The bot stays free either way.
 
 **Help**
 

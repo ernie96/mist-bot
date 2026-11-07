@@ -433,6 +433,9 @@ msgstr ""
 msgid "&Target keys pick:"
 msgstr ""
 
+msgid "&Telegram updates channel"
+msgstr ""
+
 msgid "&Then:"
 msgstr ""
 
@@ -1066,6 +1069,9 @@ msgstr ""
 msgid "Crystals"
 msgstr ""
 
+msgid "D&onate..."
+msgstr ""
+
 msgid "D&ungeons...\tCtrl+Shift+G"
 msgstr ""
 
@@ -1125,6 +1131,15 @@ msgid "Don't donate"
 msgstr ""
 
 msgid "Don't go"
+msgstr ""
+
+msgid "Donate"
+msgstr ""
+
+msgid "Donate with &Ko-fi"
+msgstr ""
+
+msgid "Donate with &PayPal"
 msgstr ""
 
 msgid "Done this game day (it starts at 00:00 GMT):"
@@ -1262,6 +1277,9 @@ msgstr ""
 
 msgid ""
 "Every shard into gems, then each colour up as far as it goes (failures give back a shard, which is used again). Expected:"
+msgstr ""
+
+msgid "Every update is announced in the Telegram channel: {link}"
 msgstr ""
 
 msgid "Everyone can get replies again."
@@ -1718,9 +1736,6 @@ msgstr ""
 msgid "Join an international room in the game first."
 msgstr ""
 
-msgid "Join the &Telegram group"
-msgstr ""
-
 msgid "Keep &old files:"
 msgstr ""
 
@@ -2042,7 +2057,10 @@ msgstr ""
 msgid "No bot is running."
 msgstr ""
 
-msgid "No browser opened. The Telegram group is at {link}"
+msgid "No browser opened. The Telegram channel is at {link}"
+msgstr ""
+
+msgid "No browser opened. You can donate at {link}"
 msgstr ""
 
 msgid ""
@@ -2962,9 +2980,6 @@ msgstr ""
 msgid "Taken out of the storehouse:"
 msgstr ""
 
-msgid "Talk with other players and the developer in the Telegram group: {link}"
-msgstr ""
-
 msgid "Target east"
 msgstr ""
 
@@ -3379,6 +3394,10 @@ msgstr ""
 
 msgid ""
 "Uncle Farmer character settings and profiles (*.unclefarmer-profile.json;*.json)|*.unclefarmer-profile.json;*.json|"
+msgstr ""
+
+msgid ""
+"Uncle Farmer is free. If it helps you and you'd like to give something back, you can donate with PayPal ({paypal}) or Ko-fi ({kofi})."
 msgstr ""
 
 msgid "Uncle Farmer is updated to {v}."

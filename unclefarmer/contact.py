@@ -1,5 +1,5 @@
-"""How to reach the developer: Help, Contact the developer, Help, Join the Telegram group, and the
-README's Contact section.
+"""How to reach the developer and give: Help, Contact the developer, Help, Telegram updates channel,
+Help, Donate, and the README's Contact and Support sections.
 
 The addresses and the group's invite link are the developer's public contacts, there on purpose,
 and kept in this one place; the translations only carry "{email}", "{mastodon}" and "{link}",
@@ -11,7 +11,9 @@ from __future__ import annotations
 EMAIL = "ernesto@melendez.land"
 MASTODON = "ernie@someplace.social"
 ISSUES = "https://github.com/ernie96/mist-bot/issues"
-TELEGRAM = "https://t.me/+-SHI1xTKJugwMzQ5"   # the project's Telegram invite link
+TELEGRAM = "https://t.me/+-SHI1xTKJugwMzQ5"   # the Telegram channel where updates are announced
+PAYPAL = "https://paypal.me/RefinnejLTD"
+KOFI = "https://ko-fi.com/ernie96"
 
 
 def mailto(subject: str = "") -> str:

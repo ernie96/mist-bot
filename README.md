@@ -216,6 +216,7 @@ back:
 
 - ⭐ **Star this repository.** It helps other players find it.
 - 🤝 **Contribute.** Your time and fixes are worth as much as money.
+- ☕ **Donate** with [PayPal](https://paypal.me/RefinnejLTD) or [Ko-fi](https://ko-fi.com/ernie96). In the app: Help, Donate.
 
 ## Contact 📧
 
@@ -224,8 +225,8 @@ Questions, ideas, or anything else: [ernesto@melendez.land](mailto:ernesto@melen
 [issue](https://github.com/ernie96/mist-bot/issues), so everyone can see the fix. Inside the app, Help, Contact the
 developer shows these too.
 
-Join the players' [Telegram group](https://t.me/+-SHI1xTKJugwMzQ5) to talk with other players and the developer (in the
-app: Help, Join the Telegram group).
+Every new version is announced in the [Telegram channel](https://t.me/+-SHI1xTKJugwMzQ5) (in the app: Help, Telegram
+updates channel).
 
 ## Play fair
 

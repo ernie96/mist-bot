@@ -788,9 +788,11 @@ Help, Contact the developer shows the developer's email and Mastodon addresses, 
 or ideas, with buttons to write an email or copy the address. Bugs are best
 reported as a GitHub issue, so everyone can see the fix.
 
-Help, Join the Telegram group opens the players' Telegram group (https://t.me/+-SHI1xTKJugwMzQ5),
-where you can talk with other players and the developer. The Contact the developer window has a
-button for it too.
+Help, Telegram updates channel opens the Telegram channel where every new version is announced
+(https://t.me/+-SHI1xTKJugwMzQ5). The Contact the developer window has a button for it too.
+
+Help, Donate has buttons to donate with PayPal (https://paypal.me/RefinnejLTD) or Ko-fi
+(https://ko-fi.com/ernie96). Uncle Farmer stays free either way.
 
 ## Things to know
 

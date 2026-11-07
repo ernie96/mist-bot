@@ -436,6 +436,9 @@ msgstr "&Supplies (tick wale dobara bhare jate hain):"
 msgid "&Target keys pick:"
 msgstr "&Target keys chunti hain:"
 
+msgid "&Telegram updates channel"
+msgstr "Telegram &channel (updates ki khabar)"
+
 msgid "&Then:"
 msgstr "&Phir:"
 
@@ -1086,6 +1089,9 @@ msgstr ""
 msgid "Crystals"
 msgstr "Crystals"
 
+msgid "D&onate..."
+msgstr "C&handa dein..."
+
 msgid "D&ungeons...\tCtrl+Shift+G"
 msgstr "D&ungeons...\tCtrl+Shift+G"
 
@@ -1146,6 +1152,15 @@ msgstr "Chanda na dein"
 
 msgid "Don't go"
 msgstr "Na jaayein"
+
+msgid "Donate"
+msgstr "Chanda dein"
+
+msgid "Donate with &Ko-fi"
+msgstr "&Ko-fi se chanda dein"
+
+msgid "Donate with &PayPal"
+msgstr "&PayPal se chanda dein"
 
 msgid "Done this game day (it starts at 00:00 GMT):"
 msgstr "Is game din mein ho chuka (din 00:00 GMT par shuru hota hai):"
@@ -1286,6 +1301,9 @@ msgid ""
 "Every shard into gems, then each colour up as far as it goes (failures give back a shard, which is used again). Expected:"
 msgstr ""
 "Har shard ko gems mein, phir har rang ko jitna mumkin upar (fail hone par shard wapas milta hai, jo dobara istemal hota hai). Tawaqqo:"
+
+msgid "Every update is announced in the Telegram channel: {link}"
+msgstr "Har update ka elaan Telegram channel par hota hai: {link}"
 
 msgid "Everyone can get replies again."
 msgstr "Ab sab ko jawab mil sakta hai."
@@ -1761,9 +1779,6 @@ msgstr "Pehle game mein koi private channel join karein."
 msgid "Join an international room in the game first."
 msgstr "Pehle game mein koi international room join karein."
 
-msgid "Join the &Telegram group"
-msgstr "&Telegram group join karein"
-
 msgid "Keep &old files:"
 msgstr "Purani files &rakhein:"
 
@@ -2094,8 +2109,11 @@ msgstr "Gem Maker, Equipment Enhancer ya roz ke kaam ka koi run nahi."
 msgid "No bot is running."
 msgstr "Koi bot nahi chal raha."
 
-msgid "No browser opened. The Telegram group is at {link}"
-msgstr "Koi browser nahi khula. Telegram group yahan hai: {link}"
+msgid "No browser opened. The Telegram channel is at {link}"
+msgstr "Koi browser nahi khula. Telegram channel yahan hai: {link}"
+
+msgid "No browser opened. You can donate at {link}"
+msgstr "Koi browser nahi khula. Aap yahan chanda de sakte hain: {link}"
 
 msgid ""
 "No character has settings to export yet. Log in to one and let the bot scan it first."
@@ -3050,9 +3068,6 @@ msgstr "Game ki &window saamne ho tab bhi unke commands lein"
 msgid "Taken out of the storehouse:"
 msgstr "Storehouse se nikale gaye:"
 
-msgid "Talk with other players and the developer in the Telegram group: {link}"
-msgstr "Doosre players aur developer se Telegram group mein baat karein: {link}"
-
 msgid "Target east"
 msgstr "Mashriq ko target karein"
 
@@ -3506,6 +3521,11 @@ msgid ""
 "Uncle Farmer character settings and profiles (*.unclefarmer-profile.json;*.json)|*.unclefarmer-profile.json;*.json|"
 msgstr ""
 "Uncle Farmer character settings aur profiles (*.unclefarmer-profile.json;*.json)|*.unclefarmer-profile.json;*.json|"
+
+msgid ""
+"Uncle Farmer is free. If it helps you and you'd like to give something back, you can donate with PayPal ({paypal}) or Ko-fi ({kofi})."
+msgstr ""
+"Uncle Farmer muft hai. Agar yeh aap ke kaam aata hai aur aap kuch wapas dena chahte hain, to PayPal ({paypal}) ya Ko-fi ({kofi}) se chanda de sakte hain."
 
 msgid "Uncle Farmer is updated to {v}."
 msgstr "Uncle Farmer {v} par update ho gaya."
