@@ -1,5 +1,16 @@
 # What's new
 
+## Not released yet
+
+**Updates**
+
+- Updates are now one signed file. Uncle Farmer downloads the new UncleFarmer.exe, checks that it
+  is signed by this project, then swaps it in and starts again. There is nothing to unpack, so an
+  update can no longer stop at 99% "Unpacking".
+- Coming from 1.0.1 or 1.0.2: those can't install this version themselves. Download
+  UncleFarmer.exe from the release page once and put it in place of yours; after that, updates
+  install themselves again.
+
 ## 1.0.2
 
 **Contact, news and donations**

@@ -171,8 +171,8 @@ class Started:
         self.target(**self.kwargs)
 
 
-REL: updater.Release = {"version": "99.0.0", "tag": "v99.0.0", "notes": "", "asset": "UncleFarmer-99.0.0.zip",
-                        "size": 1, "url": "u", "sha256": ""}
+REL: updater.Release = {"version": "99.0.0", "tag": "v99.0.0", "notes": "", "asset": "UncleFarmer.exe",
+                        "size": 1, "url": "u", "sha256": "", "signature_url": "s"}
 
 
 @pytest.fixture

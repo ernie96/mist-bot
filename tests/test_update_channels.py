@@ -29,15 +29,14 @@ def asset(name: str, **over: Any) -> dict[str, Any]:
 
 def stable(version: str, **over: Any) -> dict[str, Any]:
     rel: dict[str, Any] = {"tag_name": "v" + version, "body": "stable notes", "draft": False, "prerelease": False,
-                           "assets": [asset("UncleFarmer-%s.zip" % version)]}
+                           "assets": [asset("UncleFarmer.exe"), asset("UncleFarmer.exe.sig")]}
     rel.update(over)
     return rel
 
 
 def dev(version: str, **over: Any) -> dict[str, Any]:
     rel: dict[str, Any] = {"tag_name": "v" + version, "body": "dev notes", "draft": False, "prerelease": True,
-                           "assets": [asset("UncleFarmer-%s.zip" % version),
-                                      asset("UncleFarmer-%s.zip.sha256" % version)]}
+                           "assets": [asset("UncleFarmer.exe"), asset("UncleFarmer.exe.sig")]}
     rel.update(over)
     return rel
 
@@ -116,7 +115,7 @@ def test_an_unknown_channel_in_the_file_falls_back_to_master_and_keeps_the_rest(
 def test_master_reads_the_latest_stable_release(github: GitHub) -> None:
     github.latest = stable("0.10.0")
     rel = updater.latest(update_channel="master")
-    assert rel is not None and rel["version"] == "0.10.0" and rel["asset"] == "UncleFarmer-0.10.0.zip"
+    assert rel is not None and rel["version"] == "0.10.0" and rel["asset"] == "UncleFarmer.exe"
     assert github.asked == [updater.LATEST % updater.REPO]
 
 
@@ -130,9 +129,9 @@ def test_master_is_the_default_channel(github: GitHub) -> None:
 @pytest.mark.parametrize("rel", [
     dev("0.10.0-dev.5"),                                   # a pre-release
     dev("0.10.0-dev.5", prerelease=False),                 # a dev build that wasn't marked pre-release
-    stable("0.10.0", assets=[asset("UncleFarmer-0.10.0-dev.5.zip")]),    # only a dev zip on it
+    stable("0.10.0", assets=[asset("UncleFarmer-0.10.0.zip")]),    # an old-style zip, no signed exe
     stable("0.10.0", draft=True),
-], ids=["pre-release", "dev tag", "dev asset", "draft"])
+], ids=["pre-release", "dev tag", "old zip", "draft"])
 def test_master_never_takes_a_dev_build(github: GitHub, rel: dict[str, Any]) -> None:
     github.latest = rel
     assert updater.latest(update_channel="master") is None
@@ -147,8 +146,8 @@ def test_dev_takes_the_newest_dev_build_and_nothing_else(github: GitHub) -> None
     github.releases = [
         stable("0.11.0"),                                   # newer, but stable: not on this channel
         dev("0.10.0-dev.99", draft=True),
-        dev("0.10.0-dev.98", assets=[asset("UncleFarmer-0.10.0-dev.98.zip", state="new")]),   # still uploading
-        dev("0.10.0-dev.97", assets=[asset("UncleFarmer-0.10.0.zip")]),    # asset doesn't match the tag
+        dev("0.10.0-dev.98", assets=[asset("UncleFarmer.exe", state="new"), asset("UncleFarmer.exe.sig")]),
+        dev("0.10.0-dev.97", assets=[asset("UncleFarmer.exe")]),           # no signature
         dev("0.10.0-dev.96", prerelease=False),
         dev("0.10.0-beta.1"),                               # a pre-release, but not a dev build
         dev("0.10.0-dev.9"),
@@ -158,8 +157,8 @@ def test_dev_takes_the_newest_dev_build_and_nothing_else(github: GitHub) -> None
     rel = updater.latest(update_channel="dev")
     assert rel is not None
     assert rel["version"] == "0.10.0-dev.10" and rel["tag"] == "v0.10.0-dev.10"
-    assert rel["asset"] == "UncleFarmer-0.10.0-dev.10.zip" and rel["sha256"] == "ab" * 32
-    assert rel["url"] == "https://dl/UncleFarmer-0.10.0-dev.10.zip"
+    assert rel["asset"] == "UncleFarmer.exe" and rel["sha256"] == "ab" * 32
+    assert rel["url"] == "https://dl/UncleFarmer.exe" and rel["signature_url"] == "https://dl/UncleFarmer.exe.sig"
     assert github.asked == [updater.RELEASES % (updater.REPO, updater.DEV_PAGE)]
 
 

@@ -26,6 +26,15 @@ def exe_folder() -> str:
     return where or os.path.dirname(os.path.abspath(sys.executable))
 
 
+def exe_path() -> str:
+    """The exe the player started, under whatever name they gave it (the updater replaces it)."""
+    started: str | None = getattr(globals().get("__compiled__"), "original_argv0", None)
+    name = os.path.basename(started) if started else "UncleFarmer.exe"
+    if not name.lower().endswith(".exe"):
+        name += ".exe"
+    return os.path.join(exe_folder(), name)
+
+
 def app_folder() -> str:
     """The folder that holds what the app keeps: in a build the exe's own, from source the
     checkout's. Never the working folder."""

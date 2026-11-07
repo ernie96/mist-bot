@@ -1,34 +1,27 @@
-"""Updates from this fork's GitHub releases (REPO), on one of two channels.
+"""Updates from this project's GitHub releases (REPO), the way Ernesto's other apps take them (Tin Pan,
+TimePlayer): one exe and its Ed25519 signature, swapped in by a small helper once the app has closed.
 
-  master  stable releases: a tag "v<version>" (v0.2.0) with one asset, UncleFarmer-<version>.zip,
-          published by hand (release.py). GitHub's "latest release", which never is a pre-release.
-  dev     development builds of the dev branch, published by CI (ci.yml, ci_build.py publish-dev):
-          a PRE-release tagged "v<version>-dev.<build>" with UncleFarmer-<version>-dev.<build>.zip.
-          <version> is the last stable release's, <build> the CI run number, so 0.9.0-dev.57 is a
-          build made after 0.9.0, newer than 0.9.0 and older than 0.10.0 (version_tuple orders them).
+  master  stable releases: a tag "v<version>" (v1.0.3) with two assets, UncleFarmer.exe and
+          UncleFarmer.exe.sig, published by release.py. GitHub's "latest release", never a pre-release.
+  dev     pre-releases tagged "v<version>-dev.<build>" with the same two assets. Nothing publishes
+          them today; a copy set to Dev sees them once something does.
 
-The player picks the channel in Settings (update_channel, master when never set). Each channel
-reads only its own releases: master never takes a pre-release or a "-dev." version, dev only
-pre-releases whose tag, version and asset name all have the dev shape. A built copy says which
-build it is in build.json beside the exe (write_build); a copy without one is __version__.
+The signature is base64 Ed25519 over "MistBot-update-v1:UncleFarmer.exe:<SHA-256 of the exe, hex>",
+made with the private key on the publisher's PC (release.py); PUBLIC_KEY is its public half. A file
+whose signature doesn't check is deleted and never run.
 
 Updating goes in three steps:
 
   1. latest() asks GitHub for the newest release of the channel; the window says what's new and asks.
-  2. download() + unpack() put the new folder in update/new, next to the exe.
-  3. start_apply() runs the NEW UncleFarmer.exe from update/new with --apply-update, and the app
-     closes. That copy waits for the old one to exit, copies itself over the app folder (nothing
-     there is in use any more) and starts the updated app, which reads update/result.json and
-     says how it went.
+  2. download() puts the exe in update/ and checks its size, GitHub's checksum and the signature.
+  3. start_install() starts a hidden PowerShell helper, and the app closes. The helper waits for it
+     to exit, moves the old exe aside (UncleFarmer.exe.old), copies the new one in (putting the old
+     one back if that fails), writes update/result.json and starts the app, which says how it went
+     and removes the .old copy.
 
-update/ is the staging folder: only the download, the unpacked copy, the result and busy.json
-(who is using it) live there, and clean() empties and removes it once nothing uses it. Every step
-is written to logs/update.log with the app's other logs, so a cleanup never takes the log away.
-
-Only what a release ships is replaced: the exe (a single-file build carries the rest inside it,
-and places its agent beside itself), or its _internal folder, agent/, data/, lang/, docs/ and
-the files beside the exe. Character profiles, plans, scripts, settings, logs, messages,
-results and anything learned (data/game_texts.json, agent/run) are never in a release, so they stay.
+There is nothing to unpack: the exe carries everything (build_exe.py), so the player's own files
+beside it are never touched. update/ holds only the download, the result and busy.json (who is
+using it), and clean() empties it once nothing uses it. Every step goes to logs/update.log.
 
 The releases are public, so no login is needed. UNCLEFARMER_GITHUB_TOKEN (a read-only token)
 still works for a private fork's releases; without one, a private repository has no update to offer.
@@ -36,6 +29,7 @@ still works for a private fork's releases; without one, a private repository has
 
 from __future__ import annotations
 
+import base64
 import ctypes
 import hashlib
 import http.client
@@ -49,7 +43,6 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-import zipfile
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from typing import IO, Any, TypedDict, cast
@@ -64,24 +57,23 @@ REPO = "ernie96/mist-bot"
 LATEST = "https://api.github.com/repos/%s/releases/latest"      # % REPO, when asked
 RELEASES = "https://api.github.com/repos/%s/releases?per_page=%d"   # % (REPO, DEV_PAGE)
 DEV_PAGE = 30               # the newest releases looked through for dev builds (CI keeps 10)
-ASSET = re.compile(r"^UncleFarmer-[\w.\-]+\.zip$", re.I)
+EXE = "UncleFarmer.exe"
+ASSET = EXE                 # the release's exe; its signature is ASSET + ".sig"
+SIGNATURE = ASSET + ".sig"
+# The release signing public key. Its private half stays on the publisher's PC (release.py).
+PUBLIC_KEY = "9ZL7+zrOloMB3Odt9KwnvF/htqK4xjLZOHTSrlvX4fY="
+DOMAIN = "MistBot-update-v1"   # signed messages start with this, so no other signature can pass
 # the dev channel's shapes; ci_build.py checks its own copy of DEV_VERSION against this one
 DEV_VERSION = re.compile(r"^\d+\.\d+\.\d+-dev\.\d+$")
 CHANNELS = ("master", "dev")
 DEFAULT_CHANNEL = "master"
-EXE = "UncleFarmer.exe"
 BUILD_FILE = "build.json"   # beside the exe in a CI build: which build this copy is
 UPDATE = os.path.join(paths.APP, "update")
-NEW = os.path.join(UPDATE, "new")
 RESULT = os.path.join(UPDATE, "result.json")
-BUSY = "busy.json"          # in UPDATE while a download, an unpack or the copier uses it
+BUSY = "busy.json"          # in UPDATE while a download uses it
 STALE_SECONDS = 6 * 3600    # a busy.json older than this is a leftover, whoever wrote it
 LOG = os.path.join(paths.LOGS, "update.log")
-# folders a release replaces whole (old files in them go); every other shipped folder is merged,
-# so files the app made there itself (data/game_texts.json, agent/run) stay
-REPLACE = ("_internal",)
-KEEP_IN = {"agent": ("run",)}
-# never copied, even if a release carried them: the player's own things
+# never in a release: the player's own things (release.py checks)
 NEVER = {"profiles", "plans", "scripts", "logs", "messages", "results", "survey", "update", "settings.json",
          "schedules.json"}
 
@@ -98,14 +90,15 @@ class Release(TypedDict):
     version: str
     tag: str | None
     notes: str
-    asset: str          # the zip's file name
+    asset: str          # the exe's file name
     size: int
     url: str
     sha256: str         # "" when GitHub gives no digest
+    signature_url: str  # the exe's .sig
 
 
 class UpdateResult(TypedDict):
-    """What the update copier reports to the restarted app (update/result.json)."""
+    """What the update helper reports to the restarted app (update/result.json)."""
     version: str
     ok: bool
     error: str
@@ -202,9 +195,10 @@ def _ask(url: str, timeout: float) -> Any:
         raise UpdateError(str(getattr(e, "reason", e)))
 
 
-def _release(rel: dict[str, Any], version: str, asset: dict[str, Any]) -> Release:
+def _release(rel: dict[str, Any], version: str, asset: dict[str, Any], sig: dict[str, Any]) -> Release:
     digest = asset.get("digest") or ""
-    return {"version": version, "tag": rel.get("tag_name"),
+    return {"signature_url": sig["url"] if _token() else sig["browser_download_url"],
+            "version": version, "tag": rel.get("tag_name"),
             "notes": (rel.get("body") or "").strip(), "asset": asset["name"], "size": asset.get("size", 0),
             # with a token the API's own asset link (a private repository has no public one)
             "url": asset["url"] if _token() else asset["browser_download_url"],
@@ -222,6 +216,16 @@ def _assets(rel: dict[str, Any]) -> list[dict[str, Any]]:
     return [a for a in (_obj(x) for x in items) if a is not None]
 
 
+def _pair(rel: dict[str, Any], version: str) -> Release | None:
+    """The release's exe and its signature, both fully uploaded, as a Release; None without both."""
+    def named(name: str) -> dict[str, Any] | None:
+        # an asset still being uploaded is not one yet
+        return next((a for a in _assets(rel) if str(a.get("name", "")).lower() == name.lower()
+                     and a.get("state", "uploaded") == "uploaded"), None)
+    exe, sig = named(ASSET), named(SIGNATURE)
+    return None if exe is None or sig is None else _release(rel, version, exe, sig)
+
+
 def _stable(answer: object) -> Release | None:
     """GitHub's latest release as a master release, or None when it isn't one."""
     rel = _obj(answer)
@@ -230,14 +234,12 @@ def _stable(answer: object) -> Release | None:
     version = str(rel.get("tag_name") or "").lstrip("vV")
     if is_dev(version):                  # never a dev build on master, however it was published
         return None
-    asset = next((a for a in _assets(rel) if ASSET.match(str(a.get("name", "")))
-                  and "-dev." not in str(a.get("name", ""))), None)
-    return None if asset is None else _release(rel, version, asset)
+    return _pair(rel, version)
 
 
 def _dev(answer: object) -> Release | None:
     """One release from the list as a dev build, or None: a pre-release, not a draft, tagged
-    v<dev version>, carrying exactly UncleFarmer-<dev version>.zip."""
+    v<dev version>, carrying the exe and its signature."""
     rel = _obj(answer)
     if rel is None or rel.get("draft") or not rel.get("prerelease"):
         return None
@@ -245,11 +247,7 @@ def _dev(answer: object) -> Release | None:
     version = tag[1:] if tag[:1] in ("v", "V") else ""
     if not is_dev(version):
         return None
-    want = "UncleFarmer-%s.zip" % version
-    # an asset still being uploaded (CI publishing right now) is not one yet
-    asset = next((a for a in _assets(rel) if a.get("name") == want
-                  and a.get("state", "uploaded") == "uploaded"), None)
-    return None if asset is None else _release(rel, version, asset)
+    return _pair(rel, version)
 
 
 def latest(timeout: float=10, update_channel: str = DEFAULT_CHANNEL) -> Release | None:
@@ -504,9 +502,9 @@ def clean(wait: float = 0.0) -> bool:
 
 # ---------------------------------------------------------------------------------------- download
 def download(rel: Release, progress: Callable[[int, int], object] | None = None) -> str:
-    """Download the release's zip into update/; progress(done, total) -> False cancels. Returns
-    the zip's path. Checks the size and, when GitHub gives one, the SHA-256. Older downloads in
-    the staging folder go first; a failed or cancelled one leaves no partial file behind."""
+    """Download the release's exe into update/; progress(done, total) -> False cancels. Returns
+    its path once its size, GitHub's SHA-256 (when given) and its signature all check. Older
+    downloads in the staging folder go first; a failed, cancelled or unsigned one leaves nothing."""
     with claimed("download"):
         if _checked_staging(UPDATE, paths.APP) is not None:
             with _lock:
@@ -514,21 +512,58 @@ def download(rel: Release, progress: Callable[[int, int], object] | None = None)
             if left:
                 log("older staging files still in use, left: %s" % "; ".join(left[:3]), "WARNING")
         os.makedirs(UPDATE, exist_ok=True)
-        path = os.path.join(UPDATE, rel["asset"])
+        path = os.path.join(UPDATE, "UncleFarmer-%s.exe" % re.sub(r"[^\w.\-]", "_", rel["version"]))
         log("download of %s (%s) started" % (rel["asset"], rel["version"]))
         try:
             got = _fetch(rel, path, progress)
+            signature = _fetch_signature(rel)
+            if not verify(PUBLIC_KEY, path, ASSET, signature):
+                raise UpdateError("the download isn't signed by Mist Bot's publisher, so it was not installed")
         except UpdateError as e:
-            try:
-                os.remove(path + ".part")
-            except OSError:
-                pass
+            for leftover in (path + ".part", path):
+                try:
+                    os.remove(leftover)
+                except OSError:
+                    pass
             log("download of %s %s" % (rel["asset"], "cancelled" if str(e) == "cancelled" else "FAILED: %s" % e),
                 "INFO" if str(e) == "cancelled" else "WARNING")
             raise
-        log("download of %s done: %d bytes, %s" % (rel["asset"], got,
-                                                   "checksum ok" if rel.get("sha256") else "no checksum given"))
+        log("download of %s done: %d bytes, %s, signature ok" % (
+            rel["asset"], got, "checksum ok" if rel.get("sha256") else "no checksum given"))
         return path
+
+
+def _fetch_signature(rel: Release) -> str:
+    try:
+        with _open(rel["signature_url"], "application/octet-stream", 60) as r:
+            return r.read(4096).decode("ascii", "replace").strip()
+    except (urllib.error.URLError, OSError) as e:
+        raise UpdateError("the signature didn't download: %s" % getattr(e, "reason", e))
+
+
+def message(asset: str, sha256: bytes) -> bytes:
+    """What a release's signature signs: the domain, the asset's name and its SHA-256."""
+    return ("%s:%s:%s" % (DOMAIN, asset, sha256.hex())).encode("ascii")
+
+
+def _sha256(path: str) -> bytes:
+    sha = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1024 * 1024), b""):
+            sha.update(block)
+    return sha.digest()
+
+
+def verify(public_key: str, path: str, asset: str, signature: str) -> bool:
+    """Whether signature (base64) is the publisher's, for this file under this asset name."""
+    from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    try:
+        key = Ed25519PublicKey.from_public_bytes(base64.b64decode(public_key, validate=True))
+        key.verify(base64.b64decode(signature.strip(), validate=True), message(asset, _sha256(path)))
+        return True
+    except (InvalidSignature, ValueError, OSError):
+        return False
 
 
 def _fetch(rel: Release, path: str, progress: Callable[[int, int], object] | None) -> int:
@@ -555,45 +590,60 @@ def _fetch(rel: Release, path: str, progress: Callable[[int, int], object] | Non
     return done
 
 
-def unpack(zip_path: str) -> str:
-    """Unpack the release into update/new and return the folder holding the new exe."""
-    with claimed("unpack"):
-        if os.path.exists(NEW):
-            left: list[str] = []
-            if _checked_staging(UPDATE, paths.APP) is None:
-                raise UpdateError("%s is not the app's own update folder" % UPDATE)
-            _remove(NEW, UPDATE, left)
-            if left or os.path.exists(NEW):
-                raise UpdateError("the last unpacked update is still in use: %s" % "; ".join(left[:2]))
-        os.makedirs(NEW)
-        root = os.path.realpath(NEW)
-        try:
-            try:
-                with zipfile.ZipFile(zip_path) as z:
-                    for name in z.namelist():
-                        target = os.path.realpath(os.path.join(NEW, name))
-                        if target != root and not target.startswith(root + os.sep):
-                            raise UpdateError("the update holds a file outside its folder: %s" % name)
-                    z.extractall(NEW)
-            except zipfile.BadZipFile:
-                raise UpdateError("the downloaded file is not a zip")
-            for folder, _dirs, files in os.walk(NEW):
-                if EXE in files:
-                    log("unpacked %s" % os.path.basename(zip_path))
-                    return folder
-            raise UpdateError("the update has no %s" % EXE)
-        except UpdateError as e:
-            log("unpacking %s FAILED: %s" % (os.path.basename(zip_path), e), "WARNING")
-            raise
+def quote(value: str) -> str:
+    """A PowerShell single-quoted string. PowerShell also ends one at the curly quotes, so those
+    are doubled too."""
+    return "'" + re.sub("['\u2018\u2019\u201a\u201b]", lambda m: m.group(0) * 2, value) + "'"
 
 
-def start_apply(new_folder: str, version: str) -> None:
-    """Start the new copy's --apply-update; the caller then closes the app at once."""
-    args = [os.path.join(new_folder, EXE), "--apply-update", paths.APP, str(os.getpid()), version]
-    subprocess.Popen(args, cwd=new_folder, close_fds=True,
-                     creationflags=getattr(subprocess, "DETACHED_PROCESS", 0) |
+def install_script(pids: list[int], new_exe: str, exe: str, version: str, result: str) -> str:
+    """The helper: wait for the app to exit, move the old exe aside, copy the new one in (retrying
+    while the old one is still locked), put the old one back if that fails, write the result for
+    the restarted app, then start it. The .old copy goes at the next start (tidy)."""
+    old = exe + ".old"
+    ok_json = '{"version": %s, "ok": true, "error": ""}' % json.dumps(version)
+    bad_json = ('{"version": %s, "ok": false, "error": "the exe couldn\'t be replaced (still in use?)"}'
+                % json.dumps(version))
+    return ("Wait-Process -Id %s -Timeout 120 -ErrorAction SilentlyContinue; $ok = $false; "
+            "for ($i = 0; $i -lt 30 -and -not $ok; $i++) { try { "
+            "Move-Item -LiteralPath %s -Destination %s -Force -ErrorAction Stop; "
+            "try { Copy-Item -LiteralPath %s -Destination %s -Force -ErrorAction Stop; $ok = $true } "
+            "catch { Move-Item -LiteralPath %s -Destination %s -Force -ErrorAction SilentlyContinue; throw } "
+            "} catch { Start-Sleep -Seconds 1 } }; "
+            "if ($ok) { Set-Content -LiteralPath %s -Value %s -Encoding UTF8 } "
+            "else { Set-Content -LiteralPath %s -Value %s -Encoding UTF8 }; "
+            "Remove-Item -LiteralPath %s -Force -ErrorAction SilentlyContinue; "
+            "Start-Process -FilePath %s -WorkingDirectory %s"
+            % (",".join(str(p) for p in pids), quote(exe), quote(old), quote(new_exe), quote(exe),
+               quote(old), quote(exe), quote(result), quote(ok_json), quote(result), quote(bad_json),
+               quote(new_exe), quote(exe), quote(os.path.dirname(exe))))
+
+
+def start_install(new_exe: str, version: str) -> None:
+    """Start the hidden helper that swaps the exe once this app has exited; the caller then
+    closes the app at once. The single-file build runs as two processes (the exe that was
+    started, and Python in its unpacked copy): the helper waits for both."""
+    pids = [os.getpid()]
+    if paths.one_exe():
+        pids.append(os.getppid())
+    script = install_script(pids, new_exe, paths.exe_path(), version, RESULT)
+    subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                      "-WindowStyle", "Hidden", "-Command", script],
+                     cwd=UPDATE, close_fds=True,
+                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0) |
                      getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0))
-    log("the update copier for %s started; the app closes for it" % version)
+    log("the update helper for %s started; the app closes for it" % version)
+
+
+def tidy() -> None:
+    """After an update: the old exe the helper moved aside goes."""
+    old = paths.exe_path() + ".old"
+    if os.path.exists(old):
+        try:
+            os.remove(old)
+            log("removed the old exe")
+        except OSError as e:
+            log("couldn't remove the old exe yet: %s" % e, "WARNING")
 
 
 # ---------------------------------------------------------------------------------------- applying
@@ -605,90 +655,7 @@ def _wait_for_exit(pid: int, seconds: float=120) -> None:
             kernel.WaitForSingleObject(h, int(seconds * 1000))
         finally:
             kernel.CloseHandle(h)
-    time.sleep(1.0)                     # OS wait in the update helper, not the app clock: let Windows let go of the files
-
-
-def _copy(src: str, dst: str, log: Callable[[str], None], tries: int = 30) -> None:
-    """Copy one file, waiting a while for one still in use (an antivirus scan, a closing game)."""
-    for i in range(tries):
-        try:
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copy2(src, dst)
-            return
-        except PermissionError:
-            if i == tries - 1:
-                raise
-            log("in use, waiting: %s" % dst)
-            time.sleep(2)                 # OS wait in the update helper, not the app clock
-
-
-def apply(app: str, src: str, log: Callable[[str], None]) -> None:
-    """Copy the release in src over the app folder (see the module notes)."""
-    for name in sorted(os.listdir(src)):
-        if name.lower() in NEVER:
-            continue
-        s, d = os.path.join(src, name), os.path.join(app, name)
-        if os.path.isdir(s) and name in REPLACE:
-            old = d + ".old"
-            shutil.rmtree(old, ignore_errors=True)
-            if os.path.exists(d):
-                os.rename(d, old)
-            try:
-                shutil.copytree(s, d)
-            except Exception:
-                # The update cannot carry on with a half-copied folder: put the old one back and
-                # let run_apply report the failure.
-                shutil.rmtree(d, ignore_errors=True)
-                if os.path.exists(old):
-                    os.rename(old, d)
-                raise
-            shutil.rmtree(old, ignore_errors=True)
-            log("replaced %s" % name)
-        elif os.path.isdir(s):
-            keep = KEEP_IN.get(name, ())
-            for folder, dirs, files in os.walk(s):
-                rel = os.path.relpath(folder, s)
-                if rel == ".":
-                    dirs[:] = [x for x in dirs if x not in keep]
-                for f in files:
-                    _copy(os.path.join(folder, f), os.path.normpath(os.path.join(d, rel, f)), log)
-            log("updated %s" % name)
-        else:
-            _copy(s, d, log)
-            log("updated %s" % name)
-
-
-def run_apply(argv: list[str]) -> None:
-    """`UncleFarmer.exe --apply-update <app folder> <old pid> <version>`, run from update/new.
-
-    This process runs from the staging folder, so its own paths.APP is update/new: the app folder
-    comes from argv, and the log goes to <app>/logs/update.log. busy.json names this process until
-    it exits, so the restarted app waits for it before it empties the staging folder."""
-    app, pid, version = argv[0], int(argv[1]), argv[2]
-    src = paths.exe_folder()
-    update = os.path.join(app, "update")
-    os.makedirs(update, exist_ok=True)
-    logs = os.path.join(app, "logs")
-
-    def log(text: str) -> None:
-        applog.update("copier: " + text, "ERROR" if text.startswith("FAILED") else "INFO", logs=logs)
-
-    _mark_busy(update, "update copier")
-    log("updating %s to %s" % (app, version))
-    _wait_for_exit(pid)
-    result: UpdateResult = {"version": version, "ok": True, "error": ""}
-    try:
-        apply(app, src, log)
-    except Exception as e:                    # report it in the app, which starts again either way
-        # Not carry_on(): silently continuing would leave a half-applied release. The update
-        # worker records the failure for the restarted app instead.
-        result["ok"], result["error"] = False, "%s: %s" % (type(e).__name__, e)
-        log("FAILED " + result["error"])
-    with open(os.path.join(update, "result.json"), "w", encoding="utf-8") as f:
-        json.dump(result, f)
-    log("done; starting the app again")
-    subprocess.Popen([os.path.join(app, EXE)], cwd=app, close_fds=True,
-                     creationflags=getattr(subprocess, "DETACHED_PROCESS", 0))
+    time.sleep(1.0)                     # OS wait, not the app clock: let Windows let go of the files
 
 
 def take_result() -> UpdateResult | None:

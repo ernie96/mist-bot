@@ -13,8 +13,8 @@ Everything works with a screen reader. Important events are spoken through NVDA.
 
 ## Installing
 
-1. Unzip this folder anywhere you like, for example your Documents. Keep everything inside it
-   together.
+1. Put UncleFarmer.exe in a folder of its own, for example in your Documents. Your settings,
+   plans and logs will be kept beside it.
 2. Start **UncleFarmer.exe**. The first time, it offers to open Settings.
 3. In Settings, Game tab, choose your Mist World folder (the one with mw.exe), or start the game
    first and press **Find the running game**. Press **Install**. (Once the agent is installed,
@@ -757,22 +757,22 @@ Settings, Speech and language, Updates, **Release channel** says where updates c
 The choice is saved with the other settings and kept after a restart. Each channel only ever
 offers its own builds: Master never offers a development build, and Dev never offers a stable
 release. Going back from Dev to Master keeps your development build until a stable release newer
-than it is out (Help, Check for updates says so); to go back at once, unpack a stable release's
-zip over the folder by hand.
+than it is out (Help, Check for updates says so); to go back at once, put a stable release's
+UncleFarmer.exe in place of yours by hand.
 
 ### What an update leaves behind
 
-The download and the unpacked new version go into the `update` folder beside the app while the
-update runs. It is emptied and removed once the update is done, failed or was cancelled, and old
-downloads never pile up there. It is cleaned only while no update is using it, and only that one
-folder: your characters, plans, settings and logs are never in it. Every step (the check, the
-download, unpacking, installing, cleaning) is written to `logs/update.log`, with the other logs,
-so it is still there after the cleanup.
+An update is one file, the new UncleFarmer.exe, with a signature. Uncle Farmer downloads it into
+the `update` folder beside the app and checks that signature: a file that isn't signed by this
+project is deleted and never run. Then Uncle Farmer closes, a small helper puts the new exe in
+place of the old one, and starts it. If the old one can't be replaced, it is kept, and Uncle
+Farmer says so when it starts. The old exe, kept as UncleFarmer.exe.old during the update, is
+removed at the next start, and the `update` folder is emptied. Every step (the check, the
+download, the signature, installing, cleaning) is written to `logs/update.log`.
 
-You can also update by hand: close Uncle Farmer and the games, unpack a newer
-UncleFarmer-<version>.zip over this folder and let it replace the files. Either way your
-characters, plans, scripts, settings and logs stay as they are, since a release never carries
-them. "What's new.txt" in the folder says what changed.
+You can also update by hand: close Uncle Farmer and the games, and put a newer UncleFarmer.exe
+in place of yours. Either way your characters, plans, scripts, settings and logs stay as they are,
+since a release never carries them.
 
 ## The game in another language
 

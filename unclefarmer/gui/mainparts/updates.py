@@ -18,8 +18,9 @@ class UpdatesMixin(FrameParts):
     def after_update(self) -> None:
         """Say how an update went, empty the staging folder, and look for a newer one in the background."""
         result = updater.take_result()
+        updater.tidy()
         mine = updater.installed_version()
-        # In the background: the update copier may still be closing, and the cleanup waits for it.
+        # In the background: the update helper may still be closing, and the cleanup waits for it.
         threading.Thread(target=updater.clean, kwargs={"wait": 60}, daemon=True).start()
         if result is not None and result.get("ok"):
             applog.bootup.note("the update to %s finished" % mine)
@@ -77,8 +78,8 @@ class UpdatesMixin(FrameParts):
         if err is not None:
             error(self, _("Couldn't reach GitHub to look for updates: {why}", why=err))
         elif rel is None and not updater.REPO:
-            info(self, _("Uncle Farmer {v} doesn't look for updates online. New versions come as a zip: "
-                         "unpack it over this folder.", v=__version__))
+            info(self, _("Uncle Farmer {v} doesn't look for updates online. Download the new "
+                         "UncleFarmer.exe and put it in place of this one.", v=__version__))
         elif rel is None and dev:
             info(self, _("No development build of Uncle Farmer can be seen on GitHub yet."))
         elif rel is None:
@@ -164,17 +165,11 @@ class UpdatesMixin(FrameParts):
             folder: str | None = None
             err: Exception | None = None
             try:
-                # one claim over both steps: the staging folder is never cleaned between them
                 with updater.claimed("update"):
-                    zip_path = updater.download(rel, progress)
-                    try:
-                        wx.CallAfter(self._update_progress, dlg, state, 99, 99, _("Unpacking..."))
-                    except RuntimeError:
-                        pass
-                    folder = updater.unpack(zip_path)
-            except (updater.UpdateError, OSError) as e:
+                    folder = updater.download(rel, progress)
+            except Exception as e:      # whatever goes wrong, the window must hear of it and close
                 err = e
-                updater.log("the update to %s stopped: %s" % (rel["version"], e),
+                updater.log("the update to %s stopped: %r" % (rel["version"], e),
                             "INFO" if str(e) == "cancelled" else "WARNING")
             try:
                 wx.CallAfter(self._update_done, dlg, rel, folder, err)
@@ -204,7 +199,7 @@ class UpdatesMixin(FrameParts):
             updater.clean()
             return
         try:
-            updater.start_apply(folder, rel["version"])
+            updater.start_install(folder, rel["version"])
         except OSError as e:
             error(self, _("The update couldn't start: {why}", why=e))
             return

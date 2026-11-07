@@ -2,8 +2,6 @@
 
     python -m unclefarmer            the app
     python -m unclefarmer --strings  refresh lang/unclefarmer.pot, merge the .po files, compile them
-    UncleFarmer.exe --apply-update <app folder> <pid> <version>
-                                     (the updater's own step: see updater.py)
     UncleFarmer.exe --self-test <report.json>
                                      check the copy without a window (selftest.py; CI runs it)
 """
@@ -20,10 +18,6 @@ if TYPE_CHECKING:
 
 
 def main() -> None:
-    if "--apply-update" in sys.argv:
-        from . import updater
-        updater.run_apply(sys.argv[sys.argv.index("--apply-update") + 1:])
-        return
     if "--self-test" in sys.argv:
         from . import selftest
         i = sys.argv.index("--self-test")

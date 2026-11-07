@@ -96,8 +96,8 @@ nothing.
 
 ## Getting started
 
-1. Download `UncleFarmer-<version>.zip` from this repository's [Releases](https://github.com/ernie96/mist-bot/releases)
-   and unzip it anywhere: it makes an `Uncle Farmer` folder.
+1. Download `UncleFarmer.exe` from this repository's [Releases](https://github.com/ernie96/mist-bot/releases)
+   and put it in a folder of its own.
 2. Run `UncleFarmer.exe`. The first time, it opens **Settings**: choose your Mist World folder (or
    start the game and press **Find the running game**) and press **Install**.
 3. Restart Mist World and log in. Make a plan in the **Plans** tab (pick a map and how long), then
@@ -108,9 +108,10 @@ speaks your results.
 
 New versions: Uncle Farmer offers them itself when it starts (or Help, Check for updates), and
 installs them for you. If games are open, it asks first and closes them (an open game holds the
-agent file); start them again after the update. You can also unzip a newer release over the same
-folder with every game closed. Your characters, plans and settings are never in a release, so they
-stay.
+agent file); start them again after the update. Every release is signed, and Uncle Farmer only
+installs one whose signature checks. You can also put a newer `UncleFarmer.exe` in place of yours
+with every game and Uncle Farmer closed. Your characters, plans and settings are never in a release,
+so they stay.
 
 When the agent needs installing again (another tool removed it from the game, Uncle Farmer moved
 to another folder, or an open game started without this version's agent), Uncle Farmer says why

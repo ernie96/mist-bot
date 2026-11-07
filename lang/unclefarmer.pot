@@ -3417,7 +3417,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Uncle Farmer {v} doesn't look for updates online. New versions come as a zip: unpack it over this folder."
+"Uncle Farmer {v} doesn't look for updates online. Download the new UncleFarmer.exe and put it in place of this one."
 msgstr ""
 
 msgid ""
@@ -3449,9 +3449,6 @@ msgid ""
 msgstr ""
 
 msgid "Unmute every &game"
-msgstr ""
-
-msgid "Unpacking..."
 msgstr ""
 
 msgid "Update"

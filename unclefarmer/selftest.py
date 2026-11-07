@@ -21,12 +21,19 @@ from . import __version__, paths
 
 def _imports() -> str:
     # the GUI library, without wx.App: no window, no message loop
+    import base64
+
+    import cryptography                            # the updater checks signatures with it
     import numpy
     import orjson
     import pydantic
     import wx
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    from . import updater
+    Ed25519PublicKey.from_public_bytes(base64.b64decode(updater.PUBLIC_KEY))
     gui: str = wx.VERSION_STRING
-    return "wx %s, numpy %s, orjson %s, pydantic %s" % (gui, numpy.__version__, orjson.__version__, pydantic.VERSION)
+    return "wx %s, numpy %s, orjson %s, pydantic %s, cryptography %s" % (
+        gui, numpy.__version__, orjson.__version__, pydantic.VERSION, cryptography.__version__)
 
 
 def _native() -> str:

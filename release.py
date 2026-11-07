@@ -3,16 +3,18 @@
     python release.py 0.2.0 --notes "What's new, in a line or two"
     python release.py 0.2.0 --notes-file notes.md
     python release.py 0.2.0 --draft          (a draft release: no copy sees it until you publish it)
-    python release.py 0.2.0 --local --notes-file notes.md   (build and zip only, no GitHub)
+    python release.py 0.2.0 --local --notes-file notes.md   (build and sign only, no GitHub)
     python release.py 0.2.0 --local --full ...              (every core, normal priority: faster)
 
 It sets the version in unclefarmer/__init__.py and pyproject.toml (and refreshes uv.lock), builds
-the folder (build_exe.py), zips it as dist/UncleFarmer-<version>.zip and makes the GitHub release
-v<version> with that zip, using the GitHub CLI (gh, logged in). The release notes are what the app shows under "What's new". Commit
+the exe (build_exe.py), signs it (UncleFarmer.exe.sig, with the private key named by
+MISTBOT_SIGNING_KEY, else ~/.keys/mist-bot-update.key) and makes the GitHub release v<version> with
+the exe and its signature, using the GitHub CLI (gh, logged in). Every copy's updater checks that
+signature against updater.PUBLIC_KEY. The release notes are what the app shows under "What's new". Commit
 and push first: the release's tag points at what GitHub has.
 
---local builds and zips without GitHub: the notes go into the zip as "What's new.txt" and next to
-it, and the old builds in dist are removed first, so dist holds just this release.
+--local builds and signs without GitHub: the notes go next to the exe in dist, and the old notes
+in dist are removed first, so dist holds just this release.
 """
 
 from __future__ import annotations
@@ -57,6 +59,37 @@ def set_version(v: str) -> None:
     export_requirements.main()
 
 
+def signing_key_path() -> str:
+    return os.environ.get("MISTBOT_SIGNING_KEY") or os.path.join(os.path.expanduser("~"), ".keys",
+                                                                   "mist-bot-update.key")
+
+
+def sign(exe: str) -> str:
+    """exe.sig beside the exe, made with the private key; stops when it doesn't match PUBLIC_KEY."""
+    import base64
+    import hashlib
+
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    path = signing_key_path()
+    try:
+        with open(path, encoding="ascii") as f:
+            key = Ed25519PrivateKey.from_private_bytes(base64.b64decode(f.read().strip()))
+    except (OSError, ValueError) as e:
+        sys.exit("can't read the signing key %s: %s" % (path, e))
+    public = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+    if base64.b64encode(public).decode() != updater.PUBLIC_KEY:
+        sys.exit("the signing key %s isn't the one updater.PUBLIC_KEY expects" % path)
+    with open(exe, "rb") as f:
+        digest = hashlib.sha256(f.read()).digest()
+    sig = exe + ".sig"
+    with open(sig, "w", encoding="ascii", newline="\n") as f:
+        f.write(base64.b64encode(key.sign(updater.message(updater.ASSET, digest))).decode() + "\n")
+    if not updater.verify(updater.PUBLIC_KEY, exe, updater.ASSET, open(sig, encoding="ascii").read()):
+        sys.exit("the new signature doesn't check")
+    return sig
+
+
 def make_zip(v: str, path: str | None = None) -> str:
     """The built folder as a zip (dist/UncleFarmer-<v>.zip, or path): "Uncle Farmer/..." inside,
     and never a player's own files. CI's builds (ci_build.py) are zipped here too."""
@@ -89,19 +122,16 @@ def main() -> None:
     set_version(v)
     import build_exe
     build_exe.main(full=a.full)
-    updater.write_build(OUT, v, "master")      # a stable release: the master channel's
-    if a.local and notes:
-        with open(os.path.join(OUT, "What's new.txt"), "w", encoding="utf-8") as f:
-            f.write("Uncle Farmer %s\n\n%s\n" % (v, notes.strip()))
-    zip_path = make_zip(v)
-    print("zipped:", zip_path, "(%.1f MB)" % (os.path.getsize(zip_path) / 1e6))
+    exe = os.path.join(OUT, updater.ASSET)
+    sig = sign(exe)
+    print("signed:", exe, "(%.1f MB)" % (os.path.getsize(exe) / 1e6))
     if a.local:
         if notes:
             with open(os.path.join(ROOT, "dist", "UncleFarmer-%s.txt" % v), "w", encoding="utf-8") as f:
                 f.write("Uncle Farmer %s\n\n%s\n" % (v, notes.strip()))
         print("built v%s locally. Commit the version change (unclefarmer/__init__.py, pyproject.toml, uv.lock)." % v)
         return
-    _publish(a, v, zip_path)
+    _publish(a, v, [exe, sig])
 
 
 @dataclass
@@ -161,11 +191,11 @@ def _clear_dist() -> None:
             os.remove(os.path.join(dist, name))
 
 
-def _publish(a: Options, v: str, zip_path: str) -> None:
-    """The GitHub release v<version> with the zip."""
+def _publish(a: Options, v: str, files: list[str]) -> None:
+    """The GitHub release v<version> with the exe and its signature."""
     if not updater.REPO:
         sys.exit("no GitHub repository is set (updater.REPO): use --local")
-    cmd = ["gh", "release", "create", "v" + v, zip_path, "--repo", updater.REPO, "--title", "Uncle Farmer " + v]
+    cmd = ["gh", "release", "create", "v" + v, *files, "--repo", updater.REPO, "--title", "Mist Bot " + v]
     if a.notes_file:
         cmd += ["--notes-file", a.notes_file]
     elif a.notes:

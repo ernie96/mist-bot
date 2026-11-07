@@ -3548,9 +3548,9 @@ msgstr ""
 "Mist World ke liye farming bot."
 
 msgid ""
-"Uncle Farmer {v} doesn't look for updates online. New versions come as a zip: unpack it over this folder."
+"Uncle Farmer {v} doesn't look for updates online. Download the new UncleFarmer.exe and put it in place of this one."
 msgstr ""
-"Uncle Farmer {v} online updates nahi dhoondta. Naye versions zip mein aate hain: is folder par unpack karein."
+"Uncle Farmer {v} online updates nahi dhoondta. Naya UncleFarmer.exe download karein aur is ki jagah rakh dein."
 
 msgid ""
 "Uncle Farmer {v} is out (you have {cur}).\n"
@@ -3595,9 +3595,6 @@ msgstr ""
 
 msgid "Unmute every &game"
 msgstr "Har &game ki awaaz chalu karein"
-
-msgid "Unpacking..."
-msgstr "Unpack ho raha hai..."
 
 msgid "Update"
 msgstr "Update"
@@ -6690,6 +6687,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ "Uncle Farmer character settings (*.unclefarmer-profile.json)|*.unclefarmer-profile.json|"
 #~ msgstr ""
 #~ "Uncle Farmer character settings (*.unclefarmer-profile.json)|*.unclefarmer-profile.json|"
+
+#~ msgid "Unpacking..."
+#~ msgstr "Unpack ho raha hai..."
 
 #~ msgid ""
 #~ "When nothing is in sight, walk to where a monster is due back (learned while farming)"
