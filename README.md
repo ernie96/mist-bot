@@ -216,13 +216,16 @@ back:
 
 - ⭐ **Star this repository.** It helps other players find it.
 - 🤝 **Contribute.** Your time and fixes are worth as much as money.
-- ☕ **Donate.** Write to me at [afnan.nasir2000@gmail.com](mailto:afnan.nasir2000@gmail.com) and I'll tell you how.
 
 ## Contact 📧
 
-Questions, ideas, or anything else: [afnan.nasir2000@gmail.com](mailto:afnan.nasir2000@gmail.com). Bugs are best reported as an
+Questions, ideas, or anything else: [ernesto@melendez.land](mailto:ernesto@melendez.land), or on Mastodon at
+[ernie@someplace.social](https://someplace.social/@ernie). Bugs are best reported as an
 [issue](https://github.com/ernie96/mist-bot/issues), so everyone can see the fix. Inside the app, Help, Contact the
-developer shows the address too.
+developer shows these too.
+
+Join the players' [Telegram group](https://t.me/+-SHI1xTKJugwMzQ5) to talk with other players and the developer (in the
+app: Help, Join the Telegram group).
 
 ## Play fair
 

@@ -1,5 +1,48 @@
 # What's new
 
+## Not released yet
+
+**Contact**
+
+- Help, Contact the developer now gives this project's email and Mastodon addresses, and Help, Join
+  the Telegram group opens this project's group.
+
+**Help**
+
+- Help, Commands for trusted players and Script commands (Help menu and the script editor) are no
+  longer empty in the built app. The build stripped the texts they show; it keeps them now, and
+  the build's self-test stops a build that lacks them.
+
+**Pets**
+
+- The bot turns on the monsters next to your pet as soon as the pet loses 2% of its HP within 3
+  seconds (about one hit), instead of 8%: it no longer lets the pet take a beating before it
+  defends it.
+
+**Group skills**
+
+- Area skills are chosen by damage: each one counts once for every monster it would hit, and goes
+  whenever that beats the best single hit. Out in the field they waited for three monsters close
+  together (two in a cave), so casters hardly used them there: a Witcher only fired Shadow Arrow.
+  Now two monsters are usually enough, and one when the area skill hits hardest.
+- Area skills are weighed against each other by damage too, not by how many targets they could
+  take: an Elf in a pack no longer casts only the 3-second Blazing Storm and now uses Fire Surge
+  whenever it is ready. Area skills whose text gives no damage (Blizzard, Icicle) still wait for a
+  pack.
+
+**After farming**
+
+- Character, Settings, Travel and pets: "Automatically sell shards after farming" and
+  "Automatically clean the bag after farming", each on its own (both off). Ticked, Sell shards now
+  and Clean the bag now run by themselves, one after the other, when a farming run finishes by
+  itself - never after Stop. A failure in one doesn't keep the other from running, and the Tools
+  menu still runs both by hand.
+
+**Selling shards**
+
+- Selling shards is quicker: the sale runs inside the game agent, and the Shard Market is reopened
+  there. Agent 56: Uncle Farmer offers the new agent at start (close your games first).
+
 ## 1.0.1
 
 **Bag**
@@ -16,6 +59,24 @@
 - The build is now a single `UncleFarmer.exe`. It puts the game agent in an `agent` folder beside
   itself the first time it starts, and your settings, plans and results stay beside it as before.
   The first start takes longer, while it unpacks; later starts don't.
+
+**Sharing settings and plans**
+
+- Character, Export character settings and Import character settings: a character's settings
+  (combat, keys, potions and the rest) saved to a file and loaded into another character or another
+  copy of Uncle Farmer.
+- Plans, Export plan and Import plan: a plan saved to a file and loaded elsewhere.
+
+**Results**
+
+- Results show Time used and Time remaining (to the earliest known end: the plan's time limit, the
+  stop time or the daily stop), and earnings so far, total expenses and net earnings.
+
+**Gem Maker buying**
+
+- The Gem Maker buys from the market in batches worked out from the room in your bag, your arnebia
+  and the game's 2000-at-a-time limit, and takes a bagful from the storehouse at once. A job that
+  is really blocked stops at once and says why.
 
 **Gem Maker**
 

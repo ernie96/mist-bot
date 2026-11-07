@@ -32,6 +32,9 @@ OUT = os.path.join(DIST, "Uncle Farmer")
 # The release's jar is built here, never over agent/unclefarmer-agent.jar: a running game has that
 # one loaded, and a release can be built while you play.
 JAR = os.path.join(DIST, "unclefarmer-agent.jar")
+# -O, never -OO: -OO strips docstrings, and Help, Commands for trusted players and both Script
+# commands windows show module docstrings (messages, engine.script) - they were empty in every build.
+PYTHON_FLAG = "--python-flag=-O"
 # What goes into the exe, gathered here first (the libraries Nuitka finds itself).
 PAYLOAD = os.path.join(DIST, "payload")
 # What the finished folder must hold: the one exe.
@@ -108,7 +111,7 @@ def main(full: bool = False) -> None:
         "--output-filename=UncleFarmer.exe", "--output-dir=" + DIST, "--remove-output",
         "--windows-product-name=Uncle Farmer",
         "--windows-product-version=" + windows_version(__version__),
-        "--jobs=%d" % jobs, "--lto=auto", "--python-flag=-OO",
+        "--jobs=%d" % jobs, "--lto=auto", PYTHON_FLAG,
         "--include-package=unclefarmer",
     ], creationflags=priority)
     if os.path.exists(OUT):

@@ -162,7 +162,8 @@ def test_the_self_test_from_source_reports_every_check(tmp_path: Path) -> None:
     code = selftest.run(str(path))
     report = json.loads(path.read_text(encoding="utf-8"))
     assert code == 0 and report["ok"] is True and report["frozen"] is False
-    assert [r["check"] for r in report["checks"]] == ["imports", "native routing", "data", "translations", "game agent"]
+    assert [r["check"] for r in report["checks"]] == ["imports", "native routing", "data", "translations", "help texts",
+                                                       "game agent"]
     assert all(r["ok"] for r in report["checks"] if r["required"])
 
 
@@ -174,6 +175,28 @@ def test_a_failing_required_self_test_check_fails_the_run(tmp_path: Path, monkey
     assert selftest.run(str(path)) == 1
     rows = json.loads(path.read_text(encoding="utf-8"))["checks"]
     assert rows[0]["ok"] is False and "no data" in rows[0]["detail"]
+
+
+def test_the_build_keeps_docstrings_the_help_windows_show() -> None:
+    # -OO strips docstrings: Commands for trusted players and Script commands came up empty
+    assert build_exe.PYTHON_FLAG == "--python-flag=-O"
+
+
+def test_the_self_test_fails_when_the_help_texts_are_gone(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from unclefarmer import messages
+    monkeypatch.setattr(messages, "__doc__", None)
+    path = tmp_path / "report.json"
+    assert selftest.run(str(path)) == 1
+    row = next(r for r in json.loads(path.read_text(encoding="utf-8"))["checks"] if r["check"] == "help texts")
+    assert row["ok"] is False and "messages" in row["detail"]
+
+
+# ---------------------------------------------------------------- the Dev channel's builds
+def test_the_release_version_marks_a_dev_build_with_its_run() -> None:
+    assert ci_build.release_version("production", "0.9.0", 57) == "0.9.0"
+    assert ci_build.release_version("development", "0.9.0", 57) == "0.9.0-dev.57"
+    with pytest.raises(SystemExit):
+        ci_build.release_version("nightly", "0.9.0", 57)
 
 
 @pytest.mark.parametrize("value, want", [("57", 57), ("", 0), ("x", 0), ("-3", 0)])

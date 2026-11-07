@@ -363,6 +363,7 @@ def test_sell_shards_now_sells_only_the_shards_set_to_sell_keeping_what_the_rule
     assert asked == [([RUBY1], {RUBY1.lower(): 40})]       # not the Topaz (keep), not the fur (no shard)
     assert bot.bag[TOPAZ1] == 30 and bot.bag["Wolf Fur"] == 9
     assert any("sold 40 Level 1 Ruby Shard" in s for s in bot.spoken)
+    assert not any("arnebia came in" in s for s in bot.spoken)
 
 
 def test_sell_shards_now_with_nothing_to_sell_says_so_and_goes_nowhere(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -502,6 +503,9 @@ def tools_window(monkeypatch: pytest.MonkeyPatch, rules: dict[str, dict[str, Any
 
         def run_errand(self, text: str, title: str, walk: bool = False) -> None:
             seen.errands.append(text)
+
+        def log(self, line: str, speak: bool = False, who: str | None = None, private: bool = False) -> None:
+            seen.said.append(line)
     seen.win = Win()
     return seen
 
@@ -510,12 +514,13 @@ def test_tools_sell_shards_now_runs_the_sell_shards_job(monkeypatch: pytest.Monk
     seen = tools_window(monkeypatch, {}, True)
     seen.win.sell_shards_now()
     assert seen.errands == ["sell_shards\n"]
+    assert seen.said == ["Sell shards now: started by hand"]
 
 
 def test_tools_clean_bag_asks_first_showing_the_list(monkeypatch: pytest.MonkeyPatch) -> None:
     seen = tools_window(monkeypatch, {"wolf fur": {"action": "throw", "keep": 2}, "x": {"action": "sell"}}, True)
     seen.win.clean_bag_now()
-    assert seen.errands == ["clean_bag\n"]
+    assert seen.errands == ["clean_bag\n"] and seen.said == ["Clean the bag now: started by hand"]
     assert "wolf fur, keeping 2" in seen.asked[0] and "x" not in seen.asked[0].split("\n")
 
 
