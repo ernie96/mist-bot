@@ -277,7 +277,7 @@ Your names can be used anywhere the bot's own names can.
     enhance check                only look
     chores                       the day's chores as set up in Tools, Daily chores (each once a game day)
     chores check                 only look
-    chores only=bank,donation    just those: bank, bounty, pet_rebirth, donation, construction, secret_room
+    chores only=bank,donation    just those: bank, bounty, pet_rebirth, donation, construction, feed, secret_room
     gather                       fish, mine or collect herbs as set up in Tools, Gathering: the gang's
                                  area once a game day, then outside; fights back and sells the collection
     gather check                 only look: the skill, the gang area's entrance, the place it would use
@@ -290,6 +290,8 @@ Your names can be used anywhere the bot's own names can.
     update_shard_prices          read the nearest Shard Market's prices into data/shards.json: only a
                                  price the menu shows and sends alike is kept; the others stay as they
                                  were - Tools, Update shard prices
+    store_items                  put into the storehouse what is on the bag manager's Store list
+                                 (keeping what each rule keeps), nothing else - Tools, Store items now
     dungeon                      the cave set up in Tools, Dungeons - a character goes into one cave a
                                  game day: supplies first, then all 15 minutes inside
     dungeon Spider cave          that cave instead of the one set in the window
@@ -416,7 +418,7 @@ into script lines you can change.
     visit <kind>   talk <npc>   choose <text>
     buy <n> <item>   sell <item> [n]   withdraw <n> <item>   deposit <item> [n]   restock
     gem_maker [check]   enhance [check]   chores [check] [only=...]   survey cities|all|everything|here|<map>
-    gather [check]   sell_collection [fish|ore|herb|all]   sell_shards   clean_bag   update_shard_prices   dungeon [check] [<cave>]
+    gather [check]   sell_collection [fish|ore|herb|all]   sell_shards   clean_bag   update_shard_prices   store_items   dungeon [check] [<cave>]
     follow <player>   come <player> [<map> [at x,y]]
     key <key> [ms]   hold <key> <s>   wait <s>   heal   hearthstone
     say <text>   set <name> = <value>

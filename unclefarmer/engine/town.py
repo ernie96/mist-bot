@@ -64,13 +64,13 @@ def nearest(b: Bot, role: str | None, candidates: Sequence[Npc] | None = None) -
     best: tuple[float, Npc] | None = None
     rows = b.bag_rows()
     purse = travel.arnebia_in(rows)
+    rides, off = travel.ride_rules(b.p)
     for mid, name, x, y in (candidates if candidates is not None else knowledge.service_npcs(role or "")):
         start_map, start_cell, extra = here, (me["x"], me["y"]), 0.0
         if out is not None and mid != here:
             start_map, start_cell, extra = out[0], out[1], travel.LEAVE_COST
         legs, cost = travel.plan(start_map, start_cell, mid, (x, y + 1), with_cost=True,
-                                 transport=b.p.get("use_transport", True), vip=b.p.get("vip", False),
-                                 avoid=travel.kept_off(b.p),
+                                 transport=rides, vip=b.p.get("vip", False), avoid=off,
                                  bag=rows if b.p.get("use_travel_items", False) else [],
                                  hearth_home=b.p.get("hearth_home") or None, arnebia=purse)
         if legs is None or cost is None:
@@ -117,10 +117,17 @@ def visit(b: Bot, role: str | None, name: str | None = None, candidates: Sequenc
     mid, npc, x, y = target
     b.log(_("going to {npc} on {map}", npc=npc, map=atlas.label(mid)))
     stats.reading(b)            # the results: loot before the trip, fares on it, the trade after it
-    b.travel(mid)
-    stats.reading(b)
-    if not b.talk(npc, (x, y)):
-        raise Stopped(_("couldn't talk to {npc}", npc=npc))
+    # The walk up to the NPC is travelling too: most visits stay on one map (the next buyer in the
+    # same town), where travel() has nothing to plan, so this keeps the Swift fusion beast on for it.
+    was = getattr(b, "traveling", False)
+    b.traveling = True
+    try:
+        b.travel(mid)
+        stats.reading(b)
+        if not b.talk(npc, (x, y)):
+            raise Stopped(_("couldn't talk to {npc}", npc=npc))
+    finally:
+        b.traveling = was
     return npc
 
 
@@ -350,7 +357,19 @@ def buy(b: Bot, item: str, n: int) -> int:
         b.log(_("no shop in {map} sells {item} - not going to another town for it",
                 map=atlas.label(getattr(b, "restock_town", 0) or 0), item=item), speak=True)
         return 0
-    before = counts(b).get(item.lower(), 0)
+    have = counts(b)
+    before = have.get(item.lower(), 0)
+    price = knowledge.unit_price(item)
+    money = have.get(stats.ARNEBIA)
+    if price and money is not None and n * price > money:
+        afford = money // price
+        if afford <= 0:
+            b.log(_("not enough arnebia for one {item}: {price} each, {money} in the bag",
+                    item=item, price=price, money=money), speak=True)
+            return 0
+        b.log(_("buying {n} {item}, not {want}: that is what {money} arnebia pays for at {price} each",
+                n=afford, item=item, want=n, money=money, price=price))
+        n = afford
     tried: list[Npc] = []
     for _try in range(BUY_TRIES):
         target = nearest(b, None, [s for s in shops if s not in tried])
@@ -552,11 +571,15 @@ def possible(b: Bot, r: dict[str, Any], why: list[str]) -> bool:
         return False
     lacks: set[str] = getattr(b, "storehouse_lacks", set())
     from_store = store and item not in lacks
-    from_shop = shop and (money is None or money > 0)
+    price = knowledge.unit_price(item) or 1
+    from_shop = shop and (money is None or money >= price)
     if from_store or from_shop:
         return True
     if store and not shop:
         why.append(_("the storehouse has no {item}", item=r["item"]))
+    elif shop and money is not None and 0 < money < price:
+        why.append(_("not enough arnebia to buy {item}: {price} each, {money} in the bag",
+                     item=r["item"], price=price, money=money))
     elif shop and money is not None and money <= 0:
         why.append(_("no arnebia to buy {item}", item=r["item"]))
     else:
@@ -1132,6 +1155,20 @@ def clean_bag(b: Bot) -> int:
     if not todo:
         b.log(_("nothing in the bag is on the throw-away list (or only what its rules keep)"), speak=True)
         return 0
+    if b.stop_event.is_set():
+        raise Stopped(_("stopped"))
+    discard = getattr(b, "throw_items", None)
+    direct = discard(todo) if discard else None
+    if direct is not None:
+        thrown = direct
+        failed = [name for name, _n in todo if not any(done == name for done, _gone in thrown)]
+        for name, gone in thrown:
+            stats.moved(b, "thrown", name, gone)
+        if failed:
+            b.log(_("couldn't throw away: {list}", list=", ".join(failed)), speak=True)
+        if thrown:
+            b.log(_("threw away {list}", list=", ".join("%d %s" % (k, s) for s, k in thrown)), speak=True)
+        return len(thrown)
     thrown: list[tuple[str, int]] = []
     failed: list[str] = []
     for name, n in todo:
@@ -1147,6 +1184,59 @@ def clean_bag(b: Bot) -> int:
     if thrown:
         b.log(_("threw away {list}", list=", ".join("%d %s" % (k, s) for s, k in thrown)), speak=True)
     return len(thrown)
+
+
+def store_list(p: dict[str, Any]) -> list[tuple[str, int]]:
+    """The bag manager's store list ("Move to storehouse"): [(item, how many it keeps in the bag)],
+    only what the player put there themselves."""
+    rules: dict[str, object] = p.get("bag_rules") or {}
+    return sorted((name, int(r.get("keep") or 0)) for name, r in rules.items()
+                  if json.is_object(r) and r.get("action") == "store")
+
+
+def store_items(b: Bot) -> int:
+    """Tools, Store items now: put into the storehouse what the bag manager's store list says
+    (keeping the number each rule keeps in the bag) - only what is on that list, read as it is now,
+    never anything else. The bag trip's storehouse step on its own (deposit, at the nearest
+    storehouse). Says what went in, what the storehouse didn't take (full, or refused) and what
+    wasn't in the bag. Returns how many kinds of item were stored."""
+    listed = store_list(b.p)
+    if not listed:
+        b.log(_("the storage list is empty - choose items to move to the storehouse in Character, Bag and supplies"),
+              speak=True)
+        return 0
+    bag, hot = _bag_and_hotkeys(b)
+    names = {name for name, _keep in listed}
+    todo = [(name, n) for name, action, n in bagrules.plan(b.p, bag, hot, None)
+            if action == "store" and name.lower() in names and bagrules.rule(b.p, name)["chosen"]]
+    have = {k.lower() for k, v in bag.items() if v > 0}
+    missing = sorted(name for name in names if name not in have)
+    kept = sorted(name for name in names if name in have and name not in {t.lower() for t, _n in todo})
+    if missing:
+        b.log(_("not in the bag: {list}", list=", ".join(missing)))
+    if kept:
+        b.log(_("kept in the bag, as their rules say: {list}", list=", ".join(kept)))
+    if not todo:
+        b.log(_("nothing in the bag is on the storage list (or only what its rules keep)"), speak=True)
+        return 0
+    b.log(_("storing: {list}", list=", ".join("%d %s" % (n, s) for s, n in todo)))
+    stored: list[tuple[str, int]] = []
+    failed: list[str] = []
+    for name, n in todo:
+        if b.stop_event.is_set():
+            raise Stopped(_("stopped"))
+        put = _try_trip(b, _("couldn't store {item}: {why}"), name, lambda name=name, n=n: deposit(b, name, n))
+        if put:
+            stored.append((name, put))
+            if put < n:
+                failed.append(_("{item} ({n} of {want}: the storehouse took no more)", item=name, n=put, want=n))
+        else:
+            failed.append(name)
+    if failed:
+        b.log(_("not stored (the storehouse may be full): {list}", list=", ".join(failed)), speak=True)
+    if stored:
+        b.log(_("stored {list}", list=", ".join("%d %s" % (k, s) for s, k in stored)), speak=True)
+    return len(stored)
 
 
 # ---------------------------------------------------------------------------------------- shard prices

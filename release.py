@@ -10,7 +10,8 @@ It sets the version in unclefarmer/__init__.py and pyproject.toml (and refreshes
 the exe (build_exe.py), signs it (UncleFarmer.exe.sig, with the private key named by
 MISTBOT_SIGNING_KEY, else ~/.keys/mist-bot-update.key) and makes the GitHub release v<version> with
 the exe and its signature, using the GitHub CLI (gh, logged in). Every copy's updater checks that
-signature against updater.PUBLIC_KEY. The release notes are what the app shows under "What's new". Commit
+signature against updater.PUBLIC_KEY. The release also carries MistBot-<version>.zip, the exe in a
+"Mist Bot" folder, for a first install. The release notes are what the app shows under "What's new". Commit
 and push first: the release's tag points at what GitHub has.
 
 --local builds and signs without GitHub: the notes go next to the exe in dist, and the old notes
@@ -36,6 +37,8 @@ from unclefarmer import updater  # noqa: E402
 INIT = os.path.join(ROOT, "unclefarmer", "__init__.py")
 PYPROJECT = os.path.join(ROOT, "pyproject.toml")
 OUT = os.path.join(ROOT, "dist", "Uncle Farmer")
+ZIP = "MistBot-%s.zip"          # % version: the release's zip for a first install
+ZIP_FOLDER = "Mist Bot"         # the folder inside it
 
 
 def _replace_once(path: str, pattern: str, new: str) -> None:
@@ -90,9 +93,9 @@ def sign(exe: str) -> str:
     return sig
 
 
-def make_zip(v: str, path: str | None = None) -> str:
-    """The built folder as a zip (dist/UncleFarmer-<v>.zip, or path): "Uncle Farmer/..." inside,
-    and never a player's own files. CI's builds (ci_build.py) are zipped here too."""
+def make_zip(v: str, path: str | None = None, inside: str = "Uncle Farmer") -> str:
+    """The built folder as a zip (dist/UncleFarmer-<v>.zip, or path): "<inside>/..." inside, and never
+    a player's own files or the update signature. CI's builds (ci_build.py) are zipped here too."""
     path = path or os.path.join(ROOT, "dist", "UncleFarmer-%s.zip" % v)
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         for folder, _dirs, files in os.walk(OUT):
@@ -105,9 +108,17 @@ def make_zip(v: str, path: str | None = None) -> str:
                     sys.exit("the built folder holds %s - a player's own files never go into a release" % f)
                 if f == "game_texts.json":
                     sys.exit("the built folder holds game_texts.json, which is made from each player's game")
+                if f.lower().endswith(".sig"):
+                    continue                    # the updater's, published beside the exe
                 full = os.path.join(folder, f)
-                z.write(full, os.path.join("Uncle Farmer", os.path.relpath(full, OUT)))
+                z.write(full, os.path.join(inside, os.path.relpath(full, OUT)))
     return path
+
+
+def install_zip(v: str) -> str:
+    """dist/MistBot-<v>.zip for a first install: the exe inside a "Mist Bot" folder, so it is
+    unpacked into a folder of its own (settings, plans and results are kept beside the exe)."""
+    return make_zip(v, os.path.join(ROOT, "dist", ZIP % v), inside=ZIP_FOLDER)
 
 
 def main() -> None:
@@ -125,13 +136,15 @@ def main() -> None:
     exe = os.path.join(OUT, updater.ASSET)
     sig = sign(exe)
     print("signed:", exe, "(%.1f MB)" % (os.path.getsize(exe) / 1e6))
+    zipped = install_zip(v)
+    print("zipped:", zipped)
     if a.local:
         if notes:
             with open(os.path.join(ROOT, "dist", "UncleFarmer-%s.txt" % v), "w", encoding="utf-8") as f:
                 f.write("Uncle Farmer %s\n\n%s\n" % (v, notes.strip()))
         print("built v%s locally. Commit the version change (unclefarmer/__init__.py, pyproject.toml, uv.lock)." % v)
         return
-    _publish(a, v, [exe, sig])
+    _publish(a, v, [zipped, exe, sig])
 
 
 @dataclass
@@ -187,7 +200,7 @@ def _clear_dist() -> None:
     """Older releases out of dist: it holds this one only."""
     dist = os.path.join(ROOT, "dist")
     for name in os.listdir(dist) if os.path.isdir(dist) else []:
-        if name.startswith("UncleFarmer-") and name.endswith((".zip", ".txt")):
+        if name.startswith(("UncleFarmer-", "MistBot-")) and name.endswith((".zip", ".txt")):
             os.remove(os.path.join(dist, name))
 
 

@@ -136,7 +136,7 @@ class TownBot:
         d = self.dialog()
         return d if bool(d.get("open")) == want_open else None
 
-    def wait_menu_change(self, before: dict[str, Any] | None, seconds: float=0.4) -> dict[str, Any]:
+    def wait_menu_change(self, before: dict[str, Any] | None, seconds: float=0.4, depth: int=1) -> dict[str, Any]:
         return self.dialog()
 
     def close_dialogs(self) -> None:
@@ -342,7 +342,9 @@ def test_nearest_passes_the_profile_to_the_planner(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr(town.travel, "plan", plan)
     monkeypatch.setattr(knowledge, "service_npcs", stand_in(knowledge.service_npcs, lambda role: [(1, "A", 1, 1)]))
     town.nearest(as_bot(b), "role")
-    assert seen["transport"] is False and seen["vip"] is True
+    # "Use cable cars and teleport circles" off leaves the airships in ("Use airships" is on)
+    assert seen["transport"] is True and seen["vip"] is True
+    assert seen["avoid"] == {t["id"] for t in town.travel.transports() if t.get("kind") != "airship"}
     assert seen["hearth_home"] == "sunset square"
     assert seen["bag"] == [{"name": "Hearthstone", "count": 1}]
 
@@ -356,6 +358,23 @@ def test_visit_goes_to_the_nearest_and_talks(monkeypatch: pytest.MonkeyPatch) ->
     assert b.travels == [(3, None)]
     assert b.talks == [("Storehouse", (10, 20))]
     assert any("going to Storehouse" in line for line in b.lines)
+
+
+def test_the_walk_up_to_the_npc_rides_the_swift_beast(monkeypatch: pytest.MonkeyPatch) -> None:
+    # most visits stay on one map (the next buyer in town): the walk to the NPC counts as
+    # travelling, so it puts the Swift fusion beast on; afterwards it is as it was
+    b = TownBot()
+    seen: list[bool] = []
+    monkeypatch.setattr(town, "nearest", stand_in(town.nearest, lambda b, role, candidates=None: (3, "Buyer", 10, 20)))
+    monkeypatch.setattr(town.atlas, "label", stand_in(town.atlas.label, lambda mid: "Map %s" % mid))
+    real_talk = b.talk
+
+    def talk(npc: str, at: tuple[float, float] | None = None) -> bool:
+        seen.append(getattr(b, "traveling", False))
+        return real_talk(npc, at)
+    monkeypatch.setattr(b, "talk", talk)
+    town.visit(as_bot(b), "buyer")
+    assert seen == [True] and getattr(b, "traveling", None) is False
 
 
 def test_visit_reads_the_results_before_and_after_the_trip(monkeypatch: pytest.MonkeyPatch) -> None:

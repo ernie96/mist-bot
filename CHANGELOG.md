@@ -1,5 +1,61 @@
 # What's new
 
+## Unreleased
+
+**Repairs**
+
+- The Alloy Toolbox repairs again: a character whose level wasn't known yet used the cheapest
+  toolbox, a toolbox the game turned down was never followed by a stronger one, and gear a Small or
+  Large Toolbox left worn counted as repaired. Now the level is read first, an unknown level takes
+  the Alloy Toolbox, and a toolbox that can't do it hands over to the next, stronger one.
+
+**Prices**
+
+- The shops' prices of Pet Rice Roll (1,000), Hearthstone (10,000), Small Toolbox (20,000), Large
+  Toolbox (40,000) and Alloy Toolbox (80,000) arnebia, with the game's descriptions. Results cost the
+  ones used up, the bag manager shows them, and restocking buys only what your arnebia pays for.
+
+**Triggers and storing**
+
+- Tools, Store items now: puts the bag manager's Store list into the storehouse, nothing else.
+- Character, Settings, Triggers: Sell shards, Clean the bag, Update shard prices, Gathering and
+  Store items, each with its own tick before farming and after farming. The after-farming ticks
+  moved here from Travel and pets, keeping what you had ticked.
+- Script command `store_items`.
+
+**Windows**
+
+- Settings, Updater: all the update settings, this copy's version, and Save and check for updates now.
+- Tabs that hold more than the window shows now scroll, and windows never open bigger than the
+  screen (on a small screen the Fighting tab's Gear choices were out of reach).
+- Starting Uncle Farmer a second time brings the open copy's window forward in every language. It
+  looked for the English title, so with a translated title nothing came forward.
+
+**Fixes**
+
+- Equipment Enhancer: it waits for the Forger's page instead of guessing the crystal level, and it
+  never offers wedding rings, medals, badges, the Mist god Emblem or bags.
+- Holy Blood City cable car: the bot pays for the ride instead of choosing the VIP row.
+- Kills: a run counts only its own kills, not the previous run's that the agent still held.
+- Walking: a map change in the middle of a walk is treated as arriving on a new map, not as "no
+  way". Walk-first travel stays on foot, and its fallback follows both ride switches.
+- Schedules: a schedule set in the hour that summer time skips still runs.
+- Logging carries on when a log file can't be rotated.
+- Menus: the bot keeps waiting after a chosen menu closes.
+- Daily chores fixed from recorded runs done by hand.
+
+**Bag**
+
+- Throwing items away is faster: each stack goes in one step inside the game agent. Agent 57:
+  Uncle Farmer offers the new agent at start (close your games first).
+
+**Downloads**
+
+- Each release now also has MistBot-<version>.zip, with UncleFarmer.exe inside a "Mist Bot"
+  folder. For a first install, download the zip and unpack it where you want the bot to live; your
+  settings, plans and results are kept in that folder. UncleFarmer.exe on its own is still there
+  for the updater and for replacing an old copy by hand.
+
 ## 1.0.3
 
 **Updates**
