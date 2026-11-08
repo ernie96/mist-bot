@@ -9,7 +9,7 @@ HP gets low, and stops by itself when a rule you set is reached (time, kills, po
 It reads the game directly, so it knows exact positions, HP, your bag and every monster around you.
 It works with the game in the background, and it needs no drivers and no virtual machine.
 
-Everything works with a screen reader. Important events are spoken through NVDA.
+Important events are spoken through NVDA.
 
 ## Installing
 

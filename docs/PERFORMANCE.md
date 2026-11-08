@@ -355,8 +355,8 @@ divide a total by its call count to see that per-call cost. yappi's own overhead
 
 `get_func_stats(ctx_id=0)` is the main thread, but yappi treats 0 as "no filter" and returns every
 thread's stats, and `get_func_stats()` with no argument *merges* a function that several threads
-call into one stat tagged with a single context. So the report asks per context â€”
-`get_func_stats(ctx_id=<thread context>)`, which does filter â€” and gives the main thread only what
+call into one stat tagged with a single context. So the report asks per context,
+`get_func_stats(ctx_id=<thread context>)`, which does filter, and gives the main thread only what
 no other context claimed. A function the whole process shares (`AgentLink.send`, `Tally.result`)
 used to land entirely in the wx thread's list: the 2026-10-20 yappi dump credited it with 66,463
 `AgentLink.send` calls and 13,572 `Tally.result` calls, of which py-spy showed it made none.

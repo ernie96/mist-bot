@@ -1,7 +1,6 @@
 # Contributing to Uncle Farmer
 
-Thank you for helping! Every bug report, fix, translation and map tip makes the bot better for
-everyone.
+Thanks for helping. Here is how to report a bug or send a change.
 
 ## Reporting a bug
 
@@ -19,7 +18,7 @@ Open an issue and include:
 1. Fork the repository and make a branch for your change from `dev` (see "CI/CD" below).
 2. Set up as in the README's "Running from source", and test in the game.
 3. Keep to the house style:
-   - **Screen readers first.** Native wx controls only, a label created right before every field
+   - **Controls and labels.** Native wx controls only, a label created right before every field
      (use `gui/common.py`'s `Form`), short labels, units in brackets, and no "0 = off" codes: an
      optional value gets a check box.
    - **Every string the player sees goes through `_()`**, so it can be translated.
@@ -260,12 +259,14 @@ dev pre-releases above are the only thing CI publishes). When `dev`
 holds what the release should have, merge it into `master` with a pull request, then on `master`:
 write the version's changes at the top of `CHANGELOG.md`, commit and push, then
 `uv run python release.py 0.5.1 --notes-file notes.md` (the new section as the notes). It runs check.py,
-sets the version, builds the folder, zips it as `dist/UncleFarmer-0.5.1.zip` and makes the GitHub
-release v0.5.1 with it, using the GitHub CLI (`gh`, logged in). Every copy's updater finds it there:
-the notes are what it shows under "What's new". Commit the version change afterwards.
+sets the version, builds and signs `UncleFarmer.exe`, zips it as `dist/MistBot-0.5.1.zip` (the exe
+inside a `Mist Bot` folder, for a first install) and makes the GitHub release v0.5.1 with the zip,
+the exe and `UncleFarmer.exe.sig`, using the GitHub CLI (`gh`, logged in). Every copy's updater takes
+the exe and its signature from there and leaves the zip alone; the notes are what it shows under
+"What's new". Commit the version change afterwards.
 
-`--draft` makes a draft no copy sees until you publish it; `--local` only builds and zips, with the
-notes inside as "What's new.txt" and beside it as `UncleFarmer-0.5.1.txt`.
+`--draft` makes a draft no copy sees until you publish it; `--local` only builds, signs and zips,
+with the notes beside them as `UncleFarmer-0.5.1.txt`.
 
 ## Translating
 
