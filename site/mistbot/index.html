@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mist Bot</title>
+<meta name="description" content="Mist Bot, a free farming bot for Mist World on Windows. A modified version of Uncle Farmer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a misty field at the top (layered hills behind the name), then plain reading sections. */
+:root {
+  --sky: #e7ece9;
+  --paper: #f4f6f3;
+  --panel: #ffffff;
+  --ink: #17221d;
+  --ink-soft: #3e4c45;
+  --hill-far: #cbd6d0;
+  --hill-mid: #b3c4ba;
+  --hill-near: #93ab9d;
+  --green: #2f6b4a;
+  --button: #2f6b4a;
+  --on-button: #ffffff;
+  --rule: #d3dbd6;
+  --focus: #0b5cad;
+  --display: "DM Serif Display", "Georgia", "Times New Roman", serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", "Consolas", "Menlo", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sky: #141b18; --paper: #111714; --panel: #19221e; --ink: #e9efeb; --ink-soft: #bfcbc4;
+    --hill-far: #1d2824; --hill-mid: #22302a; --hill-near: #2a3b33; --green: #8fd0aa;
+    --button: #8fd0aa; --on-button: #0d1a13; --rule: #2a3631; --focus: #8cc4ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --sky: #141b18; --paper: #111714; --panel: #19221e; --ink: #e9efeb; --ink-soft: #bfcbc4;
+  --hill-far: #1d2824; --hill-mid: #22302a; --hill-near: #2a3b33; --green: #8fd0aa;
+  --button: #8fd0aa; --on-button: #0d1a13; --rule: #2a3631; --focus: #8cc4ff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--green); text-underline-offset: 0.2em; }
+a:focus-visible, .download:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+.skip {
+  position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); top: -4rem;
+  background: var(--panel); color: var(--ink); padding: 0.5rem 1rem; z-index: 5;
+}
+.skip:focus { top: calc(0.5rem + env(safe-area-inset-top, 0px)); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* The field */
+.cover { position: relative; overflow: hidden; background: var(--sky); border-bottom: 1px solid var(--rule); }
+.cover svg.hills { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 38%; }
+.cover .wrap { position: relative; padding-block: clamp(2.5rem, 7vw, 5rem) clamp(4rem, 10vw, 7rem); display: grid; gap: 1.25rem; }
+.eyebrow { font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(3.5rem, 13vw, 7rem); line-height: 0.95; margin: 0; }
+.lead { font-size: 1.3rem; max-width: 36rem; margin: 0; text-wrap: pretty; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center; }
+.download {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--button); color: var(--on-button);
+  font-weight: 700; font-size: 1.2rem; text-decoration: none;
+  padding: 0.85rem 1.4rem; border-radius: 6px;
+}
+.download:hover { filter: brightness(1.1); }
+.download svg { width: 1.2em; height: 1.2em; }
+.small { font-size: 0.95rem; color: var(--ink-soft); margin: 0; max-width: 36rem; }
+
+/* Body sections */
+main { padding-block: 2.5rem 1rem; }
+section { padding-block: 1.5rem; border-bottom: 1px solid var(--rule); }
+section:last-of-type { border-bottom: 0; }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1.15; margin: 0 0 1rem; text-wrap: balance; }
+h3 { font-size: 1.15rem; margin: 0 0 0.35rem; }
+p { max-width: 65ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.5rem 2rem; }
+.grid > div { min-width: 0; }
+.grid p { margin: 0; }
+ul.plain, ol.steps { padding-left: 1.4rem; margin: 0; display: grid; gap: 0.5rem; max-width: 65ch; }
+.file { font-family: var(--mono); font-size: 0.95rem; overflow-wrap: anywhere; }
+
+.keys-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; max-width: 44rem; }
+th, td { text-align: left; padding: 0.55rem 0.8rem 0.55rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: 0.95rem; color: var(--ink-soft); font-weight: 700; }
+kbd { font-family: var(--mono); font-size: 0.9rem; background: var(--panel); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 0.05rem 0.4rem; white-space: nowrap; }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 1.5rem 2.5rem; display: grid; gap: 0.6rem; }
+footer p { margin: 0; font-size: 1rem; color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .download { transition: filter 120ms ease; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the description</a>
+
+<header class="cover">
+  <svg class="hills" aria-hidden="true" focusable="false" viewBox="0 0 1200 240" preserveAspectRatio="none">
+    <path fill="var(--hill-far)" d="M0 120 C 180 60, 340 90, 520 70 S 860 40, 1000 80 S 1150 70, 1200 60 V240 H0 Z"/>
+    <path fill="var(--hill-mid)" d="M0 170 C 160 130, 300 150, 470 140 S 780 110, 930 150 S 1120 140, 1200 130 V240 H0 Z"/>
+    <path fill="var(--hill-near)" d="M0 210 C 220 180, 420 200, 640 190 S 1000 175, 1200 195 V240 H0 Z"/>
+  </svg>
+  <div class="wrap">
+    <p class="eyebrow">For Mist World on Windows. Free.</p>
+    <h1>Mist Bot</h1>
+    <p class="lead">A farming bot for Mist World. It walks your character to the farming map, fights, drinks potions, looks after your pets, sorts your bag, does your daily chores, and goes home when you tell it to.</p>
+    <div class="actions">
+      <a class="download" href="https://github.com/ernie96/mist-bot/releases/latest">
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>
+        Download Mist Bot<span class="sr-only"> from its latest release on GitHub</span>
+      </a>
+      <p class="small">Opens the latest release on GitHub. Mist Bot is a modified version of Uncle Farmer; the program still calls itself Uncle Farmer.</p>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <div class="wrap">
+
+    <section aria-labelledby="what">
+      <h2 id="what">What it does</h2>
+      <div class="grid">
+        <div>
+          <h3>Plans and scripts</h3>
+          <p>Pick maps, how long to farm each one, how to move around and which monsters to fight. Stop after a time, at a clock time, after a number of kills, or when an item runs low. Scripts, with loops and conditions, cover what a plan can't.</p>
+        </div>
+        <div>
+          <h3>Fighting</h3>
+          <p>It scans each character itself: class, skills on every key, talents, combos, potions, beasts and pets. Each class fights from its own attack's distance and picks skills by cooldown, rage, marks and combos.</p>
+        </div>
+        <div>
+          <h3>The bag</h3>
+          <p>Every shard and item goes to Throw away, Keep, Store or Sell. It refills potions and food from the storehouse or the shop, and unloads or stops when the bag is full or the day's drop time runs out.</p>
+        </div>
+        <div>
+          <h3>Chores and tools</h3>
+          <p>Daily chores once a game day: bank income, bounties, pet rebirths, gang donation and construction. Gem Maker, Equipment Enhancer, gathering and dungeons, none of them spending below your arnebia reserve.</p>
+        </div>
+        <div>
+          <h3>Travel</h3>
+          <p>Between any two of the game's 375 maps, by cable car and airship, or a walk to a map or dungeon entrance. It keeps off lava and crosses Polson Wetland on a fusion beast.</p>
+        </div>
+        <div>
+          <h3>Results</h3>
+          <p>Kills, contribution, experience, arnebia, shards, skills used and healing, for a run, any day, the last week or month, or all time. Shift+Pause speaks a one-line summary.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="start">
+      <h2 id="start">Getting started</h2>
+      <p>You need Windows, Mist World, and NVDA set as the game's default speech. Important events are spoken through NVDA.</p>
+      <ol class="steps">
+        <li>From the <a href="https://github.com/ernie96/mist-bot/releases/latest">latest release<span class="sr-only"> on GitHub</span></a>, download <span class="file">MistBot-&lt;version&gt;.zip</span> and unpack it where you want the bot to live. It holds <span class="file">UncleFarmer.exe</span> in a Mist Bot folder; your settings, plans and results are kept in that folder.</li>
+        <li>Run <span class="file">UncleFarmer.exe</span>. The first time, it opens Settings: choose your Mist World folder, or start the game and press Find the running game, then press Install.</li>
+        <li>Restart Mist World and log in. Make a plan in the Plans tab, then press Start on the Bot tab.</li>
+      </ol>
+      <p>Install adds one line to the game's <span class="file">mw.exe.vmoptions</span> and keeps the original as a backup. Remove, in the same place, takes the line out again.</p>
+      <p>New versions: the bot offers them when it starts, or from Help, Check for updates, and installs them itself. Releases are signed, and it only installs one whose signature checks. The release also has <span class="file">UncleFarmer.exe</span> on its own, for replacing an older copy by hand.</p>
+    </section>
+
+    <section aria-labelledby="keys">
+      <h2 id="keys">A few keys</h2>
+      <div class="keys-wrap">
+        <table>
+          <caption class="sr-only">Keys and what they do</caption>
+          <thead><tr><th scope="col">Key</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>Pause</kbd></td><td>Starts and stops the bot from anywhere, even inside the game</td></tr>
+            <tr><td><kbd>Shift+Pause</kbd></td><td>Speaks the results of the game in front</td></tr>
+            <tr><td><kbd>F1</kbd></td><td>Quick guide</td></tr>
+            <tr><td><kbd>F5</kbd></td><td>Start</td></tr>
+            <tr><td><kbd>F6</kbd></td><td>Pause or go on, so you can play by hand</td></tr>
+            <tr><td><kbd>Ctrl+W</kbd></td><td>Walk to a dungeon or map</td></tr>
+            <tr><td><kbd>Ctrl+R</kbd></td><td>Results</td></tr>
+            <tr><td><kbd>Ctrl+T</kbd></td><td>Chat</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="privacy">
+      <h2 id="privacy">Privacy</h2>
+      <ul class="plain">
+        <li>There's no account, no server, no licence check and no telemetry.</li>
+        <li>The update check asks GitHub for the latest release and carries nothing about you or your game. Untick it in Settings, Updater and the bot never goes online.</li>
+        <li>Settings, plans, scripts, logs and results are plain files in the bot's folder.</li>
+        <li>The agent inside the game listens on 127.0.0.1 only, with a secret it makes up at each launch. It doesn't write chat or network packets to disk.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="help">
+      <h2 id="help">Problems, ideas and support</h2>
+      <p>Bugs are best reported as an <a href="https://github.com/ernie96/mist-bot/issues">issue on GitHub</a>, so everyone can see the fix. You can also write to me.</p>
+      <ul class="plain">
+        <li>Email: <a href="mailto:ernesto@melendez.land">ernesto@melendez.land</a></li>
+        <li>Mastodon: <a href="https://someplace.social/@ernie">ernie@someplace.social</a></li>
+        <li>News and updates for all my apps: <a href="https://t.me/+-SHI1xTKJugwMzQ5">the Telegram channel</a></li>
+        <li>Code and releases: <a href="https://github.com/ernie96/mist-bot">github.com/ernie96/mist-bot</a></li>
+      </ul>
+      <p>Mist Bot is free. If it's useful to you, you can support it on <a href="https://paypal.me/RefinnejLTD">PayPal</a> or <a href="https://ko-fi.com/ernie96">Ko-fi</a>.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Mist Bot is a modified version of <a href="https://github.com/afnannasir/uncle-farmer">Uncle Farmer</a> by its authors, changed since 5 November 2026 by Ernesto Melendez. It is released under the GNU General Public License, version 3.</p>
+    <p>Mist World belongs to its makers. Mist Bot is not made by or affiliated with them.</p>
+  </div>
+</footer>
+</body>
+</html>

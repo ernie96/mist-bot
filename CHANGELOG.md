@@ -1,6 +1,9 @@
 # What's new
 
-## Unreleased
+## 1.0.5
+
+This version comes with game agent 58. Uncle Farmer offers it when it starts: close your games
+first, then start them again.
 
 **The game in any language**
 

@@ -23,6 +23,7 @@ graft docs
 graft lang
 graft perf
 graft .githooks
+graft site
 
 # made on each player's computer, or by building
 exclude data/game_texts.json
