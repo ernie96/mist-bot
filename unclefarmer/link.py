@@ -13,9 +13,13 @@ import socket
 import threading
 from typing import Any, Protocol
 
-from . import gamelang, jsonio as json, paths
+from . import gamelang, jsonio as json, paths, settings
 
 HOST = "127.0.0.1"
+
+# Confirmed against the game client's live server routes.  The agent reports only the port; this
+# turns that stable route into the name players use in the UI.
+SERVER_NAMES = {8767: "S1", 8769: "S2"}
 
 
 class JsonLink(Protocol):
@@ -91,6 +95,7 @@ class AgentLink:
         if not live:
             raise AgentError("no_game")
         self.port, self.pid, secret = live[0]
+        self._folder: str | None = None
         self.lock = threading.Lock()
         self.sock = socket.create_connection((HOST, self.port), timeout=timeout)
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -136,8 +141,16 @@ class AgentLink:
             # problem, or a garbled reply would look like a bug in the bot's own code.
             raise AgentError("bad reply") from None
         if line.split(" ", 1)[0] in gamelang.COMMANDS:
-            data = gamelang.english(data)      # the game's words back in English (another language pack)
+            # the game's words back in English (another language pack), by this game's own folder
+            data = gamelang.english(data, game=self.game_folder())
         return data
+
+    def game_folder(self) -> str | None:
+        """The folder of the game this link talks to (agent 48 notes it), None when unknown."""
+        if self._folder is None:
+            from . import gameinstall
+            self._folder = gameinstall.folder_of(self.pid, "")
+        return self._folder or None
 
     def close(self) -> None:
         try:
@@ -152,6 +165,18 @@ class AgentLink:
         self.close()
 
 
+def server_name(link: JsonLink) -> str:
+    """The familiar server label for an agent's live game route, if this agent can report it."""
+    try:
+        data = link.json("server")
+    except (AgentError, OSError, ValueError):
+        return ""
+    if not json.is_object(data):
+        return ""
+    port = data.get("port")
+    return SERVER_NAMES.get(port, "") if isinstance(port, int) else ""
+
+
 def games() -> list[tuple[int, str | None, str | None]]:
     """[(pid, character name or None, map name or None)] for every running game with the agent."""
     out: list[tuple[int, str | None, str | None]] = []
@@ -162,7 +187,9 @@ def games() -> list[tuple[int, str | None, str | None]]:
             with AgentLink(pid=pid, timeout=3) as a:
                 s = a.json("mem")
                 if s.get("ok"):
-                    name, where = s["self"]["name"], s["map"]["name"]
+                    me = s["self"]
+                    name = settings.character_profile(me["name"], me.get("id"), server_name(a))
+                    where = s["map"]["name"]
         except (AgentError, OSError, ValueError):
             pass
         out.append((pid, name, where))

@@ -1,5 +1,85 @@
 # What's new
 
+## Unreleased
+
+**The game in any language**
+
+- Every language pack now works, other English packs such as en_uk and public english translation
+  included. The bot's names come from the game's own english pack, which rewords many of the
+  server's texts ("Pet Bone Cookie" for "Bone Cookie"); other packs are now turned into that
+  wording, not the server's.
+- NPCs, items and skills are recognised by the game's own ids where it gives them (an NPC by its
+  map and id, an item by its type, a skill by its id), so no wording can hide them. Names are only
+  needed for what has no lasting id, such as monsters.
+- An NPC whose name doesn't match (after a game update renamed it) is found by where it stands.
+- The server's own text (the lines the game speaks without a menu, a menu's server wording, the
+  character sheet) is no longer "translated back", which could change it.
+
+**Results**
+
+- Run, Results: Yesterday and "A day of my choice" (a Day list of every day with runs) besides
+  Today, the last 7 and 30 days and All time.
+- Skills used: how often each skill was cast, its damage and share of all damage, critical hits,
+  misses and what it healed, the most damage first.
+- Healing: at the end, what your own healing skills healed on yourself, your pet and others
+  (potions not counted).
+- The spoken summary (Ctrl+Shift+R, Shift+Pause, the end of a run, private messages) now starts
+  with the time farmed and today's drop time left, then kills, contribution and experience. Damage
+  and loot are in the Results window.
+
+**Characters with the same name**
+
+- Two characters with the same name on different servers (S1, S2) now keep their own settings,
+  daily chores and last plan. The Games list names them "Name - S1". Needs agent 58.
+
+**Dispels**
+
+- A Sorcerer's or Priest's dispel is cast on yourself with Shift + its key: in a fight the plain key
+  cast it at the selected monster and the debuff stayed.
+
+**Shooting while walking when farming**
+
+- Character, Settings, Fighting: "Shoot monsters in reach while walking to the next one". Dungeons
+  already did this; now field farming can too. A character that fights from afar shoots whatever it
+  would fight that comes into reach on its walk, instead of stopping for each one. It never shoots
+  monsters outside the farm area, bosses, or monsters another player is killing, and never on a
+  trip. Off by default. A character that fights from close by is told it can't use it.
+
+**Pausing**
+
+- A pause of more than two minutes no longer ends the run as "lost the connection to the game"
+  when it goes on: the game's agent dropped a link that asked nothing for two minutes, and a paused
+  run asked nothing. A paused run now checks in every 30 seconds, so a pause can last as long as
+  you like.
+- Moved the character while paused: going on, the bot now plans its walk again from where you
+  left it on the map (and says how far it was moved), instead of pressing on along the old line
+  and maybe calling itself stuck.
+
+**Polson Wetland and lava**
+
+- Polson Wetland without Poison Immunity: a trip through it now gets on a fusion beast (any kind)
+  and crosses, fighting nothing on the way, instead of refusing to go. A trip that ends there goes
+  with a spoken warning. Leaving it is never refused.
+- The volcanic caves' lava lake and magma, which take HP from whoever stands in them, count as
+  walls: the bot walks, stands and fights on the islands, and shoots monsters in the lava from the
+  shore when they are within reach.
+
+**Menus**
+
+- The Bot menu is now three menus: Run, Game and Messages. The jobs that run at once (Sell the
+  collection, Sell shards, Clean the bag, Store items, Update shard prices) moved from Tools to
+  each game's own menu in the Games list (Applications key, Shift+F10 or right-click).
+- The buttons under the plan, spot, schedule, gang and place lists moved into each list's own
+  menu. The Log tab's menu has Copy selection.
+
+**Travel**
+
+- One-way gates are walked round instead of into (the bot got stuck before Dark pit City).
+- Share trips pick the instructor that is cheapest there and back.
+- After a fight the bot gets back on its mount on the way, uses no buffs while travelling, and
+  says why it is on foot.
+- On another map, the bot forgets what it held against monster ids and leaves the fight.
+
 ## 1.0.4
 
 **Repairs**

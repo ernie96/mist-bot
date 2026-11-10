@@ -42,6 +42,35 @@ The main window has three tabs (Ctrl+1, Ctrl+2, Ctrl+3):
 - **Plans:** your plans and scripts, with a summary of the selected one.
 - **Log:** everything the bot did, or only the important events.
 
+Each game in the Games list has its own menu: select it and press the Applications key or
+Shift+F10, or right-click it. It has Walk to, Scan now, Character settings, Bag and supplies, Chat,
+Private messages, Results, mute and unmute, and the jobs that run at once: Sell the collection now,
+Sell shards now, Clean the bag now, Store items now and Update shard prices. An entry that can't be
+used right now, such as a job while that game's bot runs, is greyed out.
+
+On the Plans tab, New plan and New script are buttons. Everything else for the selected plan or
+script is in its menu: Run selected, Edit, Duplicate, Export, Delete, New plan, New script and
+Import. Enter edits it and Delete deletes it. In the Log tab, select text and choose Copy
+selection from the log's menu to copy it.
+
+The menu bar has:
+
+- **File:** Settings, the log and results folders, and Exit.
+- **View:** the three tabs.
+- **Run:** Start, Stop, Pause or go on, Stop every bot, Walk to a dungeon or map, Schedules,
+  Results and Speak the results.
+- **Game:** mute and unmute this game or every game, and Open another game window.
+- **Messages:** Private messages, Chat, and Let everyone get replies again.
+- **Character:** Settings, Bag and supplies, Scan now, Another character, and Import or export
+  character settings.
+- **Tools:** Gem Maker, Equipment Enhancer, Daily chores, Gathering and Dungeons.
+- **Plans:** New plan, New script, Edit, Duplicate, Delete, and Import or export plans.
+- **Help:** the guides, keyboard shortcuts, script commands, commands for trusted players, Check
+  for updates, contact, the Telegram updates channel, Donate, and About.
+
+Entries that can't be used right now are greyed out: Start while the selected game's bot runs, or
+Duplicate when a script, not a plan, is selected.
+
 Help, Quick guide (F1) explains everything step by step, and Help, Keyboard shortcuts lists every
 key. The **Pause** key starts and stops the bot from anywhere, including while you are playing.
 To hold a run without ending it, use the **Pause** button on the Bot tab (or F6): the bot lets go of
@@ -177,7 +206,7 @@ Character, Bag and supplies (Ctrl+B):
 
 ### Storing items now
 
-Tools, Store items now (storage list) puts into the storehouse what the bag manager's Store list
+Store items now, in the game's menu in the Games list, puts into the storehouse what the bag manager's Store list
 says (Character, Bag and supplies, "Move to storehouse"), keeping the number each rule keeps in the
 bag, and nothing else: items on no list, or on another list, stay where they are. It walks to the
 nearest storehouse, the same way a bag trip does. The log says what went in, what was only kept,
@@ -188,12 +217,12 @@ stays in the bag). The list is read when the job runs, so a change you just made
 
 Character, Settings, **Triggers** has two lists of the same five jobs:
 
-- **Sell shards** (Tools, Sell shards now): the shards on the Sell list, at the nearest Shard Market.
-- **Clean the bag** (Tools, Clean the bag now): throws away, where the character stands, only what
+- **Sell shards** (Sell shards now in the game's menu): the shards on the Sell list, at the nearest Shard Market.
+- **Clean the bag** (Clean the bag now in the game's menu): throws away, where the character stands, only what
   is on the throw-away list.
-- **Update shard prices** (Tools, Update shard prices).
+- **Update shard prices** (Update shard prices in the game's menu).
 - **Gathering**, as set in Tools, Gathering.
-- **Store items** (Tools, Store items now): the Store list, as above.
+- **Store items** (Store items now in the game's menu): the Store list, as above.
 
 **Before farming** runs when a plan, or a script that farms, starts - after the character is
 scanned and before the day's chores and the first farming line. **After farming** runs when a
@@ -436,13 +465,13 @@ window says which skill the last scan found and its rank, from Newbie to Grand M
   when Vitality is down to" (When to stop tab) reads the Vitality on the character sheet while it
   gathers, and doesn't set out at all when it is already that low.
 
-Check only reads the gang area's entrance and says where it would gather. Tools, Sell the
-collection now sells to all three buyers from wherever you are. In a script: `gather`,
+Check only reads the gang area's entrance and says where it would gather. Sell the collection now, in the game's
+menu in the Games list, sells to all three buyers from wherever you are. In a script: `gather`,
 `gather check`, `sell_collection` or `sell_collection fish`.
 
 ### Shard prices
 
-Shard Market prices change. Tools, Update shard prices walks to the nearest Shard Broker, reads
+Shard Market prices change. Update shard prices, in the game's menu in the Games list, walks to the nearest Shard Broker, reads
 its list and keeps the prices in `data\shards.json`, the price list the bag manager and the
 results use. A price is kept only when the price the list shows and the price its row sends to the
 game are the same, sane number; any other row, and any shard the list doesn't show, keeps its old
@@ -516,7 +545,7 @@ Check only says what is short and which cave it would go to. In a script: `dunge
 
 ## Walking
 
-Bot, Walk to a dungeon or map (Ctrl+W):
+Run, Walk to a dungeon or map (Ctrl+W):
 
 - **Dungeon entrance:** the dungeons whose entrance NPC the bot knows (a teleport circle or the NPC
   at the cave mouth). It walks up to the NPC and, if you like, opens its menu so you choose.
@@ -527,15 +556,27 @@ Show the route says the way before you go. The whole way it rides your fastest S
 in towns and through monster ground alike, and it doesn't stop to fight; potions still keep your HP
 up. Pause stops it.
 
-### Polson Wetland needs Poison Immunity (for now)
+### Polson Wetland and its poison
 
-Polson Wetland's poisoned ground hurts anyone on it who hasn't activated the General talent
-Poison Immunity. Until the bot can activate talents itself, it doesn't go to Polson Wetland, or
-through it (the only way to the Underground Water Cave and the sailing port beyond), unless that
-talent is activated: the run stops before anything moves, and the log says "Travel to Polson
-Wetland (5141) refused: Poison Immunity Talent is not activated." This applies to plans, scripts,
-Walk to, the Tools and come/follow alike. Activate the talent in the game and start again. A
-character already standing in Polson Wetland can still move about and leave it.
+Polson Wetland's poisoned ground hurts anyone on it, unless they have activated the General talent
+Poison Immunity or are on a fusion beast (any kind). Without the talent:
+
+- A trip through it (the only way to the Underground Water Cave and the sailing port beyond) gets on
+  a fusion beast before stepping in and stays on it all the way across, without stopping to fight.
+  Your fastest Swift beast goes on first, else your strongest Fierce one, whatever your travel beast
+  setting says. If no beast will go on, it waits out a fight that just ended; if there's still none,
+  the run stops before the step in, and the log says why.
+- A trip that ends there (farming, gathering) goes, and says once that Poison Immunity isn't
+  activated: every fight there is on foot, in the poison.
+- Leaving Polson Wetland is never refused.
+
+### Lava
+
+The volcanic caves' lava lake and magma can be walked on, but a character standing in them loses
+HP. The bot treats them as walls: it walks, stands and fights only on the islands and bridges. A
+monster out in the lava is fought from the shore when it is within your attack's reach, and left
+alone when it isn't. On the two maps where lava is the only way between parts of the map (Deep
+underground and Demon Castle), it stays walkable.
 
 ## Several games at once
 
@@ -544,20 +585,21 @@ instead of opening a second one. While it runs, it keeps your settings, plans, p
 message files and results open, so Windows refuses to delete or move them; close Uncle Farmer first
 if you want to clean those files by hand.
 
-Bot, Open another game window (Ctrl+O), or just start Mist World again. The agent lets every copy
+Game, Open another game window (Ctrl+O), or just start Mist World again. The agent lets every copy
 run, however many you open (each needs about 1 GB of memory). Each game window is named after its
 character, such as "Mist World - YourName".
 
 Choose a game in the Games list, choose its plan and press Start, then do the same for the next
-game. Inside a game window, Pause starts and stops that game's bot. Bot, Stop every bot
+game. Inside a game window, Pause starts and stops that game's bot. Run, Stop every bot
 (Ctrl+Shift+S) stops them all.
 
 ## Schedules
 
-Bot, Schedules (Ctrl+Shift+H) starts a plan or script for a character at a set time: once (a date
+Run, Schedules (Ctrl+Shift+H) starts a plan or script for a character at a set time: once (a date
 and a time), every day, or on the days of the week you tick. The list shows each schedule, when it
-runs next and whether it is on; Add, Edit, Turn on or off, Delete and History act on the selected
-one. Changes are saved straight away, in `schedules.json` beside the settings (an update never
+runs next and whether it is on. Add is a button; Edit, Turn on or off, Delete and History are in
+the selected schedule's menu (Applications key, Shift+F10, or right-click). Enter edits a schedule
+and Delete deletes it. Changes are saved straight away, in `schedules.json` beside the settings (an update never
 replaces it).
 
 - A scheduled plan starts as the Start button would, in the game that character is logged in to:
@@ -572,11 +614,18 @@ replaces it).
 
 ## Results
 
-Bot, Results (Ctrl+R) shows what each character earned farming: time and kills, contribution,
+Run, Results (Ctrl+R) shows what each character earned farming: time and kills, contribution,
 experience and levels, arnebia, every shard picked up (with its Shard Broker value, and how many of
 it were thrown away, sold or put into the storehouse), other items picked up, what was bought or
-taken out of the storehouse, and the potions used. It covers the current run, today, the last 7 or
-30 days, or all time.
+taken out of the storehouse, and the potions used. It covers the current run (or the last one),
+today, yesterday, a day you pick from the Day list (each date with its weekday and how many days
+ago it was), the last 7 or 30 days, or all time.
+
+**Skills used** lists every skill the character cast: how many times, its damage and share of all
+your skills' damage, its critical hits and misses, and what it healed, the most damage first. For
+classes that heal (Priests and Sorcerers, for example), **Healing** says how much your own healing
+skills healed you, your pet and anyone else; potions aren't counted there. Skills and healing are
+counted from version 1.0.5 on, and older runs say they weren't counted.
 
 For a run it shows **Time used** (farming time, hours:minutes; a pause or a job on the way is not
 counted) and **Time remaining** until the run ends by itself: the plan's time limit, its stop time
@@ -608,8 +657,13 @@ and misses, critical hits and defence breaks (with the best and the last of each
 hit, the last monster killed, and the monsters that hurt you most. Anything the game did not report
 is shown as `null`. These numbers need agent 28 or newer, like the crit-timed combos.
 
-Shift+Pause speaks a one-line summary of the game in front, from anywhere. When a run ends one short
-line is spoken; Settings can add a line every few minutes, or turn it off. The records are in the
+Shift+Pause speaks a one-line summary of the game in front, from anywhere, and Ctrl+Shift+R in
+Uncle Farmer speaks it for the game selected in the Games list. When a run ends one short line is
+spoken; Settings can add a line every few minutes, or turn it off. The summary starts with how long
+the character has farmed and how much of today's drop time is left, then kills, contribution,
+experience and any level ups, for example "farmed 2 h 15 min, drop time left 3 h 20 min, 340
+kills, 4,183 contribution, 12,000 experience". The drop time is left out until the game has shown
+the character sheet. Damage and loot are in the Results window. The records are in the
 results folder, one file per character.
 
 ## The game's own voice
@@ -619,7 +673,7 @@ line, the combat announcer's damage numbers too, whichever voice the game uses (
 or its own voices). Settings chooses: while a bot runs, always, or never.
 
 By hand, Ctrl+M mutes the game selected in the Games list and Ctrl+U lets it talk again, each game
-on its own (the Bot menu also has Mute every game and Unmute every game). A run that ends keeps a
+on its own (the Game menu also has Mute every game and Unmute every game). A run that ends keeps a
 game muted if you muted it.
 
 ## Quick phrases and teammates
@@ -650,7 +704,7 @@ leader: only on the same map, from further than 20 yards, once per about 50 seco
 
 ## Chat
 
-Bot, Chat (Ctrl+T) reads and writes the game's chat while the bot farms, without the game's keys:
+Messages, Chat (Ctrl+T) reads and writes the game's chat while the bot farms, without the game's keys:
 what you send goes through the game itself, as if typed there, so the bot's keys and your chat
 never get in each other's way. Two tabs, as in the game (Ctrl+Tab moves between them):
 
@@ -712,7 +766,7 @@ Chat is never saved: it is kept in memory while Uncle Farmer runs, and gone when
 
 ## Private messages
 
-Bot, Private messages (Ctrl+Shift+M). While a bot runs, strangers who message the character get a
+Messages, Private messages (Ctrl+Shift+M). While a bot runs, strangers who message the character get a
 few lines from your reply list at once (never the same line twice), then one goodbye line and
 silence for an hour. Edit the lines there; a few polite ones are there to start with. Write {name}
 in a line to put the player's name there ("Hi {name}, I'm away"); with "Call them by their name"
@@ -810,8 +864,19 @@ since a release never carries them.
 Uncle Farmer works with any of the game's language packs (language\lang.txt), not only English.
 The game translates names and menus as they arrive; the bot reads the same language files the game
 does and turns what it sees back into English, so it finds the same potions, skills, monsters,
-pets and menus. Whatever a language pack leaves untranslated is English already. Players' names are
-never changed. Pick the language in the game as usual; after changing it, restart the game.
+pets and menus. The English it turns them into is the wording of the game's own **english** pack,
+which renames many of the server's texts ("Pet Bone Cookie" for the server's "Bone Cookie", for
+example). Other English packs, such as **en_uk** or **public english translation**, are treated
+like any other language, and whatever a pack leaves as the server sent it is turned into the
+english pack's wording too. Players' names are never changed.
+
+Where the game gives a lasting id, Uncle Farmer goes by the id instead of the words: items by their
+type, skills by their id, and NPCs by their map and id, checked against where the NPC stands, since
+a game update can renumber a map's NPCs. If an NPC's name still doesn't match, after a game update
+renamed it for example, it is found by where it stands, since NPCs never move. Names matter only
+for what has no lasting id, such as monsters.
+
+Pick the language in the game as usual; after changing it, restart the game.
 
 ## Contact
 

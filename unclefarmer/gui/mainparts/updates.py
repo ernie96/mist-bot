@@ -49,7 +49,7 @@ class UpdatesMixin(FrameParts):
         window must not freeze (a BusyCursor only hid that)."""
         if self.destroyed:
             return
-        self._append(_("Looking for a new version..."), False)
+        self._append(_("Looking for a new version"), False)
         ch = updater.channel(self.s.get("update_channel"))
 
         def work() -> None:
@@ -132,7 +132,7 @@ class UpdatesMixin(FrameParts):
                           _("Update")):
                 return
             self.updating = True
-            self.say(_("Closing every Mist World window for the update..."))
+            self.say(_("Closing every Mist World window for the update"))
             agentfix.close_then(games, lambda left: self._games_closed_for_update(rel, left))
             return
         self._download_update(rel)
@@ -148,7 +148,7 @@ class UpdatesMixin(FrameParts):
 
     def _download_update(self, rel: updater.Release) -> None:
         self.updating = True
-        dlg = wx.ProgressDialog(_("Update"), _("Downloading Uncle Farmer {v}...", v=rel["version"]), 100, self,
+        dlg = wx.ProgressDialog(_("Update"), _("Downloading Uncle Farmer {v}", v=rel["version"]), 100, self,
                                 wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME)
         state = {"cancel": False}       # the worker asks this; the window's thread sets it
 
