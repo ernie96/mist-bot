@@ -12,8 +12,75 @@ from .. import agentfix
 from ..common import ask, ask_ok, error, info, save_file
 from .base import FrameParts
 
+CHECK_EVERY_MS = 6 * 3600 * 1000   # while the window is open: a fix reaches a copy left open the same day
+OFFER_RETRY_MS = 60 * 1000         # a found update waits this long between tries while a bot runs or a dialog is up
+
 
 class UpdatesMixin(FrameParts):
+    update_timer: wx.Timer
+    update_waiting: updater.Release | None    # found while busy: offered once nothing is in the way
+    update_offered: set[str]                  # versions offered by the periodic check this session
+    update_retry: bool                        # an OFFER_RETRY_MS wait is already set
+
+    def start_update_checks(self) -> None:
+        """Look again every CHECK_EVERY_MS while the window is open (the start check is after_update's).
+        Each tick reads the settings, so turning the check on or off in Settings counts at once."""
+        self.update_waiting, self.update_offered, self.update_retry = None, set(), False
+        self.update_timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, lambda e: self.update_tick(), self.update_timer)
+        self.update_timer.Start(CHECK_EVERY_MS)
+        applog.bootup.note("update check while open: every %d h" % (CHECK_EVERY_MS // 3_600_000))
+
+    def update_tick(self) -> None:
+        """The periodic check. Quiet: nothing is said when there is no new version or GitHub can't
+        be reached (update.log has it); a new version is offered as the start check offers it."""
+        if self.destroyed or self.updating or not updater.frozen() or not self.s.get("check_updates", True):
+            return
+        if self.update_waiting is not None:          # already found: no need to ask GitHub again
+            self._offer_waiting()
+            return
+        ch = updater.channel(self.s.get("update_channel"))
+
+        def look() -> None:
+            rel = updater.check(update_channel=ch)
+            if rel is not None:
+                try:
+                    wx.CallAfter(self._periodic_found, rel)
+                except RuntimeError:                 # the window went away meanwhile
+                    pass
+        threading.Thread(target=look, daemon=True).start()
+
+    def _periodic_found(self, rel: updater.Release) -> None:
+        if self.destroyed or rel["version"] in (self.s.get("skip_version"), *self.update_offered):
+            return
+        self.update_waiting = rel
+        self._offer_waiting()
+
+    def _ui_busy(self) -> bool:
+        """A modal window is up (a dialog the player is in): the offer would land on top of it."""
+        return any(w is not self and isinstance(w, wx.Dialog) and w.IsShown() and w.IsModal()
+                   for w in wx.GetTopLevelWindows())
+
+    def _offer_waiting(self) -> None:
+        """Offer the waiting update unless a bot runs, an update is under way or a dialog is open;
+        then try again in OFFER_RETRY_MS. An update needs every bot stopped, so a farming run is
+        never interrupted: the offer comes when it ends."""
+        rel = self.update_waiting
+        if rel is None or self.destroyed:
+            return
+        if self.updating or self.runs or self._ui_busy():
+            if not self.update_retry:
+                self.update_retry = True
+                wx.CallLater(OFFER_RETRY_MS, self._retry_offer)
+            return
+        self.update_waiting = None
+        self.update_offered.add(rel["version"])
+        updater.log("update check while open: %s offered" % rel["version"])
+        self.offer_update(rel, True)
+
+    def _retry_offer(self) -> None:
+        self.update_retry = False
+        self._offer_waiting()
     # ------------------------------------------------------------ updates (updater.py)
     def after_update(self) -> None:
         """Say how an update went, empty the staging folder, and look for a newer one in the background."""

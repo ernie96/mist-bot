@@ -58,6 +58,48 @@ def test_names_and_menu_lines_come_back_in_english(game: Path) -> None:
     assert t.word("Something new") == "Something new"
 
 
+def test_a_translation_comes_back_in_the_english_packs_wording(tmp_path: Path) -> None:
+    """The bot's names are the english pack's, and that pack rewords some of the server's. Live
+    with the Spanish pack (2026-11-11): "Mercado de fragmentos" came back as the server's "Shard
+    Marketplace", and a run stopped with "couldn't talk to Shard Broker" beside that NPC."""
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "more" / "NPC.txt"), [
+        ("Shard Marketplace", "Shard Broker"),
+        ("Bone Cookie", "Pet Bone Cookie"),
+        ("Lesser Cattle Soul Stone", "Lesser Cow Soul Stone"),
+        ("{d} Cattle", "$1 Cows"),                    # a template: not an exact name's business
+    ])
+    write(str(lang / "xx" / "more" / "NPC.txt"), [
+        ("Shard Marketplace", "Mercado de fragmentos"),
+        ("Bone Cookie", "Galleta de Hueso"),
+        ("Lesser Cattle Soul Stone", "Piedra menor de alma de vaca"),
+        ("Frog", "Rana"),                             # the english pack says nothing: the key stands
+    ])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("Mercado de fragmentos") == "Shard Broker"
+    assert t.word("Galleta de Hueso") == "Pet Bone Cookie"
+    assert t.word("Piedra menor de alma de vaca") == "Lesser Cow Soul Stone"
+    assert t.word("Rana") == "Frog"
+
+
+def test_a_reworded_name_is_found_inside_a_joined_name(tmp_path: Path) -> None:
+    """A pet's name is its kind and its own name, turned back part by part: the kind too is the
+    english pack's wording."""
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "more" / "pet.txt"), [("Cattle", "Cow")])
+    write(str(lang / "xx" / "more" / "pet.txt"), [("Cattle", "Vaca"), (" belongs to {s}", " pertenece a $1")])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("Vaca Lola pertenece a Hero") == "Cow Lola belongs to Hero"
+
+
+def test_shown_keeps_the_key_when_the_english_pack_has_holes_or_nothing(tmp_path: Path) -> None:
+    eng = {"Bone Cookie": "Pet Bone Cookie", "Arnebia piece": "$1 Arnebia", "Empty": ""}
+    assert gamelang._shown("Bone Cookie", eng) == "Pet Bone Cookie"
+    assert gamelang._shown("Arnebia piece", eng) == "Arnebia piece"
+    assert gamelang._shown("Empty", eng) == "Empty"
+    assert gamelang._shown("Frog", eng) == "Frog"
+
+
 def test_a_pet_s_name_is_turned_back_part_by_part(game: Path) -> None:
     t = gamelang.table()
     assert t is not None
@@ -77,15 +119,6 @@ def test_an_agent_answer_is_english_but_players_keep_their_names(game: Path) -> 
     assert out["self"]["hp"] == 5
 
 
-def test_the_server_s_own_text_is_left_as_it_came(game: Path) -> None:
-    assert "said" not in gamelang.COMMANDS          # IN op=60 lines: English from the server
-    entry = {"raw": "Pet Large Red Potion", "text": "Evcil Büyük Kırmızı İksir"}
-    sheet = {"counter_name": "Evet", "level": 50}
-    out = gamelang.english({"top": {"entries": [[entry]]}, "self": {"sheet": sheet}})
-    assert out["top"]["entries"][0][0] == {"raw": "Pet Large Red Potion", "text": "Pet Large Red Potion"}
-    assert out["self"]["sheet"] == sheet
-
-
 def test_english_changes_nothing(game: Path) -> None:
     (game / "language" / "lang.txt").write_text("english", encoding="utf-8")
     gamelang.forget()
@@ -94,141 +127,72 @@ def test_english_changes_nothing(game: Path) -> None:
     assert gamelang.english(data) is data
 
 
-# ---------------------------------------------------------------- the english folder's wording
-@pytest.fixture
-def packs(tmp_path: Path) -> Path:
-    """An english folder that rewords server text (as the game's own one does), an English variant
-    that leaves it as the server sends it, and a translation."""
+def test_the_same_original_with_a_space_at_an_edge_does_not_win(tmp_path: Path) -> None:
+    """Live with the Spanish pack (2026-11-11): Item2.txt has " Platinum wedding ring" and
+    equipment.txt "Platinum wedding ring", both "anillo de boda de platino". Item2.txt is read
+    first, and 17 of a character's 19 pieces of equipment came back with a space in front."""
     lang = tmp_path / "language"
-    write(str(lang / "english" / "more" / "item.txt"), [
-        ("Bone Cookie", "Pet Bone Cookie"),
-        ("Lesser Cattle Soul Stone", "Lesser Cow Soul Stone"),
-        ("{d} Arnebia piece", "$1 Arnebia"),
-        ("Level {d} Ruby Shard", "Level $1 Ruby Shard"),
-        ("Cow", "Cow"),
+    write(str(lang / "english" / "basic.txt"), [("确定", "Yes")])
+    write(str(lang / "xx" / "more" / "Item2.txt"), [
+        (" Platinum wedding ring", "anillo de boda de platino"),
+        ("Total Monster Kills: ", "Total de monstruos asesinados: "),      # spaced like its translation: kept
     ])
-    write(str(lang / "en_uk" / "more" / "item.txt"), [("Bone Cookie", "Bone Cookie")])   # kept as sent
+    write(str(lang / "xx" / "more" / "equipment.txt"), [("Platinum wedding ring", "anillo de boda de platino")])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("anillo de boda de platino") == "Platinum wedding ring"
+    assert t.word("Total de monstruos asesinados: ") == "Total Monster Kills: "
+
+
+def test_an_original_spaced_like_its_translation_wins_whatever_the_order(tmp_path: Path) -> None:
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "basic.txt"), [("确定", "Yes")])
+    write(str(lang / "xx" / "more" / "a.txt"), [("Celestial robe", "Tunica"), (" unread messages", " sin leer")])
+    write(str(lang / "xx" / "more" / "b.txt"), [(" Celestial robe", "Tunica"), ("unread messages", " sin leer")])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("Tunica") == "Celestial robe"                # the first one was right: it stays
+    assert t.word(" sin leer") == " unread messages"           # spaced like " sin leer"
+
+
+def test_two_different_originals_are_not_touched_by_the_spacing_rule(tmp_path: Path) -> None:
+    """"Salir" is Leave, exit and quit: that is a real ambiguity, and the first still wins."""
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "basic.txt"), [("确定", "Yes")])
+    write(str(lang / "xx" / "more" / "a.txt"), [("Leave", "Salir")])
+    write(str(lang / "xx" / "more" / "b.txt"), [("exit", "Salir"), (" quit", "Salir")])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("Salir") == "Leave"
+
+
+def marked_game(tmp_path: Path) -> gamelang.Table:
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "basic.txt"), [("(限制)", " (restricted) "), ("(锁定)", " (locked) ")])
+    write(str(lang / "xx" / "basic.txt"), [("(限制)", " (restringido) "), ("(锁定)", " (bloqueado) ")])
     write(str(lang / "xx" / "more" / "item.txt"), [
-        ("Bone Cookie", "Kemik Kurabiye"),
-        ("Pharmacist Mia", "Eczacı Mia"),
-        ("Apothecary Mia", "Eczacı Mia"),           # one translation for two originals
-        ("Armory", "cephanelik"),
-        ("armory", "cephanelik"),
-        ("Level {d} {s}", "Seviye $1 $2"),
-        ("Level {d} Ruby Shard", "Seviye $1 Yakut Parçası"),
+        ("Memory Butterfly", "Mariposa de memoria"),
+        ("{d} Memory Butterfly", "$1 Mariposa de memoria"),
+        ("Level {d} Turquoise Shard", "Fragmento de turquesa de nivel $1"),
+        ("{d} Level {d} Turquoise Shard", "$1 Fragmento de turquesa de nivel $2"),
     ])
-    return lang
+    return gamelang.Table(str(lang / "xx"), str(lang / "english"))
 
 
-KNOWN = {"pharmacist mia": "Pharmacist Mia", "armory": "Armory", "pet bone cookie": "Pet Bone Cookie"}
+def test_a_name_with_the_client_s_mark_after_it_comes_back_name_and_mark(tmp_path: Path) -> None:
+    # The storehouse's "deposit item" list in Spanish, live 2026-11-11: the marked entries stayed
+    # Spanish, and the shard's came back "1 Level 2 (restringido)  Turquoise Shard" - the hole of
+    # its name had taken the mark. Depositing it said 'the menu has no entry like "...Level\ 2    # Turquoise\ Shard..."'.
+    t = marked_game(tmp_path)
+    assert t.word("78 Mariposa de memoria (restringido) ") == "78 Memory Butterfly (restricted)"
+    assert t.word("1 Fragmento de turquesa de nivel 2 (restringido) ") == "1 Level 2 Turquoise Shard (restricted)"
+    assert t.word("1 Fragmento de turquesa de nivel 2 (restringido)  (bloqueado) ") ==         "1 Level 2 Turquoise Shard (restricted) (locked)"
+    assert t.word("78 Mariposa de memoria") == "78 Memory Butterfly"           # unmarked: as before
+    assert t.word(" (restringido) ") == " (restricted) "                       # the mark alone: as before
+    assert t.word("Algo nuevo (restringido) ") == "Algo nuevo (restricted)"    # a name it doesn't know
 
 
-def test_an_english_variant_comes_back_in_the_english_folder_s_wording(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "en_uk"), str(packs / "english"), KNOWN)
-    assert t.word("Bone Cookie") == "Pet Bone Cookie"                 # its entry keeps the server's text
-    assert t.word("Lesser Cattle Soul Stone") == "Lesser Cow Soul Stone"   # no entry: as the server sent it
-    assert t.word("12 Arnebia piece") == "12 Arnebia"                  # a template it doesn't have
-    assert t.word("Cow") == "Cow"
+def test_a_pack_that_leaves_the_marks_as_they_are_still_has_them_split_off(tmp_path: Path) -> None:
+    lang = tmp_path / "language"
+    write(str(lang / "english" / "basic.txt"), [("(限制)", " (restricted) ")])
+    write(str(lang / "xx" / "more" / "item.txt"), [("{d} Memory Butterfly", "$1 Mariposa de memoria")])
+    t = gamelang.Table(str(lang / "xx"), str(lang / "english"))
+    assert t.word("78 Mariposa de memoria(限制)") == "78 Memory Butterfly (restricted)"
 
-
-def test_a_translation_comes_back_in_the_english_folder_s_wording(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    assert t.word("Kemik Kurabiye") == "Pet Bone Cookie"               # not the server's "Bone Cookie"
-
-
-def test_a_shared_translation_is_the_name_the_bot_knows_written_its_way(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    assert t.word("Eczacı Mia") == "Pharmacist Mia"
-    assert t.word("cephanelik") == "Armory"
-
-
-def test_the_most_particular_template_comes_first(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    assert t.word("Seviye 3 Yakut Parçası") == "Level 3 Ruby Shard"
-
-
-def test_the_bot_s_known_names_come_from_its_data() -> None:
-    names = gamelang.known_names()
-    assert len(names) > 1000
-    assert all(k == " ".join(k.split()).lower() for k in names)
-
-
-# ---------------------------------------------------------------- the game's ids before any words
-@pytest.fixture
-def id_tables(monkeypatch: pytest.MonkeyPatch) -> None:
-    t = gamelang._Ids.__new__(gamelang._Ids)
-    t.items = {23386: "Medium Red Potion"}
-    t.skills = {1611: "Soul Purify"}
-    t.npcs = {(1081, -19): ("Pharmacist Mia", 67.0, 64.0)}
-    t.by_name = None
-    monkeypatch.setattr(gamelang, "_ids", t)
-
-
-@pytest.mark.usefixtures("id_tables")
-def test_ids_settle_npcs_items_and_skills_whatever_the_words(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    snap = {"map": {"id": 1081, "name": "x"},
-            "entities": [{"id": -19, "kind": "npc", "name": "Eczacı Mia", "x": 67.0, "y": 65.0},  # a shared word
-                         {"id": -19, "kind": "monster", "name": "Kemik Kurabiye", "x": 67, "y": 64},  # words only
-                         {"id": -5, "kind": "npc", "name": "cephanelik", "x": 1, "y": 1}]}      # no id known
-    out = gamelang.english(snap, t)
-    assert [e["name"] for e in out["entities"]] == ["Pharmacist Mia", "Pet Bone Cookie", "Armory"]
-    # after a game update shifted the ids, that id belongs to an NPC standing elsewhere: words decide
-    moved = {"map": {"id": 1081}, "entities": [{"id": -19, "kind": "npc", "name": "cephanelik", "x": 20, "y": 20}]}
-    assert gamelang.english(moved, t)["entities"][0]["name"] == "Armory"
-    skills = gamelang.english({"combat": [{"id": 1611, "kind": 1, "name": "Ruh Arındırma"}],
-                               "talents": [], "profession": [{"id": 9, "name": "cephanelik"}]}, t)
-    assert skills["combat"][0]["name"] == "Soul Purify" and skills["profession"][0]["name"] == "Armory"
-    bag = gamelang.english([{"uid": 5, "type": 23386, "name": "Orta Kırmızı İksir", "count": 3},
-                            {"uid": 6, "type": 1, "name": "Kemik Kurabiye", "count": 1}], t)
-    assert [r["name"] for r in bag] == ["Medium Red Potion", "Pet Bone Cookie"]
-
-
-@pytest.mark.usefixtures("id_tables")
-def test_menu_rows_are_settled_by_item_id_and_names_lead_to_ids(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    menu = gamelang.english({"ok": True, "layout": "potion_shop", "verified": True,
-                             "items": [{"row": 0, "col": 0, "id": 23386, "name": "Orta Kırmızı İksir", "price": 150}]}, t)
-    assert menu["items"][0]["name"] == "Medium Red Potion"
-    assert "menu" in gamelang.COMMANDS
-    assert gamelang.item_type("medium  red potion") == 23386 and gamelang.item_type("Nothing") is None
-
-
-def test_exact_matches_ignore_case_where_one_entry_fits(packs: Path) -> None:
-    t = gamelang.Table(str(packs / "xx"), str(packs / "english"), KNOWN)
-    assert t.word("KEMIK kurabiye") == "Pet Bone Cookie"
-    assert t.word("Eczacı mia") == "Pharmacist Mia"
-
-
-def test_each_game_folder_has_its_own_language(packs: Path, tmp_path: Path) -> None:
-    (packs / "lang.txt").write_text("xx", encoding="utf-8")
-    other = tmp_path / "second"
-    (other / "language" / "english").mkdir(parents=True)
-    (other / "language" / "lang.txt").write_text("english", encoding="utf-8")
-    gamelang.forget()
-    assert gamelang.table(str(tmp_path)) is not None            # the first copy plays in xx
-    assert gamelang.table(str(other)) is None                   # the second in English
-
-
-def test_the_player_is_told_about_another_pack_or_an_old_english_one(packs: Path, tmp_path: Path) -> None:
-    (packs / "lang.txt").write_text("xx", encoding="utf-8")
-    notes = gamelang.notes(str(tmp_path))
-    assert any("language is xx" in n for n in notes)
-    assert any("older than the one" in n and "shops.txt" in n for n in notes)     # its english folder lacks them
-    for name in gamelang.ENGLISH_PACK_FILES:
-        write(str(packs / "english" / "more" / name), [("a", "b")])
-    (packs / "lang.txt").write_text("english", encoding="utf-8")
-    assert gamelang.notes(str(tmp_path)) == []
-
-
-def test_server_text_is_put_in_the_english_pack_s_wording(packs: Path) -> None:
-    w = gamelang.EnglishWording(str(packs / "english"))
-    assert w.shown("Bone Cookie") == "Pet Bone Cookie"
-    assert w.shown("12 Arnebia piece") == "12 Arnebia"
-    assert w.shown("Something new") == "Something new"
-
-
-def test_the_id_tables_ship_with_the_bot() -> None:
-    table = gamelang.ids()
-    assert len(table.items) > 100 and len(table.skills) > 10 and len(table.npcs) > 50
-    assert all(mid > 0 and nid < 0 for mid, nid in table.npcs)       # NPCs only, never a player

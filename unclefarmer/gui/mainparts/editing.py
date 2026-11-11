@@ -391,6 +391,8 @@ class EditingMixin(FrameParts):
         boot = applog.bootup
         with boot.step("update result and check", must=False):
             self.after_update()
+        with boot.step("update check while open", must=False):
+            self.start_update_checks()
         with boot.step("game folder and agent", must=False):
             self.check_game()
         boot.end("ready")

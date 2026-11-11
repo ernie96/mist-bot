@@ -1,5 +1,37 @@
 # What's new
 
+## 1.0.6
+
+**Updates**
+
+- Uncle Farmer now also looks for a new version every 6 hours while it is open, not only when it
+  starts, so a copy left running for days still gets fixes. It says nothing when there is nothing
+  new. When there is, it asks as it does at start, but waits until no bot is running and no dialog
+  is open. Saying no keeps that version from being offered again; Help, Check for updates still
+  offers it. Settings, Updater, "Look for a new version when Uncle Farmer starts" turns this check
+  off too.
+
+**The game in another language**
+
+- The id-based recognition added in 1.0.5 is taken out again. In live play it caused serious
+  problems with the game in other languages, so NPCs, items and skills are found by name as before.
+- A translated name now comes back in the english pack's wording (the Spanish "Mercado de
+  fragmentos" is the Shard Broker again), so walking to the Shard Broker works in other languages.
+- Equipment names no longer come back with a stray space in front (17 of 19 pieces with the Spanish
+  pack).
+
+**Fighting**
+
+- Elf: Ignition is used only right before Pyroblast or Blazing Storm with three fire elements, a
+  Fireball critical hit with Flame Combo makes Fire Impact ready at once, and Pyroblast keeps its
+  target.
+
+**Fixes**
+
+- Storing items the storehouse marks "(restricted)" works.
+- A free VIP ride that goes nowhere: the bot says to check your VIP and pays the fare instead.
+- Characters with the same name on different servers keep their server in the bot's own state too.
+
 ## 1.0.5
 
 This version comes with game agent 58. Uncle Farmer offers it when it starts: close your games

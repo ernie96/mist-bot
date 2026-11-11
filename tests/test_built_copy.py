@@ -148,6 +148,9 @@ class Window:
         self.destroyed = False
         self.downloads: list[updater.Release] = []
         self.status: list[str] = []
+        self.update_waiting: updater.Release | None = None      # the check while open (UpdatesMixin)
+        self.update_offered: set[str] = set()
+        self.update_retry = False
 
     def __getattr__(self, name: str) -> Any:
         from unclefarmer.gui import main
@@ -322,3 +325,89 @@ def test_a_dev_build_is_offered_as_one(window: dict[str, list[str]], monkeypatch
     assert len(asked) == 1 and "0.9.0-dev.58 is out (you have 0.9.0-dev.57)" in asked[0]
     assert "development build from the dev branch" in asked[0] and "the notes" in asked[0]
     assert w.downloads == [rel]
+
+
+# ------------------------------------------------------------ the check while the window is open
+@pytest.fixture
+def periodic(window: dict[str, list[str]], monkeypatch: pytest.MonkeyPatch) -> dict[str, list[Any]]:
+    """The periodic check with its answers handed in, CallAfter run at once, CallLater and the offer caught."""
+    from unclefarmer.gui.mainparts import updates
+    seen: dict[str, list[Any]] = {"offered": [], "later": [], "answers": []}
+
+    def check(timeout: float = 10, update_channel: str = "master") -> updater.Release | None:
+        window["checked"].append(update_channel)
+        return seen["answers"].pop(0) if seen["answers"] else None
+
+    def call_after(fn: Callable[..., object], *args: object) -> None:
+        fn(*args)
+
+    def call_later(ms: int, fn: Callable[..., object]) -> None:
+        seen["later"].append(ms)
+    monkeypatch.setattr(updater, "check", check)
+    monkeypatch.setattr(updater, "log", returning(None))
+    monkeypatch.setattr(updates.wx, "CallAfter", call_after)
+    monkeypatch.setattr(updates.wx, "CallLater", call_later)
+    monkeypatch.setattr(updates.wx, "GetTopLevelWindows", returning([]))
+    def offer(self: object, rel: updater.Release, at_start: bool) -> None:
+        seen["offered"].append((rel["version"], at_start))
+    monkeypatch.setattr(updates.UpdatesMixin, "offer_update", offer)
+    return seen
+
+
+def ticking() -> Window:
+    return Window()
+
+
+@pytest.mark.usefixtures("built")
+def test_the_check_while_open_offers_a_new_version_once(window: dict[str, list[str]],
+                                                        periodic: dict[str, list[Any]]) -> None:
+    w = ticking()
+    periodic["answers"] += [REL, REL]
+    w.update_tick()
+    w.update_tick()                        # the same version found again: not offered twice
+    assert periodic["offered"] == [("99.0.0", True)]
+    assert window["checked"] == ["master", "master"]
+    assert window["info"] == [] and window["error"] == []
+
+
+@pytest.mark.usefixtures("built")
+def test_the_check_while_open_is_quiet_with_nothing_new_and_off_when_switched_off(
+        window: dict[str, list[str]], periodic: dict[str, list[Any]]) -> None:
+    w = ticking()
+    w.update_tick()
+    assert periodic["offered"] == [] and window["info"] == [] and window["error"] == []
+    w.s["check_updates"] = False
+    w.update_tick()
+    assert window["checked"] == ["master"]
+
+
+@pytest.mark.usefixtures("built")
+def test_the_check_while_open_skips_the_version_said_no_to(periodic: dict[str, list[Any]]) -> None:
+    w = ticking()
+    w.s["skip_version"] = REL["version"]
+    periodic["answers"].append(REL)
+    w.update_tick()
+    assert periodic["offered"] == []
+
+
+@pytest.mark.usefixtures("built")
+def test_a_running_bot_holds_the_offer_until_it_ends(window: dict[str, list[str]],
+                                                     periodic: dict[str, list[Any]]) -> None:
+    from unclefarmer.gui.mainparts import updates
+    w = ticking()
+    w.runs = {1234: object()}
+    periodic["answers"].append(REL)
+    w.update_tick()
+    w._offer_waiting()                     # a second try while the first wait is set: no second wait
+    assert periodic["offered"] == [] and periodic["later"] == [updates.OFFER_RETRY_MS]
+    w.runs = {}
+    w._retry_offer()
+    assert periodic["offered"] == [("99.0.0", True)]
+    w.update_tick()                        # found already: no second offer, GitHub asked again
+    assert periodic["offered"] == [("99.0.0", True)] and window["checked"] == ["master", "master"]
+
+
+@pytest.mark.usefixtures("source")
+def test_a_source_copy_never_checks_while_open(window: dict[str, list[str]], periodic: dict[str, list[Any]]) -> None:
+    ticking().update_tick()
+    assert window["checked"] == []

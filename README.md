@@ -24,7 +24,8 @@ you're happy with a paid bot, keep using it.
 ## Privacy
 
 - There's no account, no server, no licence check and no telemetry.
-- When it starts, Uncle Farmer asks this repository's releases page whether there's a newer version.
+- When it starts, and every 6 hours while it's open, Uncle Farmer asks this repository's releases
+  page whether there's a newer version.
   That request carries nothing about you or your game. Untick "Look for a new version when Uncle
   Farmer starts" in Settings and it never goes online; it works the same without internet.
 - Character settings, plans, scripts, logs and results are plain files next to the program. Delete
@@ -89,8 +90,8 @@ you're happy with a paid bot, keep using it.
 The Pause key starts and stops the bot from anywhere, even inside the game. Shift+Pause speaks your
 results.
 
-New versions: Uncle Farmer offers them when it starts (or Help, Check for updates) and installs them
-for you. If games are open, it asks first and closes them, because an open game holds the agent file;
+New versions: Uncle Farmer offers them when it starts, every 6 hours while it's open (once no bot is
+running), or from Help, Check for updates, and installs them for you. If games are open, it asks first and closes them, because an open game holds the agent file;
 start them again after the update. Releases are signed, and Uncle Farmer only installs one whose
 signature checks. You can also put a newer `UncleFarmer.exe` in place of yours with every game and
 Uncle Farmer closed. Your characters, plans and settings aren't part of a release, so they stay.

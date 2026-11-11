@@ -342,11 +342,13 @@ def nothing(self: object) -> None:
 
 def test_first_run_ends_the_start_ready(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(updates.UpdatesMixin, "after_update", nothing)
+    monkeypatch.setattr(updates.UpdatesMixin, "start_update_checks", nothing)
     monkeypatch.setattr(editing.EditingMixin, "check_game", nothing)
     applog.bootup.begin("x")
     Closing().first_run()
     log = text("bootup.log")
     assert "update result and check: done" in log and "game folder and agent: done" in log
+    assert "update check while open: done" in log
     assert lines("bootup.log")[-1].split("] ", 1)[1].startswith("END startup: ready in")
 
 
@@ -358,6 +360,7 @@ def test_a_failed_first_check_is_written_and_the_start_isn_t_called_clean(monkey
     def check(self: object) -> None:
         checked.append(True)
     monkeypatch.setattr(updates.UpdatesMixin, "after_update", broken)
+    monkeypatch.setattr(updates.UpdatesMixin, "start_update_checks", nothing)
     monkeypatch.setattr(editing.EditingMixin, "check_game", check)
     applog.bootup.begin("x")
     Closing().first_run()

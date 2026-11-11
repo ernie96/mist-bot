@@ -425,6 +425,10 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         if timer is not None:
             with down.step("stop the schedules timer", must=False):
                 timer.Stop()
+        update_timer: wx.Timer | None = getattr(self, "update_timer", None)
+        if update_timer is not None:
+            with down.step("stop the update check timer", must=False):
+                update_timer.Stop()
         with down.step("destroy the window", must=False):
             self.Destroy()
 
@@ -560,10 +564,10 @@ skills on two or more close together, potions instead of resting, the pet kept o
 the game moves it out, and ends where the Where to end tab says, as a plan does.
 
 UPDATES
-At start Uncle Farmer looks on GitHub for a new version; if there is one it says what's new and
-asks. Yes: it downloads it, closes, updates and starts again, keeping your characters, plans,
+At start, and every 6 hours while it is open, Uncle Farmer looks on GitHub for a new version; if
+there is one it says what's new and asks (while a bot runs, it waits until the bot stops). Yes: it downloads it, closes, updates and starts again, keeping your characters, plans,
 scripts and settings. Close the games and stop the bots first. Help, Check for updates looks any
-time; Settings, Updater turns the start-up check off and picks the release channel.
+time; Settings, Updater turns these checks off and picks the release channel.
 
 WALKING
 Run, Walk to a dungeon or map (Ctrl+W). Dungeon entrance tab: the dungeons whose entrance NPC the

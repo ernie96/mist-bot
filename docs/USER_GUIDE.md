@@ -816,13 +816,15 @@ Stop following.
 
 ## Updates
 
-When it starts, Uncle Farmer asks its GitHub releases page whether there is a newer version, and
-offers it with what changed; Help, Check for updates asks at any time. Say yes and it downloads the
+When it starts, and again every 6 hours while it is open, Uncle Farmer asks its GitHub releases
+page whether there is a newer version, and offers it with what changed; Help, Check for updates
+asks at any time. The check while it is open says nothing when there is no new version, and it
+waits to offer one until no bot is running and no dialog of Uncle Farmer's is open. Say yes and it downloads the
 release, checks it, and restarts as the new version. If games are open, it asks first: the update
 replaces the agent they have loaded, so press **OK** and it closes every Mist World window, then
 updates; start the games again afterwards. The request carries nothing about you or your
-game. Settings, Updater, "Look for a new version when Uncle Farmer starts" turns the check off;
-then it never goes online.
+game. Settings, Updater, "Look for a new version when Uncle Farmer starts" turns both checks
+off; then it never goes online.
 
 Settings, **Updater** holds everything about updates: this copy's version and where its updates
 come from, the check at start, the release channel, "Offer version ... again" when you said no to
@@ -865,16 +867,9 @@ Uncle Farmer works with any of the game's language packs (language\lang.txt), no
 The game translates names and menus as they arrive; the bot reads the same language files the game
 does and turns what it sees back into English, so it finds the same potions, skills, monsters,
 pets and menus. The English it turns them into is the wording of the game's own **english** pack,
-which renames many of the server's texts ("Pet Bone Cookie" for the server's "Bone Cookie", for
-example). Other English packs, such as **en_uk** or **public english translation**, are treated
-like any other language, and whatever a pack leaves as the server sent it is turned into the
-english pack's wording too. Players' names are never changed.
-
-Where the game gives a lasting id, Uncle Farmer goes by the id instead of the words: items by their
-type, skills by their id, and NPCs by their map and id, checked against where the NPC stands, since
-a game update can renumber a map's NPCs. If an NPC's name still doesn't match, after a game update
-renamed it for example, it is found by where it stands, since NPCs never move. Names matter only
-for what has no lasting id, such as monsters.
+which renames some of the server's texts ("Shard Broker" for the server's "Shard Marketplace",
+"Pet Bone Cookie" for "Bone Cookie"). Whatever a pack leaves untranslated is English already.
+Players' names are never changed.
 
 Pick the language in the game as usual; after changing it, restart the game.
 

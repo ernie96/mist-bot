@@ -5749,15 +5749,7 @@ msgid ""
 "the game's dialogs can't be read ({why}) - restart the game so the new agent loads"
 msgstr ""
 
-msgid ""
-"the game's english language pack is older than the one Uncle Farmer's names come from ({files} missing): some names may not match"
-msgstr ""
-
 msgid "the game's keys can't be used: {why}"
-msgstr ""
-
-msgid ""
-"the game's language is {lang}: names are turned into English by the game's ids where it has them, else by its language files"
 msgstr ""
 
 msgid "the game's own speech is off while the bot runs"
@@ -5890,6 +5882,10 @@ msgid "the {kind} {name} doesn't exist any more"
 msgstr ""
 
 msgid "the {npc} didn't take me anywhere"
+msgstr ""
+
+msgid ""
+"the {npc} didn't take me for free - check that your VIP is still active. Paying the fares for the rest of this run"
 msgstr ""
 
 msgid "the {npc} offers no way in ({about})"
