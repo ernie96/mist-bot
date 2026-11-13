@@ -844,6 +844,33 @@ starts with buffs off.
 
 Stop following.
 
+## Control by an AI assistant (MCP)
+
+An AI assistant that supports MCP (the Model Context Protocol), such as Claude, can run Uncle Farmer
+for you: start and stop plans, pause, run the Tools jobs, read the log, the game's state and the
+results, write plans and scripts, change settings, schedules and the private-message lists, read
+and send chat. It acts as if you had done it, through the same code as the window.
+
+It is off until you turn it on. In File, Settings, **Control**:
+
+- "Let other programs on this computer control Uncle Farmer (MCP)" turns it on. Only programs of
+  your own Windows account can connect, and they must know a secret Uncle Farmer makes up each time
+  it starts.
+- "Also let them send raw commands to the game agent" lets the assistant press keys, type and send
+  any of the agent's commands in the game. Leave it off unless you need it.
+- "Copy setup instructions for an AI assistant" copies a text with this copy's path and the
+  commands to add it; paste it into your assistant. For Claude Code it is
+  `claude mcp add uncle-farmer -- "<path to UncleFarmer.exe>" --mcp`.
+
+The assistant starts `UncleFarmer.exe --mcp`, which has no window: it passes each request to the
+open Uncle Farmer, and starts Uncle Farmer if it isn't open. While the setting is off, every request
+is refused with a message saying where to turn it on.
+
+Requests that spend arnebia, sell or throw away items, send chat or private messages, delete a plan
+or schedule, close games, reinstall the agent, install an update or close Uncle Farmer only work when
+the assistant says it asked you first (confirm). The control switches themselves can only be
+changed by you. Every request is written to the day's log as "control by another program".
+
 ## Updates
 
 When it starts, and again every 6 hours while it is open, Uncle Farmer asks its GitHub releases

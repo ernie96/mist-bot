@@ -34,6 +34,8 @@ APP_DEFAULTS: dict[str, Any] = {
     "log_level": "INFO",      # DEBUG | INFO | WARNING | ERROR: what the files in logs/ get
     "log_max_mb": 5,          # start a new log file after this many megabytes (0: never rotate)
     "log_backups": 5,         # old log files kept as name.1 ... name.N
+    "mcp_control": False,     # let other programs of this Windows user control the bot (UncleFarmer.exe --mcp)
+    "mcp_raw_agent": False,   # ...and send raw commands to the game agent too (keys, typing, any agent command)
 }
 
 # The portable character-settings file is intentionally narrower than a profile on disk.  A scan
@@ -224,6 +226,8 @@ class AppSettings(BaseModel):
     log_level: str = APP_DEFAULTS["log_level"]
     log_max_mb: int = APP_DEFAULTS["log_max_mb"]
     log_backups: int = APP_DEFAULTS["log_backups"]
+    mcp_control: bool = APP_DEFAULTS["mcp_control"]
+    mcp_raw_agent: bool = APP_DEFAULTS["mcp_raw_agent"]
 
 
 class Profile(BaseModel):

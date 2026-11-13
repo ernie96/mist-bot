@@ -8,10 +8,11 @@ from typing import Any
 
 import wx
 
-from .. import __version__, applog, daily, gameinstall, i18n, paths, updater
+from .. import __version__, applog, control, daily, gameinstall, i18n, paths, updater
 from ..i18n import _
 from . import agentfix
-from .common import Dialog, ask, ask_ok, buttons, enable_label, error, group, info, modal, ok_cancel, opens, page, tabs
+from .common import (Dialog, ask, ask_ok, buttons, copy_text, enable_label, error, group, info, modal, ok_cancel, opens,
+                     page, tabs)
 
 SPEECH_MODES = ("running", "always", "never")
 AFTER = ("nothing", "close_game", "shutdown")
@@ -29,6 +30,7 @@ class SetupDialog(Dialog):
         self.day_page(nb)
         self.log_page(nb)
         self.updater_page(nb)
+        self.control_page(nb)
         root.Add(nb, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
         ok_cancel(self, root, _("Save"))
         self.SetSizerAndFit(root)
@@ -127,6 +129,27 @@ class SetupDialog(Dialog):
             "A file that reaches the size above is kept as name.1, the older ones move to name.2 and "
             "so on, and the oldest is dropped. The day's run log is rotated the same way inside its day."),
             lines=3)
+
+    def control_page(self, nb: wx.Notebook) -> None:
+        """Control by other programs (an AI assistant, through UncleFarmer.exe --mcp): off by default."""
+        panel, box = page(nb, _("Control"))
+        f = group(panel, box, _("Other programs"))
+        self.mcp = f.check(_("&Let other programs on this computer control Uncle Farmer (MCP)"),
+                           self.s.get("mcp_control", False))
+        self.mcp_raw = f.check(_("Also let them send &raw commands to the game agent (keys, typing, anything)"),
+                               self.s.get("mcp_raw_agent", False))
+        buttons(f.parent, f.box, (_("&Copy setup instructions for an AI assistant"), self.on_copy_setup))
+        f.readonly(_("About:"), _(
+            "An AI assistant that supports MCP can then run the bot for you: start and stop plans, change "
+            "settings, read the log and results, and run the Tools jobs. It acts as if you did it. Only "
+            "programs of your own Windows account can connect. The instructions this button copies are what "
+            "you paste into the assistant; they hold this copy's path. Raw agent commands let it press keys "
+            "and type in the game, so leave that off unless you need it."), lines=5)
+
+    def on_copy_setup(self, _evt: wx.Event) -> None:
+        self.mcp.SetValue(True)
+        if copy_text(control.setup_prompt(paths.exe_path())):
+            info(self, _("Copied. Paste it into your AI assistant. Press Save here so the setting is kept."))
 
     def updater_page(self, nb: wx.Notebook) -> None:
         """Everything about updates in one place: this copy's version, where updates come from, the
@@ -265,6 +288,8 @@ class SetupDialog(Dialog):
         self.s["log_level"] = applog.LEVELS[max(0, self.level.GetSelection())]
         self.s["log_max_mb"] = self.log_mb.GetValue()
         self.s["log_backups"] = self.log_kept.GetValue()
+        self.s["mcp_control"] = self.mcp.GetValue()
+        self.s["mcp_raw_agent"] = self.mcp_raw.GetValue()
         applog.configure(self.s)        # the new level and rotation apply to the next line
         t = self.day_at.GetValue().strip()
         # the default is kept as "follow the reset", so it moves if the computer's time zone does

@@ -9,7 +9,10 @@ ours.
 
 from __future__ import annotations
 
+import collections
 import os
+import threading
+from typing import Any
 
 import wx
 
@@ -25,6 +28,7 @@ from .mainparts.runs import RunsMixin
 from .mainparts.scheduling import SchedulingMixin
 from .mainparts.talk import TalkMixin
 from .mainparts.updates import UpdatesMixin
+from .remote import RemoteControl
 from .silencer import SilencerDialog
 from ..soundrestore import SoundRestore
 
@@ -34,6 +38,7 @@ VK_PAUSE = 0x13
 MOD_SHIFT = 0x0004
 MOD_NOREPEAT = 0x4000
 BOT_STOP_WAIT = 5.0         # seconds each running bot gets to end when the app closes
+EVENTS_KEEP = 5000          # numbered log lines kept for other programs (read_log, wait_for_log)
 
 
 def action_menu_states(*, available: bool, running: bool, any_running: bool, has_items: bool,
@@ -91,6 +96,11 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         self.updating = False
         self.close_reason = ""   # why the window closes, when it isn't the player (teardown.log)
         self.hotkeys: list[int] = []     # the global hotkeys this window holds
+        # every log line, numbered, for other programs (gui/remote.py): read_log, wait_for_log
+        self.events: collections.deque[dict[str, Any]] = collections.deque(maxlen=EVENTS_KEEP)
+        self.event_lock = threading.Condition()
+        self.event_seq = 0
+        self.remote = RemoteControl(self)
 
         panel = wx.Panel(self)
         root = wx.BoxSizer(wx.VERTICAL)
@@ -491,6 +501,10 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         if update_timer is not None:
             with down.step("stop the update check timer", must=False):
                 update_timer.Stop()
+        remote: RemoteControl | None = getattr(self, "remote", None)    # none if the window never got that far
+        if remote is not None:
+            with down.step("stop listening to other programs", must=False):
+                remote.stop()
         with down.step("destroy the window", must=False):
             self.Destroy()
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import subprocess
+import time
 
 import wx
 
@@ -31,6 +32,13 @@ class LogMixin(FrameParts):
             stamp, _sep, text = line.partition("  ")
             line = "%s  %s: %s" % (stamp, who, text) if text else "%s: %s" % (who, line)
         self.log_lines.append((line, bool(speak)))
+        lock = getattr(self, "event_lock", None)    # for other programs (gui/remote.py), numbered
+        if lock is not None:
+            with lock:
+                self.event_seq += 1
+                self.events.append({"n": self.event_seq, "time": time.time(), "line": line, "spoken": bool(speak),
+                                    "pid": run.pid if run is not None else None})
+                lock.notify_all()
         if len(self.log_lines) > LOG_LIMIT:
             del self.log_lines[:500]
             self.show_log()

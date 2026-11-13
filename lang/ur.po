@@ -115,6 +115,9 @@ msgid ""
 msgstr ""
 "&Construction builds roz (game 2 deta hai; muft, har aik contribution aur arnebia deti hai):"
 
+msgid "&Copy setup instructions for an AI assistant"
+msgstr "AI assistant ke liye setup ki hidayaat &copy karein"
+
 msgid "&Copy the address"
 msgstr "Pata &copy karein"
 
@@ -277,6 +280,9 @@ msgstr "&Zaban:"
 
 msgid "&Let it shut down"
 msgstr "Shutdown &hone dein"
+
+msgid "&Let other programs on this computer control Uncle Farmer (MCP)"
+msgstr "Is computer ke doosre programs ko Uncle Farmer chalane &dein (MCP)"
 
 msgid "&Level:"
 msgstr "&Level:"
@@ -769,6 +775,11 @@ msgstr "Pehle se aap ke saath chal raha hoon."
 msgid "Already running."
 msgstr "Pehle se chal raha hai."
 
+msgid ""
+"Also let them send &raw commands to the game agent (keys, typing, anything)"
+msgstr ""
+"Unhein game agent ko &raw commands bhejne bhi dein (keys, typing, kuch bhi)"
+
 msgid "Also: {names}"
 msgstr "Yeh bhi: {names}"
 
@@ -782,6 +793,11 @@ msgstr ""
 
 msgid "Always leave this many in the &bag:"
 msgstr "Hamesha itne &baste mein rakhein:"
+
+msgid ""
+"An AI assistant that supports MCP can then run the bot for you: start and stop plans, change settings, read the log and results, and run the Tools jobs. It acts as if you did it. Only programs of your own Windows account can connect. The instructions this button copies are what you paste into the assistant; they hold this copy's path. Raw agent commands let it press keys and type in the game, so leave that off unless you need it."
+msgstr ""
+"Phir MCP wala AI assistant aap ke liye bot chala sakta hai: plans shuru aur band karna, settings badalna, log aur results parhna, aur Tools ke kaam chalana. Woh aise karta hai jaise aap ne kiya ho. Sirf aap ke apne Windows account ke programs jur sakte hain. Yeh button jo hidayaat copy karta hai woh aap assistant mein paste karte hain; un mein is copy ka path hai. Raw agent commands se woh game mein keys daba aur type kar sakta hai, is liye zaroorat na ho to use band rakhein."
 
 msgid "An older Uncle Farmer agent is installed. Press Install to update it."
 msgstr "Purana Uncle Farmer agent install hai. Update ke liye Install dabayein."
@@ -1091,6 +1107,9 @@ msgstr "Developer se raabta"
 msgid "Contribution"
 msgstr "Hissa"
 
+msgid "Control"
+msgstr "Control"
+
 msgid "Cop&y all"
 msgstr "Sab cop&y karein"
 
@@ -1099,6 +1118,11 @@ msgstr "Copy ho gaya"
 
 msgid "Copied {email}."
 msgstr "{email} copy ho gaya."
+
+msgid ""
+"Copied. Paste it into your AI assistant. Press Save here so the setting is kept."
+msgstr ""
+"Copy ho gaya. Ise apne AI assistant mein paste karein. Setting rakhne ke liye yahan Mahfooz dabayein."
 
 msgid "Copy &selection"
 msgstr "Chuna hua &copy karein"
@@ -2580,6 +2604,9 @@ msgstr "Doosri cheezein"
 
 msgid "Other items picked up:"
 msgstr "Doosri cheezein mili:"
+
+msgid "Other programs"
+msgstr "Doosre programs"
 
 msgid "Our blue potions"
 msgstr "Hamare neele potions"

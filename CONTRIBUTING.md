@@ -268,6 +268,14 @@ the exe and its signature from there and leaves the zip alone; the notes are wha
 `--draft` makes a draft no copy sees until you publish it; `--local` only builds, signs and zips,
 with the notes beside them as `UncleFarmer-0.5.1.txt`.
 
+## Merging from Uncle Farmer
+
+`uv run python sync_upstream.py` shows what is new on Uncle Farmer's `dev` and which files would
+conflict; `uv run python sync_upstream.py merge` merges it, settles the conflicts that always go the
+same way, rebuilds the translations and requirements, and lists the rest. `tests/test_fork.py` fails
+when a merge undoes one of this fork's own changes. [FORK.md](FORK.md) lists them and how each
+conflict is settled.
+
 ## Translating
 
 Copy `lang/unclefarmer.pot` to `lang/<language code>.po`. In its header set `Language` to the code

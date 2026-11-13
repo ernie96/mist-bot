@@ -399,6 +399,10 @@ class EditingMixin(FrameParts):
             self.after_update()
         with boot.step("update check while open", must=False):
             self.start_update_checks()
+        remote = getattr(self, "remote", None)
+        if remote is not None:
+            with boot.step("control by other programs (pipe)", must=False):
+                remote.start()
         with boot.step("game folder and agent", must=False):
             self.check_game()
         boot.end("ready")

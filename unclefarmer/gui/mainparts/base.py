@@ -11,7 +11,9 @@ their types, and every part's methods under TYPE_CHECKING with their signatures.
 
 from __future__ import annotations
 
+import collections
 import ctypes
+import threading
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TypeVar, TypeVarTuple
 
@@ -27,6 +29,7 @@ if TYPE_CHECKING:
     from ...engine.runner import Run
     from ...stats import Tally
     from ..chat import ChatFrame
+    from ..remote import RemoteControl
 
 LOG_LIMIT = 3000
 SNAP_FRESH = 5.0          # seconds a game reading may be reused (by the poll and by editors)
@@ -107,6 +110,10 @@ class FrameParts(wx.Frame):
     updating: bool
     close_reason: str                       # why the window closes, when it isn't the player
     hotkeys: list[int]                      # the global hotkeys the window holds
+    events: "collections.deque[dict[str, Any]]"     # numbered log lines for other programs (gui/remote.py)
+    event_lock: threading.Condition         # guards events; notified on each new line
+    event_seq: int                          # the number of the newest line in events
+    remote: "RemoteControl"                 # the pipe other programs control the window through
     # ---------------------------------------------------------------- widgets
     nb: wx.Notebook
     game_list: wx.ListCtrl
@@ -218,6 +225,7 @@ class FrameParts(wx.Frame):
         def toggle(self) -> None: ...
         def start(self, pid: int | None = None, item: Item | None = None, remote: bool = False) -> str | None: ...
         def run_errand(self, text: str, title: str, walk: bool = False) -> None: ...
+        def errand_on(self, pid: int, text: str, title: str, walk: bool = False) -> str | None: ...
         def errand_for(self, pid: int, text: str, title: str, tell: Callable[[str], None] | None = None,
                        follows: str | None = None) -> str | None: ...
         def follow_for(self, pid: int, leader: str, tell: Callable[[str], None] | None = None) -> str | None: ...

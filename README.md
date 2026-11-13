@@ -147,6 +147,31 @@ Put it in a folder of its own: it unpacks itself to your cache folder, puts the 
 `uv run python build_native.py` builds the optional C module that makes map searches 10 to 24 times
 faster; without it the same searches run in Python.
 
+## Control through MCP
+
+`UncleFarmer.exe --mcp` is a Model Context Protocol server on standard input and output, for AI
+assistants. It has no window: it passes each tool call over a named pipe
+(`\\.\pipe\UncleFarmer-control-<Windows user name>`) to the open Uncle Farmer, and starts Uncle
+Farmer if it isn't open. A connection must know a secret the window writes at each start to
+`agent\run\control.key`. The window answers only while File, Settings, Control, "Let other
+programs on this computer control Uncle Farmer (MCP)" is on; it is off by default. Raw agent
+commands (`agent_command`) need a second setting.
+
+There are 65 tools: the games and their live state, starting, stopping and pausing runs, scripts
+and the Tools jobs, plans and scripts, character and app settings (checked against their types
+before saving), schedules, results, the log (numbered, so a caller can wait for new lines), chat,
+private messages, voice messages, team actions, the Sound Silencer, the agent, updates and closing.
+Tools that spend, sell, throw away, send messages or close things need `confirm: true`. The code is
+`unclefarmer/mcpserver.py` (the server), `unclefarmer/control.py` (the tool list and the pipe) and
+`unclefarmer/gui/remote.py` (the window's side); `tests/test_mcp.py` drives them against the
+pretend game.
+
+For Claude Code:
+
+```
+claude mcp add uncle-farmer -- "C:\path\to\UncleFarmer.exe" --mcp
+```
+
 ## How it works
 
 ```

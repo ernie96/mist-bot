@@ -1,5 +1,15 @@
 # What's new
 
+## 1.0.8
+
+**Control by an AI assistant**
+
+- An AI assistant that supports MCP can now run Uncle Farmer: start, stop and pause runs, run
+  scripts and the Tools jobs, read the game's state, the log and the results, edit plans, scripts,
+  settings and schedules, and use chat. It is off by default: File, Settings, Control. The same tab
+  copies setup instructions to paste into the assistant. See "Control by an AI assistant" in the
+  user guide.
+
 ## 1.0.7
 
 This version comes with game agent 63. Uncle Farmer offers it when it starts: close your games

@@ -2,6 +2,7 @@
 
     python -m unclefarmer            the app
     python -m unclefarmer --strings  refresh lang/unclefarmer.pot, merge the .po files, compile them
+    UncleFarmer.exe --mcp             an MCP server on standard input and output (mcpserver.py)
     UncleFarmer.exe --self-test <report.json>
                                      check the copy without a window (selftest.py; CI runs it)
 """
@@ -18,6 +19,9 @@ if TYPE_CHECKING:
 
 
 def main() -> None:
+    if "--mcp" in sys.argv:             # an MCP server for other programs; the open window does the work
+        from . import mcpserver
+        sys.exit(mcpserver.main())
     if "--self-test" in sys.argv:
         from . import selftest
         i = sys.argv.index("--self-test")

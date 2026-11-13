@@ -5,6 +5,7 @@
     "UncleFarmer.pyw",
     "build_exe.py",
     "release.py",
+    "sync_upstream.py",
     "docs_html.py",
     "check.py",
     "benchmark.py",

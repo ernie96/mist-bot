@@ -92,7 +92,7 @@ def test_updater_tab_holds_every_update_setting(frame: Any) -> None:
     d = SetupDialog(frame, s)
     try:
         nb = tabs_of(d)
-        assert nb.GetPageText(nb.GetPageCount() - 1) == "Updater"
+        assert [nb.GetPageText(i) for i in range(nb.GetPageCount())][-2:] == ["Updater", "Control"]
         speech = labels(tab(d, "Speech and language"))
         assert not any("version" in t.lower() for t in speech)       # moved, not copied
         if updater.REPO:
@@ -103,6 +103,19 @@ def test_updater_tab_holds_every_update_setting(frame: Any) -> None:
             d.unskip.SetValue(True)
             d.apply()
             assert s["check_updates"] is True and s["update_channel"] == "master" and s["skip_version"] == ""
+    finally:
+        d.Destroy()
+
+
+def test_control_tab_is_off_by_default_and_saves_both_switches(frame: Any) -> None:
+    from unclefarmer.gui.setup import SetupDialog
+    s = dict(settings.load_app())
+    d = SetupDialog(frame, s)
+    try:
+        assert d.mcp.GetValue() is False and d.mcp_raw.GetValue() is False
+        d.mcp.SetValue(True)
+        d.apply()
+        assert s["mcp_control"] is True and s["mcp_raw_agent"] is False
     finally:
         d.Destroy()
 

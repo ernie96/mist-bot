@@ -198,20 +198,27 @@ class RunsMixin(FrameParts):
         if pid is None:
             self.say(_("No game with the agent is running."))
             return
+        why = self.errand_on(pid, text, title, walk)
+        if why:
+            self.say(why)
+
+    def errand_on(self, pid: int, text: str, title: str, walk: bool = False) -> str | None:
+        """A one-off job on a given game (run_errand's, and other programs' through gui/remote.py).
+        Returns why it didn't start, or None."""
         if pid in self.runs:
-            self.say(_("Stop the bot first."))
-            return
+            return _("Stop the bot first.")
         run = Run(text, title, pid, self.on_log, self.on_done, walk=walk, clock=self.clock)
         run.locate = self.locate
         run.last_seen = self.last_seen
         run.kind = "errand"
-        run.profile = self.selected_character()
+        run.profile = self.character(pid)
         run.character = settings.profile_name(run.profile) or None
         self.runs[pid] = run
         self.last_line[pid] = _("Starting")
         self.label_games()
         self.update_buttons()
         run.start()
+        return None
 
     def errand_for(self, pid: int, text: str, title: str, tell: Callable[[str], None] | None = None,
                    follows: str | None = None) -> str | None:

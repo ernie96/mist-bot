@@ -114,6 +114,9 @@ msgid ""
 "&Construction builds a day (the game allows 2; free, each pays contribution and arnebia):"
 msgstr ""
 
+msgid "&Copy setup instructions for an AI assistant"
+msgstr ""
+
 msgid "&Copy the address"
 msgstr ""
 
@@ -273,6 +276,9 @@ msgid "&Language:"
 msgstr ""
 
 msgid "&Let it shut down"
+msgstr ""
+
+msgid "&Let other programs on this computer control Uncle Farmer (MCP)"
 msgstr ""
 
 msgid "&Level:"
@@ -759,6 +765,10 @@ msgstr ""
 msgid "Already running."
 msgstr ""
 
+msgid ""
+"Also let them send &raw commands to the game agent (keys, typing, anything)"
+msgstr ""
+
 msgid "Also: {names}"
 msgstr ""
 
@@ -770,6 +780,10 @@ msgid ""
 msgstr ""
 
 msgid "Always leave this many in the &bag:"
+msgstr ""
+
+msgid ""
+"An AI assistant that supports MCP can then run the bot for you: start and stop plans, change settings, read the log and results, and run the Tools jobs. It acts as if you did it. Only programs of your own Windows account can connect. The instructions this button copies are what you paste into the assistant; they hold this copy's path. Raw agent commands let it press keys and type in the game, so leave that off unless you need it."
 msgstr ""
 
 msgid "An older Uncle Farmer agent is installed. Press Install to update it."
@@ -1073,6 +1087,9 @@ msgstr ""
 msgid "Contribution"
 msgstr ""
 
+msgid "Control"
+msgstr ""
+
 msgid "Cop&y all"
 msgstr ""
 
@@ -1080,6 +1097,10 @@ msgid "Copied"
 msgstr ""
 
 msgid "Copied {email}."
+msgstr ""
+
+msgid ""
+"Copied. Paste it into your AI assistant. Press Save here so the setting is kept."
 msgstr ""
 
 msgid "Copy &selection"
@@ -2509,6 +2530,9 @@ msgid "Other items"
 msgstr ""
 
 msgid "Other items picked up:"
+msgstr ""
+
+msgid "Other programs"
 msgstr ""
 
 msgid "Our blue potions"
