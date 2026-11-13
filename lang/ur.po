@@ -14,6 +14,9 @@ msgstr ""
 msgid " (estimated: it includes shards)"
 msgstr " (andaza: is mein shards shamil hain)"
 
+msgid " (locked here)"
+msgstr " (yahan band hai)"
+
 msgid " ({rate} an hour)"
 msgstr " (ek ghante mein {rate})"
 
@@ -82,9 +85,6 @@ msgstr "&Key tabdeel karein"
 
 msgid "&Character"
 msgstr "&Kirdaar"
-
-msgid "&Character settings"
-msgstr "&Kirdaar ki tarteeb"
 
 msgid "&Character:"
 msgstr "&Kirdaar:"
@@ -157,6 +157,9 @@ msgstr "&Equipment Enhancer"
 msgid "&Equipment to enhance:"
 msgstr "&Enhance karne ke liye equipment:"
 
+msgid "&Experience:"
+msgstr "&Experience:"
+
 msgid "&Feed the gang's breed beast at the Animal Shed"
 msgstr "Animal Shed par gang ke breed beast ko &khilao"
 
@@ -213,6 +216,11 @@ msgstr "&Rukhsati, har line mein ek:"
 
 msgid "&HP potion:"
 msgstr "&HP potion:"
+
+msgid ""
+"&Harvest the monsters we kill with the learned Draw Blood, Skinning or Cut Flesh"
+msgstr ""
+"Maare hue monsters ko seekhi hui Draw Blood, Skinning ya Cut Flesh se &harvest karein"
 
 msgid "&Heal skill below HP (%):"
 msgstr "HP se neeche &Shifa skill (%):"
@@ -279,6 +287,9 @@ msgstr "&Log"
 msgid "&Log:"
 msgstr "&Log:"
 
+msgid "&Lose experience:"
+msgstr "Experience &kam karein:"
+
 msgid "&Make Enhance Crystals from crystal shards when needed"
 msgstr "&Zaroorat par crystal shards se Enhance Crystals banayein"
 
@@ -300,6 +311,9 @@ msgstr "Game ki apni awaaz &band karein:"
 msgid "&Mute this game"
 msgstr "Is game ki awaaz &band karein"
 
+msgid "&Muted Sounds:"
+msgstr "&Khamosh Sounds:"
+
 msgid "&Names or ids (separated by commas):"
 msgstr "&Naam ya id (comma se alag):"
 
@@ -311,6 +325,9 @@ msgstr "&Nayi baat-cheet (naam ya id):"
 
 msgid "&New plan"
 msgstr "&Naya plan"
+
+msgid "&No, keep current language"
+msgstr "&Nahin, mojooda zaban rakhein"
 
 msgid "&Number of gems:"
 msgstr "&Gems ki tadaad:"
@@ -388,6 +405,9 @@ msgstr "&Jawab, har line mein ek:"
 msgid "&Rest before the next fight below HP (%):"
 msgstr "Agli ladai se pehle HP se neeche &aram (%):"
 
+msgid "&Restock supplies (game menu, Restock now)"
+msgstr "&Supplies dobara bharein (game menu, Restock now)"
+
 msgid "&Results"
 msgstr "&Nataij"
 
@@ -441,6 +461,12 @@ msgstr ""
 
 msgid "&Show the time after each message"
 msgstr "Har paigham ke baad &waqt dikhayein"
+
+msgid "&Sound Silencer"
+msgstr "&Sound Silencer"
+
+msgid "&Sounds:"
+msgstr "&Sounds:"
 
 msgid "&Speak"
 msgstr "&Sunayein"
@@ -513,6 +539,12 @@ msgstr "&Email likhein"
 
 msgid "&Write to the files in the logs folder:"
 msgstr "logs folder ki files mein &likhein:"
+
+msgid "&XP loser"
+msgstr "&XP loser"
+
+msgid "&Yes, switch language"
+msgstr "&Haan, zaban badlein"
 
 msgid "&Your places:"
 msgstr "&Aap ki jagahein:"
@@ -626,6 +658,9 @@ msgstr ""
 msgid "A script called {name} exists. Replace it?"
 msgstr "{name} naam ka script pehle se mojood hai. Isay badal dein?"
 
+msgid "A sound's mute setting must be on or off."
+msgstr "Sound ki khamoshi on ya off honi chahiye."
+
 msgid "A team dungeon: the game lets in groups of 2 to 3 players."
 msgstr "Team dungeon: game 2 se 3 khilariyon ke group andar aane deta hai."
 
@@ -689,6 +724,12 @@ msgstr "Kam az kam ek kheti ki jagah shamil karein."
 
 msgid "Add our &own gang"
 msgstr "&Apna gang shamil karein"
+
+msgid "Add selected to Saved Sounds"
+msgstr "Chuna hua sound Mahfooz Sounds mein shamil karein"
+
+msgid "Added to the draft. Choose Save to apply."
+msgstr "Draft mein shamil ho gaya. Lagane ke liye Mahfooz karein."
 
 msgid ""
 "Added {place} on {map}. Stand where you gather by hand: the bot stands on that very spot."
@@ -796,6 +837,9 @@ msgstr ""
 msgid "Automatic, by class"
 msgstr "Khud-bakhud, class ke mutabiq"
 
+msgid "Available sound IDs could not be read. Adding sounds is unavailable."
+msgstr "Dastiyab sound IDs nahi parhi ja sakin. Sounds shamil nahi kar sakte."
+
 msgid "Back where the run started"
 msgstr "Wahan wapas jahan run shuru hua tha"
 
@@ -881,6 +925,9 @@ msgstr "Key badlein"
 
 msgid "Change target mode"
 msgstr "Target mode tabdeel karein"
+
+msgid "Changes are a draft until Save."
+msgstr "Mahfooz tak tabdeeliyan draft hain."
 
 msgid "Channels"
 msgstr "Channels"
@@ -983,6 +1030,9 @@ msgstr "Dialog band karein"
 msgid "Close the game"
 msgstr "Game band karein"
 
+msgid "Close without saving"
+msgstr "Bina save kiye band karein"
+
 msgid "Closing every Mist World window for the update"
 msgstr "Update ke liye Mist World ki har window band ho rahi hai"
 
@@ -1026,6 +1076,12 @@ msgstr "Trusted players ke commands"
 msgid "Commands: {list}"
 msgstr "Hukm: {list}"
 
+msgid "Connected"
+msgstr "Jurr gaya"
+
+msgid "Connecting..."
+msgstr "Jurr raha hai..."
+
 msgid "Contact the &developer"
 msgstr "&Developer se raabta"
 
@@ -1046,6 +1102,19 @@ msgstr "{email} copy ho gaya."
 
 msgid "Copy &selection"
 msgstr "Chuna hua &copy karein"
+
+msgid "Corpses"
+msgstr "Laashein"
+
+msgid "Could not read known sound IDs: {error}"
+msgstr "Maloom sound IDs nahi parh sake: {error}"
+
+msgid "Could not read the saved sound list: {error}"
+msgstr "Mahfooz sound list nahi parh sake: {error}"
+
+msgid ""
+"Could not release sound listening; it is released when the connection closes."
+msgstr "Sound sunna band nahi ho saka; connection band hone par band ho jayega."
 
 msgid "Couldn't apply the settings: {err}"
 msgstr "Tarteeb lagayi nahi ja saki: {err}"
@@ -1123,6 +1192,9 @@ msgstr ""
 
 msgid "Crystals"
 msgstr "Crystals"
+
+msgid "Cut Flesh"
+msgstr "Cut Flesh (gosht)"
 
 msgid "D&onate"
 msgstr "C&handa dein"
@@ -1206,6 +1278,9 @@ msgstr "Dohri beep"
 msgid "Downloading Uncle Farmer {v}"
 msgstr "Uncle Farmer {v} download ho raha hai"
 
+msgid "Draw Blood"
+msgstr "Draw Blood (khoon)"
+
 msgid "Drink below (%):"
 msgstr "Kitne (%) se neeche peeyein:"
 
@@ -1242,6 +1317,9 @@ msgstr "Jin dungeons ka daakhla game ki files mein nahi dikhta: {names}"
 msgid "E&xit"
 msgstr "Bahar &niklein"
 
+msgid "E&xperience card to keep running while farming:"
+msgstr "Farming ke dauran chalne wala e&xperience card:"
+
 msgid "E&xport"
 msgstr "E&xport karein"
 
@@ -1250,6 +1328,9 @@ msgstr "Character settings e&xport karein"
 
 msgid "E&xport plan"
 msgstr "Mansooba e&xport karein"
+
+msgid "Each sound needs an ID, a name, and a mute setting."
+msgstr "Har sound ko ID, naam aur khamoshi ki tarteeb chahiye."
 
 msgid "Earnings so far: {n} arnebia (picked up and sold)"
 msgstr "Ab tak ki kamai: {n} arnebia (uthaye aur beche gaye)"
@@ -1298,6 +1379,12 @@ msgstr "Enhance Crystals"
 
 msgid "Enter a name for the plan."
 msgstr "Mansoobe ka naam likhein."
+
+msgid "Enter a sound ID between 1 and 99999."
+msgstr "1 se 99999 tak sound ID likhein."
+
+msgid "Enter sound IDs, ranges, all, or off."
+msgstr "Sound IDs, ranges, all, ya off likhein."
 
 msgid "Enter the daily stop time as HH:MM, for example 04:50."
 msgstr "Roz rukne ka waqt HH:MM mein likhein, misal 04:50."
@@ -1363,6 +1450,9 @@ msgstr ""
 msgid "Experience"
 msgstr "Tajurba"
 
+msgid "Experience cards"
+msgstr "Experience cards"
+
 msgid "Expert"
 msgstr "Expert"
 
@@ -1417,6 +1507,11 @@ msgstr "Larai:"
 
 msgid "Fill &up to:"
 msgstr "&Yahan tak bharein:"
+
+msgid ""
+"Fills enabled supplies to their configured targets, even above their automatic refill thresholds."
+msgstr ""
+"Chalu supplies ko un ki muqarrar miktar tak bharta hai, chahe un ki khudkar refill ki had abhi na aayi ho."
 
 msgid "Fishing"
 msgstr "Fishing (machhli)"
@@ -1688,6 +1783,12 @@ msgstr "Ghar, hearthstone ke sath"
 msgid "Home."
 msgstr "Ghar."
 
+msgid "Hook unavailable: {reason}"
+msgstr "Hook dastiyab nahi: {reason}"
+
+msgid "How it works:"
+msgstr "Kaise kaam karta hai:"
+
 msgid "How the game works"
 msgstr "Game kaise kaam karti hai"
 
@@ -1760,6 +1861,9 @@ msgid ""
 msgstr ""
 "main {map} par {x}, {y} par hoon lekin aap ko nahi dekh sakta. Game mein E dabao, Shift+C se copy karo aur bhejo: come <jo aap ne copy kiya>"
 
+msgid "ID {id}, X {x}, Y {y}: {state}"
+msgstr "ID {id}, X {x}, Y {y}: {state}"
+
 msgid "Ice prince"
 msgstr "Ice prince"
 
@@ -1775,9 +1879,6 @@ msgstr ""
 
 msgid "Import character settings"
 msgstr "Character settings import karein"
-
-msgid "Import or export character settings"
-msgstr "Kirdaar ki tarteeb import ya export karein"
 
 msgid "Import or export plans"
 msgstr "Mansoobe import ya export karein"
@@ -1831,6 +1932,9 @@ msgstr ""
 
 msgid "International"
 msgstr "International"
+
+msgid "Invalid sound reply from the game agent."
+msgstr "Game agent ka sound jawab durust nahi."
 
 msgid "It also stops by itself:"
 msgstr "Ye khud bhi ruk jata hai:"
@@ -1945,6 +2049,14 @@ msgstr "Market par &qeemat ki hadd"
 msgid "Limits"
 msgstr "Haddein"
 
+msgid ""
+"Listen for game sound requests, select an ID, then add it to Saved Sounds. This tab does not change muting. Save changes on the Saved Sounds tab."
+msgstr ""
+"Game ki sound darkhwastein dekhein, ID chunein aur Mahfooz Sounds mein shamil karein. Yeh tab khamoshi nahi badalta. Mahfooz Sounds tab mein tabdeeliyan mahfooz karein."
+
+msgid "Listen for sounds"
+msgstr "Sounds ki nigrani karein"
+
 msgid "Location:"
 msgstr "Jagah:"
 
@@ -1976,6 +2088,12 @@ msgstr "Naya version dhoond raha hoon"
 
 msgid "Looking for your application."
 msgstr "Aap ki application dhoond raha hoon."
+
+msgid "Lose e&xperience (as set in Tools, XP loser)"
+msgstr "E&xperience kam karein (jaisa Tools, XP loser mein hai)"
+
+msgid "Lose experience (as set in Tools, XP lose&r)"
+msgstr "Experience kam karein (jaisa Tools, XP lose&r mein hai)"
 
 msgid "Low HP"
 msgstr "Kam HP"
@@ -2108,6 +2226,11 @@ msgstr "Hum par hamla karne wale monsters:"
 msgid "Moral Mode"
 msgstr "Moral Mode"
 
+msgid ""
+"Morality is {n} (a black name): a death can cost worn gear, so the XP loser won't run"
+msgstr ""
+"Morality {n} hai (black name): maut par pehna hua gear ja sakta hai, is liye XP loser nahi chalega"
+
 msgid "Most to pay per shard (arnebia):"
 msgstr "Har shard ke liye zyada se zyada (arnebia):"
 
@@ -2119,6 +2242,12 @@ msgstr "&Upar le jayein"
 
 msgid "Move do&wn"
 msgstr "&Neeche le jayein"
+
+msgid "Move to Mute List"
+msgstr "Mute List mein bhejein"
+
+msgid "Move to Sounds List"
+msgstr "Sounds List mein bhejein"
 
 msgid "Move to kee&p"
 msgstr "Rakh&ne mein le jayein"
@@ -2350,6 +2479,9 @@ msgstr "Ittila"
 msgid "Notices"
 msgstr "Ittilaat"
 
+msgid "Now:"
+msgstr "Abhi:"
+
 msgid "Nowhere to get them from: it makes what the bag allows."
 msgstr "Kahan se laayein koi jagah nahi: jo basta ijazat de wohi banata hai."
 
@@ -2493,6 +2625,11 @@ msgstr "Jawabi hamle ke sath pur-aman mode"
 
 msgid "Patrol loops: {loops}"
 msgstr "Patrol loops: {loops}"
+
+msgid ""
+"Pause the card while a&way from the monsters: town trips, the walk back after a death, the end of farming (each pause costs a minute of the card; never in a dungeon)"
+msgstr ""
+"Monsters se d&oor hon to card rok dein: shehar ke chakkar, maut ke baad wapsi, farming ka khatma (har rokne par card ka ek minute jata hai; dungeon mein kabhi nahi)"
 
 msgid "Paused"
 msgstr "Waqfa"
@@ -2678,6 +2815,9 @@ msgstr "Naye paigham padh kar sunayein"
 msgid "Read rage, marks or combos in fights every (seconds):"
 msgstr "Ladaai mein rage, marks ya combos har (second) par padhein:"
 
+msgid "Reading available sound IDs..."
+msgstr "Dastiyab sound IDs parh rahe hain..."
+
 msgid "Reading channels out"
 msgstr "Channels padh kar sunana"
 
@@ -2686,6 +2826,9 @@ msgstr "Game padhna"
 
 msgid "Ready"
 msgstr "Tayyar"
+
+msgid "Recent sound &requests (latest 200):"
+msgstr "Haliya sound &darkhwastein (aakhri 200):"
 
 msgid "Record &voice"
 msgstr "&voice record karein"
@@ -2707,6 +2850,9 @@ msgstr "Agent dobara install karein"
 msgid "Release &channel:"
 msgstr "Release ka &channel:"
 
+msgid "Remove"
+msgstr "Hata dein"
+
 msgid ""
 "Remove the agent from the game? The bot won't work until you install it again."
 msgstr ""
@@ -2714,6 +2860,9 @@ msgstr ""
 
 msgid "Rename"
 msgstr "Naam badlein"
+
+msgid "Rename sound"
+msgstr "Sound ka naam badlein"
 
 msgid "Repair &gear with toolboxes from the bag"
 msgstr "Basta ke toolboxes se &gear repair karein"
@@ -2738,6 +2887,37 @@ msgstr "HP (%) tak &aaram karein:"
 
 msgid "Restart Uncle Farmer to switch the language."
 msgstr "Zaban badalne ke liye Uncle Farmer restart karein."
+
+msgid "Restoc&k supplies (game menu, Restock now)"
+msgstr "Supplies dobara &bharein (game menu, Restock now)"
+
+msgid "Restock &now"
+msgstr "Abhi restock &karein"
+
+msgid "Restock now"
+msgstr "Abhi restock karein"
+
+msgid "Restock now: a restock is already running."
+msgstr "Abhi restock karein: restock ka kaam pehle se chal raha hai."
+
+msgid "Restock now: no supplies could be restocked."
+msgstr "Abhi restock karein: supplies dobara nahin bhari ja sakin."
+
+msgid ""
+"Restock now: no supply rules are configured in Character, Bag and supplies."
+msgstr ""
+"Abhi restock karein: Character, Bag aur supplies mein koi supply rule tay nahin kiya gaya."
+
+msgid ""
+"Restock now: nothing to restock; no supplies need purchasing or withdrawal."
+msgstr ""
+"Abhi restock karein: restock ki zarurat nahin; koi supply khareedne ya storehouse se nikalne ki zarurat nahin."
+
+msgid "Restock now: supplies are at their configured targets."
+msgstr "Abhi restock karein: supplies apni muqarrar miktar par hain."
+
+msgid "Restocking supplies"
+msgstr "Supplies dobara bhar rahe hain"
 
 msgid "Results"
 msgstr "Nataij"
@@ -2826,6 +3006,9 @@ msgstr "Script ki tabdeeliyan mahfooz karein?"
 
 msgid "Saved. It's in the Plans tab as a script."
 msgstr "Mahfooz ho gaya. Ye Plans tab mein script ki tarah mojood hai."
+
+msgid "Saving and applying sound settings..."
+msgstr "Sound settings save aur lagu ho rahi hain..."
 
 msgid "Scan complete."
 msgstr "Scan mukammal."
@@ -3035,6 +3218,9 @@ msgstr ""
 msgid "Skills used: {casts} casts, {dmg} damage in all"
 msgstr "Istemal hui skills: {casts} casts, kul {dmg} damage"
 
+msgid "Skinning"
+msgstr "Skinning (khaal)"
+
 msgid "Snow mountain prince"
 msgstr "Snow mountain prince"
 
@@ -3055,6 +3241,60 @@ msgstr "Snowflake princess"
 
 msgid "Sold:"
 msgstr "Beche gaye:"
+
+msgid "Some sound requests were missed because the event buffer filled."
+msgstr "Event buffer bharne se kuch sound darkhwastein reh gayin."
+
+msgid "Sound &ID:"
+msgstr "Sound &ID:"
+
+msgid "Sound ID {id} is already in the list."
+msgstr "Sound ID {id} list mein pehle se hai."
+
+msgid "Sound IDs must be between 1 and 99999; ranges must go upwards."
+msgstr "Sound IDs 1 se 99999 hon; ranges barhti tarteeb mein hon."
+
+msgid "Sound IDs must be whole numbers between 1 and 99999."
+msgstr "Sound IDs 1 se 99999 tak poore adad hon."
+
+msgid "Sound Silencer - {name}"
+msgstr "Sound Silencer - {name}"
+
+msgid "Sound controls are unavailable."
+msgstr "Sound controls dastiyab nahi."
+
+msgid ""
+"Sound controls require an updated game agent. Install it and restart the game."
+msgstr ""
+"Sound controls ke liye naya game agent install karke game dobara chalayein."
+
+msgid "Sound controls: {error}"
+msgstr "Sound controls: {error}"
+
+msgid ""
+"Sound events were lost because the observer buffer filled. Start the wait again."
+msgstr ""
+"Observer buffer bharne se sound events kho gaye. Intezar dobara shuru karein."
+
+msgid "Sound name:"
+msgstr "Sound ka naam:"
+
+msgid "Sound names must be at most 100 characters without control characters."
+msgstr "Sound naam 100 haroof tak hon aur control haroof na hon."
+
+msgid "Sound observer is unavailable: {reason}"
+msgstr "Sound observer dastiyab nahi: {reason}"
+
+msgid "Sound settings saved and mute rules applied."
+msgstr "Sound settings save aur khamoshi ke qawaid lagu ho gaye."
+
+msgid ""
+"Sound settings were saved, but active muting could not be confirmed: {error}"
+msgstr ""
+"Sound settings save ho gayin, lekin khamoshi lagu hone ki tasdeeq nahi hui: {error}"
+
+msgid "Sound wait timeout cannot be negative."
+msgstr "Sound ke intezar ka waqt manfi nahi ho sakta."
 
 msgid "South edge (y):"
 msgstr "Junoobi kinara (y):"
@@ -3126,6 +3366,9 @@ msgstr "&Rukne ka waqt (HH:MM, is computer ki ghadi):"
 msgid "Stop &every bot"
 msgstr "Har &bot rokein"
 
+msgid "Stop after at most this many &deaths:"
+msgstr "Zyada se zyada itni &maut ke baad rukein:"
+
 msgid "Stop after this many &stuck walks in a row:"
 msgstr "Lagataar itni baar &phansi walks ke baad rukein:"
 
@@ -3155,6 +3398,9 @@ msgstr "Pehle bot ko rokein. Chalte waqt woh keyboard istemal karta hai."
 
 msgid "Stop the plan"
 msgstr "Mansooba rok dein"
+
+msgid "Stop when &Vitality is down to (0: until it runs out):"
+msgstr "Jab &Vitality itni reh jaye to rukein (0: khatam hone tak):"
 
 msgid "Stop when HP stays &low"
 msgstr "Jab HP &kam reh jaye to rukein"
@@ -3260,6 +3506,12 @@ msgstr "Yeh jagah pehle se aap ki list mein hai."
 msgid "That schedule is gone"
 msgstr "Woh schedule ab nahi raha"
 
+msgid "That sound ID is already in the lists."
+msgstr "Yeh sound ID lists mein pehle se hai."
+
+msgid "That sound ID is not in this game's available sound files."
+msgstr "Yeh sound ID is game ki dastiyab sound files mein nahi hai."
+
 msgid "That takes about {k} more {shard}{cost}, plus the craftsman's fees."
 msgstr ""
 "Is mein takreeban {k} mazeed {shard}{cost} lagega, aur craftsman ki fees alag."
@@ -3314,6 +3566,11 @@ msgstr "Bot waqt par nahi ruka, is liye aap ke saath nahi chal raha."
 
 msgid "The bot drinks it as soon as that much {what} is missing."
 msgstr "jaise hi itna {what} kam hota hai, bot ise pee leta hai."
+
+msgid ""
+"The bot finds a guard (in sight, where one was seen before, or in the nearest town), switches the PK mode to all mode, hits the guard once and lets it kill the character: no potions, no heals, no fighting back. It respawns in the city and goes again until the next level needs at least that much experience. The pet is put away first, and the PK mode is put back at the end. Deaths wear your gear like any death; a black-name character (Morality -1000 or lower) can lose worn gear when it dies, so the XP loser won't run for one."
+msgstr ""
+"Bot ek guard dhoondta hai (nazar mein, jahan pehle dekha gaya, ya qareebi shehar mein), PK mode all mode par karta hai, guard ko ek baar maarta hai aur character ko marne deta hai: na potion, na heal, na jawabi larai. Woh shehar mein dobara zinda hota hai aur tab tak dobara jata hai jab tak agle level ko kam az kam itni experience na chahiye. Pehle pet wapas rakha jata hai, aur aakhir mein PK mode wapas lagaya jata hai. Har maut ki tarah gear ghista hai; black-name character (Morality -1000 ya kam) marne par pehna hua gear kho sakta hai, is liye XP loser us ke liye nahi chalega."
 
 msgid "The bot isn't running."
 msgstr "Bot nahi chal raha."
@@ -3425,6 +3682,9 @@ msgid ""
 msgstr ""
 "Pichhle scan mein jama karne ki koi skill nahi mili. Gang ke Guru Elder ya Master Pepper se Fishing, Mining ya Collect Herbs (in mein se ek) seekhein, phir dobara scan karein."
 
+msgid "The listener is busy or disconnected. Try again."
+msgstr "Listener masroof hai ya connection toot gaya. Dobara koshish karein."
+
 msgid "The nearest city's"
 msgstr "Sab se qareebi shehar ka"
 
@@ -3467,6 +3727,9 @@ msgstr "Script theek padhi ja rahi hai."
 
 msgid "The script was saved, but the old file couldn't be removed: {err}"
 msgstr "Script mahfooz ho gayi, lekin purani file hataayi nahi ja saki: {err}"
+
+msgid "The sound list must be a list of sound entries."
+msgstr "Sound list mein sound entries honi chahiye."
 
 msgid ""
 "The storage list is empty. Choose what to move to the storehouse in Character, Bag and supplies first."
@@ -3522,6 +3785,9 @@ msgstr "Phir (minutes) tak &khamosh rahein:"
 
 msgid "There's no plan to run."
 msgstr "Chalane ke liye koi plan nahi."
+
+msgid "These sound IDs are not available in this game: {ids}"
+msgstr "Yeh sound IDs is game mein dastiyab nahi: {ids}"
 
 msgid "They come from {source}, a bagful at a time."
 msgstr "Ye {source} se aate hain, ek waqt mein poora basta."
@@ -3602,9 +3868,9 @@ msgid "Tick the monsters to fight:"
 msgstr "Ladne ke liye monsters par tick karein:"
 
 msgid ""
-"Ticked jobs run one after the other in this order, each exactly as from the Tools menu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
+"Ticked jobs run one after the other in this order, each exactly as from the game's Tools submenu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
 msgstr ""
-"Tick kiye gaye kaam isi tarteeb se ek ke baad ek chalte hain, har ek bilkul Tools menu ki tarah. Dono lists mein tick kiya gaya kaam farming se pehle ek baar aur baad mein ek baar chalta hai. Jo kaam poora na ho sake woh bataya jata hai aur agla phir bhi chalta hai; Stop sab rok deta hai. Store items bag manager ki storage list ko usi waqt jaisi hai waise istemal karta hai."
+"Tick kiye gaye kaam isi tarteeb se ek ke baad ek chalte hain, har ek bilkul game ke Tools submenu ki tarah. Dono lists mein tick kiya gaya kaam farming se pehle ek baar aur baad mein ek baar chalta hai. Jo kaam poora na ho sake woh bataya jata hai aur agla phir bhi chalta hai; Stop sab rok deta hai. Store items bag manager ki storage list ko usi waqt jaisi hai waise istemal karta hai."
 
 msgid "Time (HH:MM):"
 msgstr "Waqt (HH:MM):"
@@ -3691,6 +3957,11 @@ msgstr "&On hai"
 
 msgid "Type a message first."
 msgstr "Pehle paigham likhein."
+
+msgid ""
+"Type how much experience: the most the next level should need, or how much to lose."
+msgstr ""
+"Kitni experience likhein: agle level ko kam az kam kitni chahiye, ya kitni kam karni hai."
 
 msgid "Type the name of the gang whose craftsmen to use."
 msgstr "Us gang ka naam likhein jiske karigar istemal karne hain."
@@ -3847,6 +4118,9 @@ msgstr "&Maujooda map istemal karein"
 msgid "Use the &default ({time})"
 msgstr "&Default ({time}) istemal karein"
 
+msgid "Use the class's teleport &skill (Mage, Elf)"
+msgstr "Class ki teleport &skill istemal karein (Mage, Elf)"
+
 msgid "Use the day's free &rebirths on one pet"
 msgstr "Din ke muft &rebirth ek pet par istemal karein"
 
@@ -3867,6 +4141,9 @@ msgid ""
 "Uses the hearthstone; if it can't, ends on the nearest map without monsters."
 msgstr ""
 "Hearthstone istemal karta hai; agar na ho sake to sab se qareebi monster-free map par khatam hota hai."
+
+msgid "Vitality is down to {n}"
+msgstr "Vitality {n} reh gayi"
 
 msgid "Vitality is down to {n}, where you set gathering outside to stop"
 msgstr ""
@@ -4030,12 +4307,26 @@ msgstr "Sab se bura mila hit: {hit}"
 msgid "Worst normal hit received: {hit}"
 msgstr "Sab se bura normal hit mila: {hit}"
 
+msgid "Would you like to switch to {language}?"
+msgstr "Kya aap {language} istemal karna chahein ge?"
+
 msgid "Write the character's name: the game it is logged in to runs it."
 msgstr ""
 "Kirdaar ka naam likhein: jis game mein woh logged in hai wahi ise chalata hai."
 
 msgid "X:"
 msgstr "X:"
+
+msgid "XP loser"
+msgstr "XP loser"
+
+msgid ""
+"XP loser: the next level needs {xp} experience; dying to guards until it needs {goal}"
+msgstr ""
+"XP loser: agle level ko {xp} experience chahiye; guards se mar rahe hain jab tak {goal} na chahiye"
+
+msgid "XP loser: {end} ({n} deaths)"
+msgstr "XP loser: {end} ({n} maut)"
 
 msgid "Y:"
 msgstr "Y:"
@@ -4053,6 +4344,11 @@ msgid ""
 "You have the development build {v}. The newest stable release, {stable}, is older; the next stable release newer than your build will be offered."
 msgstr ""
 "Aap ke paas development build {v} hai. Sab se naya stable release, {stable}, is se purana hai; aap ki build se naya agla stable release pesh kiya jayega."
+
+msgid ""
+"Your system language is supported. Would you like to use {language} in Uncle Farmer?"
+msgstr ""
+"Aap ke system ki zaban dastiyab hai. Kya aap Uncle Farmer mein {language} istemal karna chahein ge?"
 
 msgid "a chat line"
 msgstr "ek chat line"
@@ -4138,6 +4434,9 @@ msgstr "{npc} ke paas pohanch gaye"
 msgid "arrived on {map}"
 msgstr "{map} par pohanch gaye"
 
+msgid "arrived on {map} at {x},{y}"
+msgstr "{map} par {x},{y} par pohanch gaye"
+
 msgid "arrived on {map} at {x},{y} - planning the way on from here"
 msgstr ""
 "{map} par {x},{y} par pohanch gaye - yahan se aage ka rasta bana rahe hain"
@@ -4171,6 +4470,9 @@ msgstr "hamla {how}"
 msgid "avoiding elites"
 msgstr "elites se bachte hue"
 
+msgid "back on the farm"
+msgstr "farm par wapas"
+
 msgid "back to {map}"
 msgstr "{map} par wapas"
 
@@ -4179,6 +4481,9 @@ msgstr "{why} ke baad {map} par wapas"
 
 msgid "bad pattern: {why}"
 msgstr "ghalat pattern: {why}"
+
+msgid "bag capacity allows {n} more {item}"
+msgstr "bag mein {n} mazeed {item} ki jagah hai"
 
 msgid "bag items and targets go by keys again: {why}"
 msgstr "baste ki cheezein aur target ab phir keys se: {why}"
@@ -4277,6 +4582,17 @@ msgid ""
 msgstr ""
 "{pet} ko {skill} se heal nahi kar sakte: {why} - tab tak pet potions, aur heal dobara aazmaya jayega{pet} ko {skill} se heal nahi kar sakte: {why} - tab tak pet potions, aur heal dobara aazmaya jayega"
 
+msgid "can't read the experience card from the character sheet yet"
+msgstr "character sheet se experience card abhi nahi parha ja sakta"
+
+msgid ""
+"can't read the experience from the character sheet - restart the game so the new agent loads"
+msgstr ""
+"character sheet se experience nahi parhi ja sakti - game dobara shuru karein taake naya agent load ho"
+
+msgid "can't read the experience from the character sheet any more"
+msgstr "character sheet se experience ab nahi parhi ja sakti"
+
 msgid ""
 "can't read the game's bag cursor - restart the game so the new agent loads"
 msgstr ""
@@ -4286,6 +4602,11 @@ msgid "can't read the game's modes ({why}) - not changing them"
 msgstr ""
 "game ke modes nahi parhe ja sakte ({why}) - unhein tabdeel nahi kar rahe"
 
+msgid ""
+"can't read the profession skills ({why}) - corpse harvesting tries again in 5 minutes"
+msgstr ""
+"profession skills nahi parhi ja sakin ({why}) - corpse harvesting 5 minute baad dobara koshish karegi"
+
 msgid "can't read this expression: {expr}"
 msgstr "yeh expression parh nahi sakte: {expr}"
 
@@ -4293,6 +4614,9 @@ msgid ""
 "can't see this character's quick phrases in the game folder ({folder}) - leaving them all alone"
 msgstr ""
 "game folder ({folder}) mein is character ke quick phrases nazar nahi aa rahe - unhein bilkul nahi chheda"
+
+msgid "can't select the guard: {why}"
+msgstr "guard chuna nahi ja saka: {why}"
 
 msgid "can't switch the skill page yet ({why}); using the page that is up"
 msgstr ""
@@ -4304,8 +4628,16 @@ msgstr "team ka navigation target mansookh karein"
 msgid "cast {n} times"
 msgstr "{n} baar cast hui"
 
+msgid "casting {skill} to {place}"
+msgstr "{place} ke liye {skill} chala rahe hain"
+
 msgid "charge in"
 msgstr "daur kar andar"
+
+msgid ""
+"check: the next level needs {xp} experience, goal {goal}; {n} guards in sight here, {k} remembered spots; PK mode {pk}{locked}"
+msgstr ""
+"jaanch: agle level ko {xp} experience chahiye, maqsad {goal}; yahan nazar mein {n} guards, {k} yaad ki hui jagahein; PK mode {pk}{locked}"
 
 msgid "choose what? write: choose Tulip City"
 msgstr "kya choose karna hai? likhein: choose Tulip City"
@@ -4346,8 +4678,29 @@ msgstr ""
 msgid "cooldown {n} s"
 msgstr "cooldown {n} s"
 
+msgid "corpse harvesting"
+msgstr "corpse harvesting"
+
+msgid ""
+"corpse harvesting is on, but this character has no Draw Blood, Skinning or Cut Flesh - learn one (Learn Profession Skill) from the gang's Guru Elder or Master Pepper"
+msgstr ""
+"corpse harvesting on hai, lekin is character ke paas Draw Blood, Skinning ya Cut Flesh nahi - gang ke Guru Elder ya Master Pepper se ek seekhein (Learn Profession Skill)"
+
+msgid ""
+"corpse harvesting needs the game's agent {need} or newer (this game has {have}) - restart the game so the new agent loads"
+msgstr ""
+"corpse harvesting ke liye game ka agent {need} ya naya chahiye (is game mein {have} hai) - game dobara shuru karein taake naya agent load ho"
+
+msgid ""
+"corpse harvesting needs the game's agent {need} or newer - restart the game so the new agent loads"
+msgstr ""
+"corpse harvesting ke liye game ka agent {need} ya naya chahiye - game dobara shuru karein taake naya agent load ho"
+
 msgid "couldn't add the {shard}"
 msgstr "{shard} shamil nahi kar sake"
+
+msgid "couldn't cast {skill} ({why}) - trying again in 5 minutes"
+msgstr "{skill} cast nahi ho saki ({why}) - 5 minute baad dobara koshish"
 
 msgid "couldn't finish at the game's end: {err}"
 msgstr "game ke end par mukammal nahi kar sake: {err}"
@@ -4405,6 +4758,9 @@ msgstr "menu entry tak nahi ja sake"
 msgid "couldn't open the Gem Craftsman's shard synthesis"
 msgstr "Gem Craftsman ki shard synthesis khol nahi sake"
 
+msgid "couldn't put the PK mode back to {mode} - please set it by hand"
+msgstr "PK mode wapas {mode} par nahi ho saka - meharbani kar ke khud lagayein"
+
 msgid "couldn't put things on empty keys: {err}"
 msgstr "khali keys par cheezein nahi rakh sake: {err}"
 
@@ -4428,6 +4784,9 @@ msgstr "skills panel mein {skill} tak nahi pohanch sake"
 
 msgid "couldn't respawn - please do it by hand"
 msgstr "respawn nahi ho saka - baraye meharbani khud karein"
+
+msgid "couldn't restock {item}: {why}"
+msgstr "{item} restock nahin ho saka: {why}"
 
 msgid "couldn't save the shard prices: {err}"
 msgstr "shards ki qeematein mahfooz nahi ho sakin: {err}"
@@ -4477,6 +4836,10 @@ msgstr "attack ka woh page nahi khol sake jis par {skill} hai"
 msgid "couldn't type into the game: {why}"
 msgstr "game mein type nahi kar sake: {why}"
 
+msgid "couldn't {what} the experience card: {why} - trying again in a minute"
+msgstr ""
+"experience card {what} nahi ho saka: {why} - ek minute baad dobara koshish"
+
 msgid "critical"
 msgstr "critical"
 
@@ -4502,12 +4865,18 @@ msgstr "{map} par mar gaye ({n} ab tak)"
 msgid "died {n} times - stopping; this place may be too hard"
 msgstr "{n} dafa mar gaye - rok rahe hain; yeh jagah shayad bohot mushkil hai"
 
+msgid "died {n} times: the next level needs {xp} experience now (goal {goal})"
+msgstr "{n} baar mare: agle level ko ab {xp} experience chahiye (maqsad {goal})"
+
 msgid "done here - going to {map}, where no monsters spawn"
 msgstr ""
 "yahan kaam khatam - {map} ja rahe hain, jahan koi monster paida nahi hota"
 
 msgid "done: made {n} {gem}; {have} in the bag"
 msgstr "ho gaya: {n} {gem} banaye; basta mein {have}"
+
+msgid "done: the next level needs at least {goal} experience"
+msgstr "ho gaya: agle level ko kam az kam {goal} experience chahiye"
 
 msgid "done: {what}"
 msgstr "ho gaya: {what}"
@@ -4533,6 +4902,9 @@ msgstr "drop: aaj kitna drop time baqi hai."
 msgid "dungeon - you leave by its chest, not on foot"
 msgstr "dungeon - yahan se aap is ke chest ke zariye nikalte hain, paidal nahi"
 
+msgid "dying costs no more experience on this level - stopped"
+msgstr "is level par marne se ab experience kam nahi hoti - ruk gaye"
+
 msgid "elites is fight or avoid"
 msgstr "elites fight ya avoid hai"
 
@@ -4553,11 +4925,28 @@ msgstr "har roz {time} baje"
 msgid "everything"
 msgstr "sab kuch"
 
+msgid "experience card paused ({card}): {why}"
+msgstr "experience card roka gaya ({card}): {why}"
+
+msgid "experience card running again ({card}): {why}"
+msgstr "experience card phir chal raha hai ({card}): {why}"
+
+msgid "experience card started: {card} ({left} more in the bag; {now})"
+msgstr "experience card shuru: {card} (bag mein {left} aur; {now})"
+
+msgid ""
+"experience cards need the game's agent {need} or newer (this game has {have}) - restart the game so the new agent loads"
+msgstr ""
+"experience cards ko game ka agent {need} ya naya chahiye (is game mein {have} hai) - game dobara shuru karein taake naya agent load ho"
+
 msgid "farm doesn't know '{opt}'. It takes: {opts}"
 msgstr "farm '{opt}' nahi jaanta. Ye leta hai: {opts}"
 
 msgid "farmed {time}"
 msgstr "{time} farming ki"
+
+msgid "farming is over"
+msgstr "farming khatam"
 
 msgid "farming is over - closing the game"
 msgstr "kheti khatam - game band kar rahe hain"
@@ -4691,6 +5080,12 @@ msgstr "pet ke baghair dungeons mein ja raha hai (Tools, Dungeons)"
 
 msgid "going on"
 msgstr "jari hai"
+
+msgid "going to where a guard was seen: {map}"
+msgstr "jahan guard dekha gaya wahan ja rahe hain: {map}"
+
+msgid "going to {map}"
+msgstr "{map} ja rahe hain"
 
 msgid "going to {map} to find {name}"
 msgstr "{name} ko dhoondne {map} ja rahe hain"
@@ -4843,6 +5238,9 @@ msgstr ""
 msgid "leaving {map} for {dest} to get unstuck"
 msgstr "atak se nikalne ke liye {map} chhod kar {dest} ja rahe hain"
 
+msgid "leaving {skill} out of this trip and planning again"
+msgstr "is safar se {skill} ko chhor kar dobara mansooba bana rahe hain"
+
 msgid "left alone for now (took no damage, couldn't be reached or selected)"
 msgstr "abhi ke liye chhora (damage nahi hua, pohanch ya select nahi ho saka)"
 
@@ -4905,11 +5303,20 @@ msgstr "pehle kisi kirdaar mein log in karein"
 msgid "looking after {pet}: HP {hp}/{max}"
 msgstr "{pet} ka khayal: HP {hp}/{max}"
 
+msgid "looking for a guard on {map}"
+msgstr "{map} par guard dhoond rahe hain"
+
 msgid "looking for the gang {gang} at the Gang Entrance"
 msgstr "Gang Entrance par gang {gang} dhoond rahe hain"
 
 msgid "looking for the {name} circle at the {n} entrances marked on {map}"
 msgstr "{map} par nishan zada {n} entrances par {name} circle dhoond rahe hain"
+
+msgid "lose this much experience"
+msgstr "itni experience kam karein"
+
+msgid "losing experience"
+msgstr "experience kam karna"
 
 msgid "lost sight of {name}"
 msgstr "{name} nazar se ojhal ho gaya"
@@ -4974,6 +5381,9 @@ msgstr "movement"
 msgid "mute: the game stops talking (only my game)."
 msgstr "mute: game bolna band kar deta hai (sirf mera game)."
 
+msgid "muted request"
+msgstr "khamosh darkhwast"
+
 msgid "never again"
 msgstr "dobara kabhi nahi"
 
@@ -5003,6 +5413,10 @@ msgstr "is baar arnebia share nahi hua: {why}"
 msgid "no arnebia to buy {item}"
 msgstr "{item} khareedne ke liye arnebia nahi"
 
+msgid "no attack key in Character settings - the guard can't be hit"
+msgstr ""
+"Character settings mein koi attack key nahi - guard ko maara nahi ja sakta"
+
 msgid "no cave lets in level {n} yet (the lowest needs level {low})"
 msgstr ""
 "abhi koi ghaar level {n} ko andar nahi jaane deta (sab se neeche wale ko level {low} chahiye)abhi koi ghaar level {n} ko andar nahi jaane deta (sab se neeche wale ko level {low} chahiye)"
@@ -5027,6 +5441,14 @@ msgstr ""
 
 msgid "no free rebirth left today"
 msgstr "aaj koi muft rebirth baqi nahi"
+
+msgid ""
+"no guard found here, at the spots where guards were seen, or in the nearest town"
+msgstr ""
+"koi guard nahi mila - na yahan, na un jagahon par jahan guards dekhe gaye, na qareebi shehar mein"
+
+msgid "no guard here - going to the nearest town, {map}"
+msgstr "yahan koi guard nahi - qareebi shehar ja rahe hain, {map}"
 
 msgid "no known entrance for the dungeon {name}"
 msgstr "dungeon {name} ka koi maloom entrance nahi"
@@ -5112,8 +5534,15 @@ msgstr ""
 msgid "no way from {a} to {b} on {map}"
 msgstr "{map} par {a} se {b} tak koi rasta nahi"
 
+msgid "no way out of the safe zone on {map} to cast {skill}"
+msgstr ""
+"{map} par {skill} chalane ke liye safe zone se bahar nikalne ka koi rasta nahi"
+
 msgid "no way to walk there"
 msgstr "wahan paidal jaane ka koi rasta nahi"
+
+msgid "no {card} in the bag - farming on without an experience card"
+msgstr "bag mein koi {card} nahi - experience card ke baghair farming jaari"
 
 msgid "no {item} in the storehouse"
 msgstr "storehouse mein koi {item} nahi"
@@ -5154,6 +5583,10 @@ msgid ""
 "not choosing in the menu directly ({why}) - moving to the entry with the keys"
 msgstr ""
 "menu mein seedha nahi chun rahe ({why}) - keys se entry tak ja rahe hain"
+
+msgid "not enough MP for {skill} ({mp} of {top}) - going another way"
+msgstr ""
+"{skill} ke liye MP kafi nahi ({top} mein se {mp}) - doosre raste se ja rahe hain"
 
 msgid "not enough arnebia above your reserve for a {n} arnebia donation"
 msgstr "{n} arnebia ke chande ke liye aap ke reserve se upar kaafi arnebia nahi"
@@ -5202,6 +5635,10 @@ msgstr "baste mein nahi: {list}"
 
 msgid "not in the price list, left out: {list}"
 msgstr "qeemat ki fehrist mein nahi, chhor diye: {list}"
+
+msgid ""
+"not known yet (the bot reads it from the character sheet when it starts)"
+msgstr "abhi maloom nahi (bot shuru hote waqt character sheet se parhta hai)"
 
 msgid "not read, old price kept: {list}"
 msgstr "parhe nahi gaye, purani qeemat rakhi: {list}"
@@ -5255,9 +5692,6 @@ msgstr "collection mein se kuch nahi bika"
 
 msgid "nothing to collect today"
 msgstr "aaj lene ko kuch nahi"
-
-msgid "nothing to restock"
-msgstr "restock karne ke liye kuch nahi"
 
 msgid "now (waiting to start)"
 msgstr "abhi (shuru hone ke intezar mein)"
@@ -5380,6 +5814,9 @@ msgstr "page {page} key {key} ({skill})"
 msgid "patrol is random, full, quick or short"
 msgstr "patrol random, full, quick ya short hai"
 
+msgid "pause"
+msgstr "rokna"
+
 msgid ""
 "pause: I stop where I am and hold still until you send resume. The run is not ended."
 msgstr ""
@@ -5479,6 +5916,9 @@ msgstr "aaram"
 msgid "restocking in {map}: {what}"
 msgstr "{map} mein dobara stock ho raha hai: {what}"
 
+msgid "restocking supplies"
+msgstr "supplies dobara bharna"
+
 msgid "restocking: {what}"
 msgstr "dobara stock ho raha hai: {what}"
 
@@ -5486,6 +5926,9 @@ msgid ""
 "results: what this run has got so far (kills, arnebia, shards, experience), or the last run's if none is going."
 msgstr ""
 "results: is run ne ab tak kya kamaya (kills, arnebia, shards, tajurba), ya agar koi run nahi chal raha to pichle run ka."
+
+msgid "resume"
+msgstr "dobara chalana"
 
 msgid "resume: I go on with the paused run."
 msgstr "resume: main waqfe wala run jari rakhta hoon."
@@ -5613,6 +6056,12 @@ msgstr "{n} {item} bech diye"
 msgid "sold {n} {item} at the Shard Market"
 msgstr "Shard Market par {n} {item} bech diye"
 
+msgid "sound request"
+msgstr "sound darkhwast"
+
+msgid "sound_wait needs at least one sound ID, or all."
+msgstr "sound_wait ko kam az kam ek sound ID, ya all chahiye."
+
 msgid "stand still"
 msgstr "khare raho"
 
@@ -5654,6 +6103,9 @@ msgstr ""
 
 msgid "stopped"
 msgstr "ruk gaya"
+
+msgid "stopped after {n} deaths, as you set"
+msgstr "{n} maut ke baad ruk gaye, jaisa aap ne rakha"
 
 msgid "stopped by you"
 msgstr "aap ne rok diya"
@@ -5817,8 +6269,18 @@ msgstr "andarune hall ka sardar chanda nahi le raha"
 msgid "the Highland Entrance offers no Occupied Highlands"
 msgstr "Highland Entrance par Occupied Highlands nahi hai"
 
+msgid "the PK mode can't be changed on {map} - looking for guards elsewhere"
+msgstr ""
+"{map} par PK mode badla nahi ja sakta - kahin aur guards dhoond rahe hain"
+
+msgid "the PK mode can't be changed where the guards are"
+msgstr "jahan guards hain wahan PK mode badla nahi ja sakta"
+
 msgid "the PK mode is locked here - leaving it as {mode}"
 msgstr "yahan PK mode locked hai - {mode} hi rehne de rahe hain"
+
+msgid "the PK mode is still all mode - please set it back by hand"
+msgstr "PK mode abhi bhi all mode hai - meharbani kar ke khud wapas lagayein"
 
 msgid "the Pet Trainer offers no rebirth"
 msgstr "Pet Trainer rebirth nahi de raha"
@@ -5919,6 +6381,11 @@ msgstr "bag ka chakkar"
 
 msgid "the bag's gems are as high as they go"
 msgstr "baste ke gems apni aakhri had tak hain"
+
+msgid ""
+"the character sheet didn't show the experience card {what} - looking again in a minute"
+msgstr ""
+"character sheet ne experience card {what} nahi dikhaya - ek minute baad dobara dekhenge"
 
 msgid "the character sheet is read with the key again: {why}"
 msgstr "kirdaar ki sheet ab phir key se padhi ja rahi hai: {why}"
@@ -6043,6 +6510,9 @@ msgid ""
 msgstr ""
 "equipment ki marammat chahiye: {tool} sirf basta mein hai, is liye is lardai ke baad (foran marammat ke liye ise hotkey par lagayein)"
 
+msgid "the guard didn't strike back - trying another"
+msgstr "guard ne jawab mein nahi maara - doosra aazma rahe hain"
+
 msgid "the hearthstone didn't take me home"
 msgstr "hearthstone mujhe ghar nahi le gaya"
 
@@ -6073,6 +6543,14 @@ msgstr ""
 
 msgid "the menu has no entry like \"{want}\""
 msgstr "menu mein aisa koi entry nahi: \"{want}\""
+
+msgid ""
+"the next level already needs {xp} experience (goal {goal}) - nothing to lose"
+msgstr ""
+"agle level ko pehle hi {xp} experience chahiye (maqsad {goal}) - kam karne ko kuch nahi"
+
+msgid "the next level needs {n} experience"
+msgstr "agle level ko {n} experience chahiye"
 
 msgid "the officer offers no hunting bounty"
 msgstr "afsar hunting bounty nahi de raha"
@@ -6148,6 +6626,9 @@ msgid ""
 msgstr ""
 "phenkne wali list khaali hai - Kirdaar, Basta aur supplies mein cheezein chunein"
 
+msgid "the top level - nothing to lose"
+msgstr "sab se ooncha level - kam karne ko kuch nahi"
+
 msgid "the {item} on key {key} are used up"
 msgstr "key {key} wali {item} khatam ho gayi"
 
@@ -6207,6 +6688,11 @@ msgid ""
 msgstr ""
 "is character ke paas jama karne ki koi skill nahi: gang ke Guru Elder ya Master Pepper se Fishing, Mining ya Collect Herbs (in mein se ek) seekhein"
 
+msgid ""
+"this character is at the top level: there is no next level to stay away from"
+msgstr ""
+"yeh character sab se oonche level par hai: koi agla level nahi jis se door raha jaye"
+
 msgid "this expression is too complex (over {n} parts or {d} deep)"
 msgstr "yeh expression bohat mushkil hai ({n} parts ya {d} gehri se zyada)"
 
@@ -6265,6 +6751,9 @@ msgstr "us ke bajaye {tool} aazma rahe hain"
 msgid "type your gang's highland number in Tools, Daily chores"
 msgstr "Tools, Daily chores mein apni gang ki highland ka number likho"
 
+msgid "unavailable"
+msgstr "dastiyab nahi"
+
 msgid "unbalanced quotes"
 msgstr "quotes balance mein nahi hain"
 
@@ -6273,6 +6762,9 @@ msgstr "ghair mutawaqqa error: {err}"
 
 msgid "unfollow: I stop following you."
 msgstr "unfollow: main aap ka peecha karna band kar deta hoon."
+
+msgid "unknown"
+msgstr "maloom nahi"
 
 msgid "unknown command: {cmd}"
 msgstr "najaana command: {cmd}"
@@ -6290,6 +6782,9 @@ msgstr "najaana map: {map}"
 msgid "unmute: the game talks again."
 msgstr "unmute: game phir bolne lagta hai."
 
+msgid "until the next level needs at least"
+msgstr "jab tak agle level ko kam az kam itni chahiye"
+
 msgid "until the plan stops"
 msgstr "jab tak mansooba na ruke"
 
@@ -6298,6 +6793,11 @@ msgstr "until= ko condition chahiye, misal: until=kills >= 100"
 
 msgid "updating shard prices"
 msgstr "shards ki qeematein update kar rahe hain"
+
+msgid ""
+"used a {card}, but the character sheet shows no experience card running - trying again in a minute"
+msgstr ""
+"{card} istemal kiya, magar character sheet par koi experience card chalta nahi dikhta - ek minute baad dobara koshish"
 
 msgid "using the hearthstone key"
 msgstr "hearthstone key istemal kar rahe hain"
@@ -6325,6 +6825,9 @@ msgstr "dushman tak chalo"
 
 msgid "walking on to {cell}"
 msgstr "{cell} ki taraf aage chal rahe hain"
+
+msgid "walking out of the safe zone to cast {skill}"
+msgstr "{skill} chalane ke liye safe zone se bahar ja rahe hain"
 
 msgid "walking to monsters"
 msgstr "monsters tak chal rahe hain"
@@ -6435,12 +6938,18 @@ msgstr "{n} baar inkaar ke baad {beast} le liya gaya"
 msgid "{better} is ready again - putting {pet} away for it"
 msgstr "{better} phir tayyar hai - iske liye {pet} ko wapas bhej rahe hain"
 
+msgid "{bonus}% more experience, {m} min {s} s left"
+msgstr "{bonus}% zyada experience, {m} min {s} s baqi"
+
 msgid "{boss} (a boss) is {n} steps away - keeping {keep} steps from it"
 msgstr ""
 "{boss} (boss) {n} qadam door hai - us se {keep} qadam door reh rahe hain"
 
 msgid "{buffer} ({n} new)"
 msgstr "{buffer} ({n} naye)"
+
+msgid "{card} ({n} in the bag)"
+msgstr "{card} (bag mein {n})"
 
 msgid "{cave} - level {n} - {where}"
 msgstr "{cave} - level {n} - {where}"
@@ -6651,6 +7160,9 @@ msgstr "{name} (script)"
 
 msgid "{name} (speed +{speed}, level {level})"
 msgstr "{name} (speed +{speed}, level {level})"
+
+msgid "{name} ({id})"
+msgstr "{name} ({id})"
 
 msgid "{name} ({n} new)"
 msgstr "{name} ({n} naye)"
@@ -6954,14 +7466,47 @@ msgid ""
 msgstr ""
 "{skill} ne lagataar {n} baar {pet} ka HP nahi barhaya - shayad aap par lag raha hai. {minutes} minute pet potions, phir dobara {skill}{skill} ne lagataar {n} baar {pet} ka HP nahi barhaya - shayad aap par lag raha hai. {minutes} minute pet potions, phir dobara {skill}"
 
+msgid "{skill} doesn't list {place} for this character"
+msgstr "{skill} is character ke liye {place} nahi dikhati"
+
+msgid "{skill} isn't on a skill key (putting skills on empty keys is off)"
+msgstr "{skill} kisi skill key par nahi (khali keys par skills lagana band hai)"
+
+msgid ""
+"{skill} isn't on a skill key and no skill key is empty - put it on one to use it"
+msgstr ""
+"{skill} kisi skill key par nahi aur koi skill key khali nahi - istemal ke liye ise kisi key par lagayein"
+
+msgid "{skill} not cast at {name}: {why}"
+msgstr "{skill} {name} par nahi chali: {why}"
+
+msgid "{skill} on our kills while Vitality lasts ({n} now)"
+msgstr "{skill} hamare shikar par, jab tak Vitality hai (abhi {n})"
+
+msgid "{skill} opened no menu (cooling down, or not enough MP?)"
+msgstr "{skill} ne koi menu nahi khola (cooldown, ya MP kafi nahi?)"
+
 msgid "{skill} put on the empty skill key {key} (page {page})"
 msgstr "{skill} khali skill key {key} par rakh diya (page {page})"
 
 msgid "{skill} stopped - starting it again"
 msgstr "{skill} ruk gayi - dobara shuru kar rahe hain"
 
+msgid ""
+"{skill} was broken off before it ended (something hit us) - fighting first"
+msgstr ""
+"{skill} khatam hone se pehle toot gayi (kisi ne hamein mara) - pehle lar rahe hain"
+
+msgid ""
+"{skill} went out at {n} corpses in a row and the game never answered - trying again in 5 minutes"
+msgstr ""
+"{skill} lagatar {n} laashon par gayi aur game ne koi jawab nahi diya - 5 minute baad dobara koshish"
+
 msgid "{skill}, {rank}; character level {level}"
 msgstr "{skill}, {rank}; character ka level {level}"
+
+msgid "{skill}: {name}"
+msgstr "{skill}: {name}"
 
 msgid "{stage}, automatically: {job}"
 msgstr "{stage}, khud ba khud: {job}"
@@ -6974,6 +7519,11 @@ msgstr "{stage}: ho gaye {ok}; poore nahi hue {bad}"
 
 msgid "{state} {what} for {m} min on {map}, HP {hp}%{mp}, {k} kills"
 msgstr "{map} par {m} min se {state} {what}, HP {hp}%{mp}, {k} kills"
+
+msgid ""
+"{state}. Active mute IDs: {mute}. Observed: {observed}; blocked: {dropped}; live muted: {live}; unsupported: {unsupported}."
+msgstr ""
+"{state}. Khamosh IDs: {mute}. Dekhe: {observed}; roke: {dropped}; chalte hue khamosh: {live}; ghair supported: {unsupported}."
 
 msgid "{tool} - {name}"
 msgstr "{tool} - {name}"
@@ -7017,6 +7567,9 @@ msgstr "{who} kisi aise game mein logged in nahi jo Uncle Farmer ko nazar aaye"
 msgid "{who}'s game is busy with {what}"
 msgstr "{who} ka game {what} mein masroof hai"
 
+msgid "{why} - no more {skill} this run ({n} done)"
+msgstr "{why} - is run mein mazeed {skill} nahi ({n} hue)"
+
 msgid "{w} by {h} tiles, {n} exits."
 msgstr "{w} bar {h} tiles, {n} exits."
 
@@ -7052,6 +7605,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "&Change key..."
 #~ msgstr "&Key tabdeel karein..."
+
+#~ msgid "&Character settings"
+#~ msgstr "&Kirdaar ki tarteeb"
 
 #~ msgid ""
 #~ "&Construction builds a day (10,000 arnebia, 2,500 gang contribution each):"
@@ -7091,6 +7647,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "&Log\tCtrl+3"
 #~ msgstr "&Log\tCtrl+3"
+
+#~ msgid "&Mute IDs:"
+#~ msgstr "&Khamosh IDs:"
 
 #~ msgid "&Mute this game\tCtrl+M"
 #~ msgstr "Is game ki awaaz &band karein\tCtrl+M"
@@ -7140,6 +7699,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgid "&View as script..."
 #~ msgstr "&Script ki tarah dekhein..."
 
+#~ msgid "&Watch IDs:"
+#~ msgstr "&Nigrani IDs:"
+
 #~ msgid "...or after this many casts that do &no damage:"
 #~ msgstr "...ya itne casts ke baad jin se koi &damage na ho:"
 
@@ -7154,6 +7716,12 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "After farming (when a run finishes by itself, never after Stop)"
 #~ msgstr "Farming ke baad (jab run khud khatam ho, Stop ke baad kabhi nahi)"
+
+#~ msgid "Apply &mute"
+#~ msgstr "&Khamoshi lagayein"
+
+#~ msgid "Apply &watch"
+#~ msgstr "&Nigrani lagayein"
 
 #~ msgid "Automatically clea&n the bag after farming (Tools, Clean the bag now)"
 #~ msgstr "Farming ke baad khud basta &saaf karein (Tools, Clean the bag now)"
@@ -7223,8 +7791,14 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgstr ""
 #~ "Pehle &gang ke ilaqe mein jama karein, game ke din mein ek baar (andar 30 minute)"
 
+#~ msgid "Import or export character settings"
+#~ msgstr "Kirdaar ki tarteeb import ya export karein"
+
 #~ msgid "Installed. Restart Mist World to load it."
 #~ msgstr "Install ho gaya. Load karne ke liye Mist World restart karein."
+
+#~ msgid "Live Sounds"
+#~ msgstr "Live Sounds"
 
 #~ msgid "Looking for a new version..."
 #~ msgstr "Naya version dhoond raha hoon..."
@@ -7286,6 +7860,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ "\n"
 #~ "Is se combat, keys, potions, bag, pet, travel aur restock ki choices badalengi. {character} ka apna scan aur seekha hua hearthstone ka maqam rahega. Yes chunne tak kuch nahi badlega."
 
+#~ msgid "S&ound controls"
+#~ msgstr "S&ound controls"
+
 #~ msgid "S&top\tShift+F5"
 #~ msgstr "R&ok\tShift+F5"
 
@@ -7294,6 +7871,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "Save as scri&pt..."
 #~ msgstr "Scri&pt ki tarah mahfooz karein..."
+
+#~ msgid "Saved Sounds"
+#~ msgstr "Mahfooz Sounds"
 
 #~ msgid "Sche&dules...\tCtrl+Shift+H"
 #~ msgstr "Sche&dules...\tCtrl+Shift+H"
@@ -7309,6 +7889,12 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "Sharing arnebia (both players get some)"
 #~ msgstr "Arnebia share karna (dono khilariyon ko milta hai)"
+
+#~ msgid "Sound Silencer"
+#~ msgstr "Sound Silencer"
+
+#~ msgid "Sound controls - {name}"
+#~ msgstr "Sound controls - {name}"
 
 #~ msgid "Spea&k the results\tCtrl+Shift+R"
 #~ msgstr "Nataij su&nayein\tCtrl+Shift+R"
@@ -7326,6 +7912,11 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "Tick a cave to go to."
 #~ msgstr "Jaane ke liye koi ghaar tick karein."
+
+#~ msgid ""
+#~ "Ticked jobs run one after the other in this order, each exactly as from the Tools menu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
+#~ msgstr ""
+#~ "Tick kiye gaye kaam isi tarteeb se ek ke baad ek chalte hain, har ek bilkul Tools menu ki tarah. Dono lists mein tick kiya gaya kaam farming se pehle ek baar aur baad mein ek baar chalta hai. Jo kaam poora na ho sake woh bataya jata hai aur agla phir bhi chalta hai; Stop sab rok deta hai. Store items bag manager ki storage list ko usi waqt jaisi hai waise istemal karta hai."
 
 #~ msgid "Time between pet potions (&seconds):"
 #~ msgstr "Pet potions ke darmiyan waqt (&second):"
@@ -7349,6 +7940,11 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "Wa&lk to a dungeon or map...\tCtrl+W"
 #~ msgstr "Dungeon ya map tak &chalain...\tCtrl+W"
+
+#~ msgid ""
+#~ "Watch sounds to see their IDs and positions; mute IDs to silence them. Use all, off, or IDs/ranges such as 1,5|7;10-20. Changes affect this game and remain after this window closes, until changed or the game exits."
+#~ msgstr ""
+#~ "Sounds ki IDs aur jagah dekhne ke liye nigrani karein; khamoshi ke liye IDs dein. all, off, ya 1,5|7;10-20 jaisi IDs/ranges likhein. Tabdeeli is game par lagti hai aur window band hone ke baad bhi rehti hai, jab tak badlein ya game band ho."
 
 #~ msgid ""
 #~ "When nothing is in sight, walk to where a monster is due back (learned while farming)"
@@ -7407,6 +8003,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "not yet today"
 #~ msgstr "aaj abhi nahi"
+
+#~ msgid "nothing to restock"
+#~ msgstr "restock karne ke liye kuch nahi"
 
 #~ msgid "pet HP {pct}% - pressing {key}"
 #~ msgstr "pet HP {pct}% - {key} daba rahe hain"
@@ -7479,6 +8078,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgid "{minutes} minutes in {room}; shared arnebia {n} times today"
 #~ msgstr "{room} mein {minutes} minute; aaj {n} baar arnebia share kiya"
 
+#~ msgid "{name} (ID {id})"
+#~ msgstr "{name} (ID {id})"
+
 #~ msgid "{n} critical hits"
 #~ msgstr "{n} critical hits"
 
@@ -7494,3 +8096,8 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "{skill} doesn't reach the pet - pet potions only"
 #~ msgstr "{skill} pet tak nahin pohanchti - ab sirf pet potions"
+
+#~ msgid ""
+#~ "{state}. Watching: {watch}. Muting: {mute}. Observed: {observed}; blocked: {dropped}; live muted: {live}; unsupported: {unsupported}."
+#~ msgstr ""
+#~ "{state}. Nigrani: {watch}. Khamoshi: {mute}. Dekhe: {observed}; roke: {dropped}; chalte hue khamosh: {live}; ghair supported: {unsupported}."

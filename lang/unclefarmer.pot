@@ -14,6 +14,9 @@ msgstr ""
 msgid " (estimated: it includes shards)"
 msgstr ""
 
+msgid " (locked here)"
+msgstr ""
+
 msgid " ({rate} an hour)"
 msgstr ""
 
@@ -81,9 +84,6 @@ msgid "&Change key"
 msgstr ""
 
 msgid "&Character"
-msgstr ""
-
-msgid "&Character settings"
 msgstr ""
 
 msgid "&Character:"
@@ -156,6 +156,9 @@ msgstr ""
 msgid "&Equipment to enhance:"
 msgstr ""
 
+msgid "&Experience:"
+msgstr ""
+
 msgid "&Feed the gang's breed beast at the Animal Shed"
 msgstr ""
 
@@ -211,6 +214,10 @@ msgid "&Goodbyes, one per line:"
 msgstr ""
 
 msgid "&HP potion:"
+msgstr ""
+
+msgid ""
+"&Harvest the monsters we kill with the learned Draw Blood, Skinning or Cut Flesh"
 msgstr ""
 
 msgid "&Heal skill below HP (%):"
@@ -277,6 +284,9 @@ msgstr ""
 msgid "&Log:"
 msgstr ""
 
+msgid "&Lose experience:"
+msgstr ""
+
 msgid "&Make Enhance Crystals from crystal shards when needed"
 msgstr ""
 
@@ -298,6 +308,9 @@ msgstr ""
 msgid "&Mute this game"
 msgstr ""
 
+msgid "&Muted Sounds:"
+msgstr ""
+
 msgid "&Names or ids (separated by commas):"
 msgstr ""
 
@@ -308,6 +321,9 @@ msgid "&New chat with (name or id):"
 msgstr ""
 
 msgid "&New plan"
+msgstr ""
+
+msgid "&No, keep current language"
 msgstr ""
 
 msgid "&Number of gems:"
@@ -385,6 +401,9 @@ msgstr ""
 msgid "&Rest before the next fight below HP (%):"
 msgstr ""
 
+msgid "&Restock supplies (game menu, Restock now)"
+msgstr ""
+
 msgid "&Results"
 msgstr ""
 
@@ -435,6 +454,12 @@ msgid ""
 msgstr ""
 
 msgid "&Show the time after each message"
+msgstr ""
+
+msgid "&Sound Silencer"
+msgstr ""
+
+msgid "&Sounds:"
 msgstr ""
 
 msgid "&Speak"
@@ -507,6 +532,12 @@ msgid "&Write an email"
 msgstr ""
 
 msgid "&Write to the files in the logs folder:"
+msgstr ""
+
+msgid "&XP loser"
+msgstr ""
+
+msgid "&Yes, switch language"
 msgstr ""
 
 msgid "&Your places:"
@@ -619,6 +650,9 @@ msgstr ""
 msgid "A script called {name} exists. Replace it?"
 msgstr ""
 
+msgid "A sound's mute setting must be on or off."
+msgstr ""
+
 msgid "A team dungeon: the game lets in groups of 2 to 3 players."
 msgstr ""
 
@@ -680,6 +714,12 @@ msgid "Add at least one farming spot."
 msgstr ""
 
 msgid "Add our &own gang"
+msgstr ""
+
+msgid "Add selected to Saved Sounds"
+msgstr ""
+
+msgid "Added to the draft. Choose Save to apply."
 msgstr ""
 
 msgid ""
@@ -782,6 +822,9 @@ msgstr ""
 msgid "Automatic, by class"
 msgstr ""
 
+msgid "Available sound IDs could not be read. Adding sounds is unavailable."
+msgstr ""
+
 msgid "Back where the run started"
 msgstr ""
 
@@ -865,6 +908,9 @@ msgid "Change key"
 msgstr ""
 
 msgid "Change target mode"
+msgstr ""
+
+msgid "Changes are a draft until Save."
 msgstr ""
 
 msgid "Channels"
@@ -967,6 +1013,9 @@ msgstr ""
 msgid "Close the game"
 msgstr ""
 
+msgid "Close without saving"
+msgstr ""
+
 msgid "Closing every Mist World window for the update"
 msgstr ""
 
@@ -1009,6 +1058,12 @@ msgstr ""
 msgid "Commands: {list}"
 msgstr ""
 
+msgid "Connected"
+msgstr ""
+
+msgid "Connecting..."
+msgstr ""
+
 msgid "Contact the &developer"
 msgstr ""
 
@@ -1028,6 +1083,19 @@ msgid "Copied {email}."
 msgstr ""
 
 msgid "Copy &selection"
+msgstr ""
+
+msgid "Corpses"
+msgstr ""
+
+msgid "Could not read known sound IDs: {error}"
+msgstr ""
+
+msgid "Could not read the saved sound list: {error}"
+msgstr ""
+
+msgid ""
+"Could not release sound listening; it is released when the connection closes."
 msgstr ""
 
 msgid "Couldn't apply the settings: {err}"
@@ -1101,6 +1169,9 @@ msgid ""
 msgstr ""
 
 msgid "Crystals"
+msgstr ""
+
+msgid "Cut Flesh"
 msgstr ""
 
 msgid "D&onate"
@@ -1185,6 +1256,9 @@ msgstr ""
 msgid "Downloading Uncle Farmer {v}"
 msgstr ""
 
+msgid "Draw Blood"
+msgstr ""
+
 msgid "Drink below (%):"
 msgstr ""
 
@@ -1221,6 +1295,9 @@ msgstr ""
 msgid "E&xit"
 msgstr ""
 
+msgid "E&xperience card to keep running while farming:"
+msgstr ""
+
 msgid "E&xport"
 msgstr ""
 
@@ -1228,6 +1305,9 @@ msgid "E&xport character settings"
 msgstr ""
 
 msgid "E&xport plan"
+msgstr ""
+
+msgid "Each sound needs an ID, a name, and a mute setting."
 msgstr ""
 
 msgid "Earnings so far: {n} arnebia (picked up and sold)"
@@ -1276,6 +1356,12 @@ msgid "Enhance Crystals"
 msgstr ""
 
 msgid "Enter a name for the plan."
+msgstr ""
+
+msgid "Enter a sound ID between 1 and 99999."
+msgstr ""
+
+msgid "Enter sound IDs, ranges, all, or off."
 msgstr ""
 
 msgid "Enter the daily stop time as HH:MM, for example 04:50."
@@ -1338,6 +1424,9 @@ msgstr ""
 msgid "Experience"
 msgstr ""
 
+msgid "Experience cards"
+msgstr ""
+
 msgid "Expert"
 msgstr ""
 
@@ -1390,6 +1479,10 @@ msgid "Fighting:"
 msgstr ""
 
 msgid "Fill &up to:"
+msgstr ""
+
+msgid ""
+"Fills enabled supplies to their configured targets, even above their automatic refill thresholds."
 msgstr ""
 
 msgid "Fishing"
@@ -1657,6 +1750,12 @@ msgstr ""
 msgid "Home."
 msgstr ""
 
+msgid "Hook unavailable: {reason}"
+msgstr ""
+
+msgid "How it works:"
+msgstr ""
+
 msgid "How the game works"
 msgstr ""
 
@@ -1723,6 +1822,9 @@ msgid ""
 "I'm on {map} at {x}, {y} but can't see you. Press E in the game, copy it with Shift+C and send: come <what you copied>"
 msgstr ""
 
+msgid "ID {id}, X {x}, Y {y}: {state}"
+msgstr ""
+
 msgid "Ice prince"
 msgstr ""
 
@@ -1736,9 +1838,6 @@ msgid "If none of them is in the room, share with &anyone there"
 msgstr ""
 
 msgid "Import character settings"
-msgstr ""
-
-msgid "Import or export character settings"
 msgstr ""
 
 msgid "Import or export plans"
@@ -1786,6 +1885,9 @@ msgid ""
 msgstr ""
 
 msgid "International"
+msgstr ""
+
+msgid "Invalid sound reply from the game agent."
 msgstr ""
 
 msgid "It also stops by itself:"
@@ -1900,6 +2002,13 @@ msgstr ""
 msgid "Limits"
 msgstr ""
 
+msgid ""
+"Listen for game sound requests, select an ID, then add it to Saved Sounds. This tab does not change muting. Save changes on the Saved Sounds tab."
+msgstr ""
+
+msgid "Listen for sounds"
+msgstr ""
+
 msgid "Location:"
 msgstr ""
 
@@ -1929,6 +2038,12 @@ msgid "Looking for a new version"
 msgstr ""
 
 msgid "Looking for your application."
+msgstr ""
+
+msgid "Lose e&xperience (as set in Tools, XP loser)"
+msgstr ""
+
+msgid "Lose experience (as set in Tools, XP lose&r)"
 msgstr ""
 
 msgid "Low HP"
@@ -2055,6 +2170,10 @@ msgstr ""
 msgid "Moral Mode"
 msgstr ""
 
+msgid ""
+"Morality is {n} (a black name): a death can cost worn gear, so the XP loser won't run"
+msgstr ""
+
 msgid "Most to pay per shard (arnebia):"
 msgstr ""
 
@@ -2065,6 +2184,12 @@ msgid "Move &up"
 msgstr ""
 
 msgid "Move do&wn"
+msgstr ""
+
+msgid "Move to Mute List"
+msgstr ""
+
+msgid "Move to Sounds List"
 msgstr ""
 
 msgid "Move to kee&p"
@@ -2291,6 +2416,9 @@ msgstr ""
 msgid "Notices"
 msgstr ""
 
+msgid "Now:"
+msgstr ""
+
 msgid "Nowhere to get them from: it makes what the bag allows."
 msgstr ""
 
@@ -2424,6 +2552,10 @@ msgid "Pacifist mode with counterattack"
 msgstr ""
 
 msgid "Patrol loops: {loops}"
+msgstr ""
+
+msgid ""
+"Pause the card while a&way from the monsters: town trips, the walk back after a death, the end of farming (each pause costs a minute of the card; never in a dungeon)"
 msgstr ""
 
 msgid "Paused"
@@ -2604,6 +2736,9 @@ msgstr ""
 msgid "Read rage, marks or combos in fights every (seconds):"
 msgstr ""
 
+msgid "Reading available sound IDs..."
+msgstr ""
+
 msgid "Reading channels out"
 msgstr ""
 
@@ -2611,6 +2746,9 @@ msgid "Reading the game"
 msgstr ""
 
 msgid "Ready"
+msgstr ""
+
+msgid "Recent sound &requests (latest 200):"
 msgstr ""
 
 msgid "Record &voice"
@@ -2632,11 +2770,17 @@ msgstr ""
 msgid "Release &channel:"
 msgstr ""
 
+msgid "Remove"
+msgstr ""
+
 msgid ""
 "Remove the agent from the game? The bot won't work until you install it again."
 msgstr ""
 
 msgid "Rename"
+msgstr ""
+
+msgid "Rename sound"
 msgstr ""
 
 msgid "Repair &gear with toolboxes from the bag"
@@ -2658,6 +2802,35 @@ msgid "Rest &until HP (%):"
 msgstr ""
 
 msgid "Restart Uncle Farmer to switch the language."
+msgstr ""
+
+msgid "Restoc&k supplies (game menu, Restock now)"
+msgstr ""
+
+msgid "Restock &now"
+msgstr ""
+
+msgid "Restock now"
+msgstr ""
+
+msgid "Restock now: a restock is already running."
+msgstr ""
+
+msgid "Restock now: no supplies could be restocked."
+msgstr ""
+
+msgid ""
+"Restock now: no supply rules are configured in Character, Bag and supplies."
+msgstr ""
+
+msgid ""
+"Restock now: nothing to restock; no supplies need purchasing or withdrawal."
+msgstr ""
+
+msgid "Restock now: supplies are at their configured targets."
+msgstr ""
+
+msgid "Restocking supplies"
 msgstr ""
 
 msgid "Results"
@@ -2745,6 +2918,9 @@ msgid "Save changes to the script?"
 msgstr ""
 
 msgid "Saved. It's in the Plans tab as a script."
+msgstr ""
+
+msgid "Saving and applying sound settings..."
 msgstr ""
 
 msgid "Scan complete."
@@ -2944,6 +3120,9 @@ msgstr ""
 msgid "Skills used: {casts} casts, {dmg} damage in all"
 msgstr ""
 
+msgid "Skinning"
+msgstr ""
+
 msgid "Snow mountain prince"
 msgstr ""
 
@@ -2963,6 +3142,57 @@ msgid "Snowflake princess"
 msgstr ""
 
 msgid "Sold:"
+msgstr ""
+
+msgid "Some sound requests were missed because the event buffer filled."
+msgstr ""
+
+msgid "Sound &ID:"
+msgstr ""
+
+msgid "Sound ID {id} is already in the list."
+msgstr ""
+
+msgid "Sound IDs must be between 1 and 99999; ranges must go upwards."
+msgstr ""
+
+msgid "Sound IDs must be whole numbers between 1 and 99999."
+msgstr ""
+
+msgid "Sound Silencer - {name}"
+msgstr ""
+
+msgid "Sound controls are unavailable."
+msgstr ""
+
+msgid ""
+"Sound controls require an updated game agent. Install it and restart the game."
+msgstr ""
+
+msgid "Sound controls: {error}"
+msgstr ""
+
+msgid ""
+"Sound events were lost because the observer buffer filled. Start the wait again."
+msgstr ""
+
+msgid "Sound name:"
+msgstr ""
+
+msgid "Sound names must be at most 100 characters without control characters."
+msgstr ""
+
+msgid "Sound observer is unavailable: {reason}"
+msgstr ""
+
+msgid "Sound settings saved and mute rules applied."
+msgstr ""
+
+msgid ""
+"Sound settings were saved, but active muting could not be confirmed: {error}"
+msgstr ""
+
+msgid "Sound wait timeout cannot be negative."
 msgstr ""
 
 msgid "South edge (y):"
@@ -3034,6 +3264,9 @@ msgstr ""
 msgid "Stop &every bot"
 msgstr ""
 
+msgid "Stop after at most this many &deaths:"
+msgstr ""
+
 msgid "Stop after this many &stuck walks in a row:"
 msgstr ""
 
@@ -3062,6 +3295,9 @@ msgid "Stop the bot first. It uses the keyboard while it runs."
 msgstr ""
 
 msgid "Stop the plan"
+msgstr ""
+
+msgid "Stop when &Vitality is down to (0: until it runs out):"
 msgstr ""
 
 msgid "Stop when HP stays &low"
@@ -3165,6 +3401,12 @@ msgstr ""
 msgid "That schedule is gone"
 msgstr ""
 
+msgid "That sound ID is already in the lists."
+msgstr ""
+
+msgid "That sound ID is not in this game's available sound files."
+msgstr ""
+
 msgid "That takes about {k} more {shard}{cost}, plus the craftsman's fees."
 msgstr ""
 
@@ -3214,6 +3456,10 @@ msgid "The bot didn't stop in time, so it isn't following you."
 msgstr ""
 
 msgid "The bot drinks it as soon as that much {what} is missing."
+msgstr ""
+
+msgid ""
+"The bot finds a guard (in sight, where one was seen before, or in the nearest town), switches the PK mode to all mode, hits the guard once and lets it kill the character: no potions, no heals, no fighting back. It respawns in the city and goes again until the next level needs at least that much experience. The pet is put away first, and the PK mode is put back at the end. Deaths wear your gear like any death; a black-name character (Morality -1000 or lower) can lose worn gear when it dies, so the XP loser won't run for one."
 msgstr ""
 
 msgid "The bot isn't running."
@@ -3318,6 +3564,9 @@ msgid ""
 "The last scan found no gathering skill. Learn Fishing, Mining or Collect Herbs (one of them) from the gang's Guru Elder or Master Pepper, then scan again."
 msgstr ""
 
+msgid "The listener is busy or disconnected. Try again."
+msgstr ""
+
 msgid "The nearest city's"
 msgstr ""
 
@@ -3354,6 +3603,9 @@ msgid "The script reads correctly."
 msgstr ""
 
 msgid "The script was saved, but the old file couldn't be removed: {err}"
+msgstr ""
+
+msgid "The sound list must be a list of sound entries."
 msgstr ""
 
 msgid ""
@@ -3401,6 +3653,9 @@ msgid "Then stay &quiet for (minutes):"
 msgstr ""
 
 msgid "There's no plan to run."
+msgstr ""
+
+msgid "These sound IDs are not available in this game: {ids}"
 msgstr ""
 
 msgid "They come from {source}, a bagful at a time."
@@ -3472,7 +3727,7 @@ msgid "Tick the monsters to fight:"
 msgstr ""
 
 msgid ""
-"Ticked jobs run one after the other in this order, each exactly as from the Tools menu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
+"Ticked jobs run one after the other in this order, each exactly as from the game's Tools submenu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
 msgstr ""
 
 msgid "Time (HH:MM):"
@@ -3556,6 +3811,10 @@ msgid "Turned &on"
 msgstr ""
 
 msgid "Type a message first."
+msgstr ""
+
+msgid ""
+"Type how much experience: the most the next level should need, or how much to lose."
 msgstr ""
 
 msgid "Type the name of the gang whose craftsmen to use."
@@ -3691,6 +3950,9 @@ msgstr ""
 msgid "Use the &default ({time})"
 msgstr ""
 
+msgid "Use the class's teleport &skill (Mage, Elf)"
+msgstr ""
+
 msgid "Use the day's free &rebirths on one pet"
 msgstr ""
 
@@ -3708,6 +3970,9 @@ msgstr ""
 
 msgid ""
 "Uses the hearthstone; if it can't, ends on the nearest map without monsters."
+msgstr ""
+
+msgid "Vitality is down to {n}"
 msgstr ""
 
 msgid "Vitality is down to {n}, where you set gathering outside to stop"
@@ -3864,10 +4129,23 @@ msgstr ""
 msgid "Worst normal hit received: {hit}"
 msgstr ""
 
+msgid "Would you like to switch to {language}?"
+msgstr ""
+
 msgid "Write the character's name: the game it is logged in to runs it."
 msgstr ""
 
 msgid "X:"
+msgstr ""
+
+msgid "XP loser"
+msgstr ""
+
+msgid ""
+"XP loser: the next level needs {xp} experience; dying to guards until it needs {goal}"
+msgstr ""
+
+msgid "XP loser: {end} ({n} deaths)"
 msgstr ""
 
 msgid "Y:"
@@ -3884,6 +4162,10 @@ msgstr ""
 
 msgid ""
 "You have the development build {v}. The newest stable release, {stable}, is older; the next stable release newer than your build will be offered."
+msgstr ""
+
+msgid ""
+"Your system language is supported. Would you like to use {language} in Uncle Farmer?"
 msgstr ""
 
 msgid "a chat line"
@@ -3968,6 +4250,9 @@ msgstr ""
 msgid "arrived on {map}"
 msgstr ""
 
+msgid "arrived on {map} at {x},{y}"
+msgstr ""
+
 msgid "arrived on {map} at {x},{y} - planning the way on from here"
 msgstr ""
 
@@ -3999,6 +4284,9 @@ msgstr ""
 msgid "avoiding elites"
 msgstr ""
 
+msgid "back on the farm"
+msgstr ""
+
 msgid "back to {map}"
 msgstr ""
 
@@ -4006,6 +4294,9 @@ msgid "back to {map} after {why}"
 msgstr ""
 
 msgid "bad pattern: {why}"
+msgstr ""
+
+msgid "bag capacity allows {n} more {item}"
 msgstr ""
 
 msgid "bag items and targets go by keys again: {why}"
@@ -4098,6 +4389,16 @@ msgid ""
 "can't heal {pet} with {skill}: {why} - pet potions meanwhile, and the heal is tried again"
 msgstr ""
 
+msgid "can't read the experience card from the character sheet yet"
+msgstr ""
+
+msgid ""
+"can't read the experience from the character sheet - restart the game so the new agent loads"
+msgstr ""
+
+msgid "can't read the experience from the character sheet any more"
+msgstr ""
+
 msgid ""
 "can't read the game's bag cursor - restart the game so the new agent loads"
 msgstr ""
@@ -4105,11 +4406,18 @@ msgstr ""
 msgid "can't read the game's modes ({why}) - not changing them"
 msgstr ""
 
+msgid ""
+"can't read the profession skills ({why}) - corpse harvesting tries again in 5 minutes"
+msgstr ""
+
 msgid "can't read this expression: {expr}"
 msgstr ""
 
 msgid ""
 "can't see this character's quick phrases in the game folder ({folder}) - leaving them all alone"
+msgstr ""
+
+msgid "can't select the guard: {why}"
 msgstr ""
 
 msgid "can't switch the skill page yet ({why}); using the page that is up"
@@ -4121,7 +4429,14 @@ msgstr ""
 msgid "cast {n} times"
 msgstr ""
 
+msgid "casting {skill} to {place}"
+msgstr ""
+
 msgid "charge in"
+msgstr ""
+
+msgid ""
+"check: the next level needs {xp} experience, goal {goal}; {n} guards in sight here, {k} remembered spots; PK mode {pk}{locked}"
 msgstr ""
 
 msgid "choose what? write: choose Tulip City"
@@ -4161,7 +4476,25 @@ msgstr ""
 msgid "cooldown {n} s"
 msgstr ""
 
+msgid "corpse harvesting"
+msgstr ""
+
+msgid ""
+"corpse harvesting is on, but this character has no Draw Blood, Skinning or Cut Flesh - learn one (Learn Profession Skill) from the gang's Guru Elder or Master Pepper"
+msgstr ""
+
+msgid ""
+"corpse harvesting needs the game's agent {need} or newer (this game has {have}) - restart the game so the new agent loads"
+msgstr ""
+
+msgid ""
+"corpse harvesting needs the game's agent {need} or newer - restart the game so the new agent loads"
+msgstr ""
+
 msgid "couldn't add the {shard}"
+msgstr ""
+
+msgid "couldn't cast {skill} ({why}) - trying again in 5 minutes"
 msgstr ""
 
 msgid "couldn't finish at the game's end: {err}"
@@ -4218,6 +4551,9 @@ msgstr ""
 msgid "couldn't open the Gem Craftsman's shard synthesis"
 msgstr ""
 
+msgid "couldn't put the PK mode back to {mode} - please set it by hand"
+msgstr ""
+
 msgid "couldn't put things on empty keys: {err}"
 msgstr ""
 
@@ -4238,6 +4574,9 @@ msgid "couldn't reach {skill} in the skills panel"
 msgstr ""
 
 msgid "couldn't respawn - please do it by hand"
+msgstr ""
+
+msgid "couldn't restock {item}: {why}"
 msgstr ""
 
 msgid "couldn't save the shard prices: {err}"
@@ -4288,6 +4627,9 @@ msgstr ""
 msgid "couldn't type into the game: {why}"
 msgstr ""
 
+msgid "couldn't {what} the experience card: {why} - trying again in a minute"
+msgstr ""
+
 msgid "critical"
 msgstr ""
 
@@ -4312,10 +4654,16 @@ msgstr ""
 msgid "died {n} times - stopping; this place may be too hard"
 msgstr ""
 
+msgid "died {n} times: the next level needs {xp} experience now (goal {goal})"
+msgstr ""
+
 msgid "done here - going to {map}, where no monsters spawn"
 msgstr ""
 
 msgid "done: made {n} {gem}; {have} in the bag"
+msgstr ""
+
+msgid "done: the next level needs at least {goal} experience"
 msgstr ""
 
 msgid "done: {what}"
@@ -4340,6 +4688,9 @@ msgstr ""
 msgid "dungeon - you leave by its chest, not on foot"
 msgstr ""
 
+msgid "dying costs no more experience on this level - stopped"
+msgstr ""
+
 msgid "elites is fight or avoid"
 msgstr ""
 
@@ -4359,10 +4710,26 @@ msgstr ""
 msgid "everything"
 msgstr ""
 
+msgid "experience card paused ({card}): {why}"
+msgstr ""
+
+msgid "experience card running again ({card}): {why}"
+msgstr ""
+
+msgid "experience card started: {card} ({left} more in the bag; {now})"
+msgstr ""
+
+msgid ""
+"experience cards need the game's agent {need} or newer (this game has {have}) - restart the game so the new agent loads"
+msgstr ""
+
 msgid "farm doesn't know '{opt}'. It takes: {opts}"
 msgstr ""
 
 msgid "farmed {time}"
+msgstr ""
+
+msgid "farming is over"
 msgstr ""
 
 msgid "farming is over - closing the game"
@@ -4493,6 +4860,12 @@ msgid "going into the dungeons without a pet (Tools, Dungeons)"
 msgstr ""
 
 msgid "going on"
+msgstr ""
+
+msgid "going to where a guard was seen: {map}"
+msgstr ""
+
+msgid "going to {map}"
 msgstr ""
 
 msgid "going to {map} to find {name}"
@@ -4638,6 +5011,9 @@ msgstr ""
 msgid "leaving {map} for {dest} to get unstuck"
 msgstr ""
 
+msgid "leaving {skill} out of this trip and planning again"
+msgstr ""
+
 msgid "left alone for now (took no damage, couldn't be reached or selected)"
 msgstr ""
 
@@ -4699,10 +5075,19 @@ msgstr ""
 msgid "looking after {pet}: HP {hp}/{max}"
 msgstr ""
 
+msgid "looking for a guard on {map}"
+msgstr ""
+
 msgid "looking for the gang {gang} at the Gang Entrance"
 msgstr ""
 
 msgid "looking for the {name} circle at the {n} entrances marked on {map}"
+msgstr ""
+
+msgid "lose this much experience"
+msgstr ""
+
+msgid "losing experience"
 msgstr ""
 
 msgid "lost sight of {name}"
@@ -4768,6 +5153,9 @@ msgstr ""
 msgid "mute: the game stops talking (only my game)."
 msgstr ""
 
+msgid "muted request"
+msgstr ""
+
 msgid "never again"
 msgstr ""
 
@@ -4795,6 +5183,9 @@ msgstr ""
 msgid "no arnebia to buy {item}"
 msgstr ""
 
+msgid "no attack key in Character settings - the guard can't be hit"
+msgstr ""
+
 msgid "no cave lets in level {n} yet (the lowest needs level {low})"
 msgstr ""
 
@@ -4814,6 +5205,13 @@ msgid "no empty skill key for {skills}, so the bot can't use them"
 msgstr ""
 
 msgid "no free rebirth left today"
+msgstr ""
+
+msgid ""
+"no guard found here, at the spots where guards were seen, or in the nearest town"
+msgstr ""
+
+msgid "no guard here - going to the nearest town, {map}"
 msgstr ""
 
 msgid "no known entrance for the dungeon {name}"
@@ -4893,7 +5291,13 @@ msgstr ""
 msgid "no way from {a} to {b} on {map}"
 msgstr ""
 
+msgid "no way out of the safe zone on {map} to cast {skill}"
+msgstr ""
+
 msgid "no way to walk there"
+msgstr ""
+
+msgid "no {card} in the bag - farming on without an experience card"
 msgstr ""
 
 msgid "no {item} in the storehouse"
@@ -4931,6 +5335,9 @@ msgstr ""
 
 msgid ""
 "not choosing in the menu directly ({why}) - moving to the entry with the keys"
+msgstr ""
+
+msgid "not enough MP for {skill} ({mp} of {top}) - going another way"
 msgstr ""
 
 msgid "not enough arnebia above your reserve for a {n} arnebia donation"
@@ -4974,6 +5381,10 @@ msgid "not in the bag: {list}"
 msgstr ""
 
 msgid "not in the price list, left out: {list}"
+msgstr ""
+
+msgid ""
+"not known yet (the bot reads it from the character sheet when it starts)"
 msgstr ""
 
 msgid "not read, old price kept: {list}"
@@ -5024,9 +5435,6 @@ msgid "nothing of the collection was sold"
 msgstr ""
 
 msgid "nothing to collect today"
-msgstr ""
-
-msgid "nothing to restock"
 msgstr ""
 
 msgid "now (waiting to start)"
@@ -5148,6 +5556,9 @@ msgstr ""
 msgid "patrol is random, full, quick or short"
 msgstr ""
 
+msgid "pause"
+msgstr ""
+
 msgid ""
 "pause: I stop where I am and hold still until you send resume. The run is not ended."
 msgstr ""
@@ -5242,11 +5653,17 @@ msgstr ""
 msgid "restocking in {map}: {what}"
 msgstr ""
 
+msgid "restocking supplies"
+msgstr ""
+
 msgid "restocking: {what}"
 msgstr ""
 
 msgid ""
 "results: what this run has got so far (kills, arnebia, shards, experience), or the last run's if none is going."
+msgstr ""
+
+msgid "resume"
 msgstr ""
 
 msgid "resume: I go on with the paused run."
@@ -5373,6 +5790,12 @@ msgstr ""
 msgid "sold {n} {item} at the Shard Market"
 msgstr ""
 
+msgid "sound request"
+msgstr ""
+
+msgid "sound_wait needs at least one sound ID, or all."
+msgstr ""
+
 msgid "stand still"
 msgstr ""
 
@@ -5410,6 +5833,9 @@ msgid ""
 msgstr ""
 
 msgid "stopped"
+msgstr ""
+
+msgid "stopped after {n} deaths, as you set"
 msgstr ""
 
 msgid "stopped by you"
@@ -5569,7 +5995,16 @@ msgstr ""
 msgid "the Highland Entrance offers no Occupied Highlands"
 msgstr ""
 
+msgid "the PK mode can't be changed on {map} - looking for guards elsewhere"
+msgstr ""
+
+msgid "the PK mode can't be changed where the guards are"
+msgstr ""
+
 msgid "the PK mode is locked here - leaving it as {mode}"
+msgstr ""
+
+msgid "the PK mode is still all mode - please set it back by hand"
 msgstr ""
 
 msgid "the Pet Trainer offers no rebirth"
@@ -5661,6 +6096,10 @@ msgid "the bag trip"
 msgstr ""
 
 msgid "the bag's gems are as high as they go"
+msgstr ""
+
+msgid ""
+"the character sheet didn't show the experience card {what} - looking again in a minute"
 msgstr ""
 
 msgid "the character sheet is read with the key again: {why}"
@@ -5775,6 +6214,9 @@ msgid ""
 "the gear needs repairing: the {tool} is only in the bag, so after this fight (put it on a hotkey to repair at once)"
 msgstr ""
 
+msgid "the guard didn't strike back - trying another"
+msgstr ""
+
 msgid "the hearthstone didn't take me home"
 msgstr ""
 
@@ -5803,6 +6245,13 @@ msgid "the last trip for {item} got none, and nothing has changed since"
 msgstr ""
 
 msgid "the menu has no entry like \"{want}\""
+msgstr ""
+
+msgid ""
+"the next level already needs {xp} experience (goal {goal}) - nothing to lose"
+msgstr ""
+
+msgid "the next level needs {n} experience"
 msgstr ""
 
 msgid "the officer offers no hunting bounty"
@@ -5875,6 +6324,9 @@ msgid ""
 "the throw-away list is empty - choose items in Character, Bag and supplies"
 msgstr ""
 
+msgid "the top level - nothing to lose"
+msgstr ""
+
 msgid "the {item} on key {key} are used up"
 msgstr ""
 
@@ -5928,6 +6380,10 @@ msgstr ""
 
 msgid ""
 "this character has no gathering skill: learn Fishing, Mining or Collect Herbs (one of them) from the gang's Guru Elder or Master Pepper"
+msgstr ""
+
+msgid ""
+"this character is at the top level: there is no next level to stay away from"
 msgstr ""
 
 msgid "this expression is too complex (over {n} parts or {d} deep)"
@@ -5986,6 +6442,9 @@ msgstr ""
 msgid "type your gang's highland number in Tools, Daily chores"
 msgstr ""
 
+msgid "unavailable"
+msgstr ""
+
 msgid "unbalanced quotes"
 msgstr ""
 
@@ -5993,6 +6452,9 @@ msgid "unexpected error: {err}"
 msgstr ""
 
 msgid "unfollow: I stop following you."
+msgstr ""
+
+msgid "unknown"
 msgstr ""
 
 msgid "unknown command: {cmd}"
@@ -6010,6 +6472,9 @@ msgstr ""
 msgid "unmute: the game talks again."
 msgstr ""
 
+msgid "until the next level needs at least"
+msgstr ""
+
 msgid "until the plan stops"
 msgstr ""
 
@@ -6017,6 +6482,10 @@ msgid "until= needs a condition, for example: until=kills >= 100"
 msgstr ""
 
 msgid "updating shard prices"
+msgstr ""
+
+msgid ""
+"used a {card}, but the character sheet shows no experience card running - trying again in a minute"
 msgstr ""
 
 msgid "using the hearthstone key"
@@ -6044,6 +6513,9 @@ msgid "walk to the enemy"
 msgstr ""
 
 msgid "walking on to {cell}"
+msgstr ""
+
+msgid "walking out of the safe zone to cast {skill}"
 msgstr ""
 
 msgid "walking to monsters"
@@ -6150,10 +6622,16 @@ msgstr ""
 msgid "{better} is ready again - putting {pet} away for it"
 msgstr ""
 
+msgid "{bonus}% more experience, {m} min {s} s left"
+msgstr ""
+
 msgid "{boss} (a boss) is {n} steps away - keeping {keep} steps from it"
 msgstr ""
 
 msgid "{buffer} ({n} new)"
+msgstr ""
+
+msgid "{card} ({n} in the bag)"
 msgstr ""
 
 msgid "{cave} - level {n} - {where}"
@@ -6358,6 +6836,9 @@ msgid "{name} (script)"
 msgstr ""
 
 msgid "{name} (speed +{speed}, level {level})"
+msgstr ""
+
+msgid "{name} ({id})"
 msgstr ""
 
 msgid "{name} ({n} new)"
@@ -6651,13 +7132,43 @@ msgid ""
 "{skill} didn't raise {pet}'s HP {n} times running - it may be landing on you instead. Pet potions for {minutes} minutes, then {skill} again"
 msgstr ""
 
+msgid "{skill} doesn't list {place} for this character"
+msgstr ""
+
+msgid "{skill} isn't on a skill key (putting skills on empty keys is off)"
+msgstr ""
+
+msgid ""
+"{skill} isn't on a skill key and no skill key is empty - put it on one to use it"
+msgstr ""
+
+msgid "{skill} not cast at {name}: {why}"
+msgstr ""
+
+msgid "{skill} on our kills while Vitality lasts ({n} now)"
+msgstr ""
+
+msgid "{skill} opened no menu (cooling down, or not enough MP?)"
+msgstr ""
+
 msgid "{skill} put on the empty skill key {key} (page {page})"
 msgstr ""
 
 msgid "{skill} stopped - starting it again"
 msgstr ""
 
+msgid ""
+"{skill} was broken off before it ended (something hit us) - fighting first"
+msgstr ""
+
+msgid ""
+"{skill} went out at {n} corpses in a row and the game never answered - trying again in 5 minutes"
+msgstr ""
+
 msgid "{skill}, {rank}; character level {level}"
+msgstr ""
+
+msgid "{skill}: {name}"
 msgstr ""
 
 msgid "{stage}, automatically: {job}"
@@ -6670,6 +7181,10 @@ msgid "{stage}: done {ok}; didn't finish {bad}"
 msgstr ""
 
 msgid "{state} {what} for {m} min on {map}, HP {hp}%{mp}, {k} kills"
+msgstr ""
+
+msgid ""
+"{state}. Active mute IDs: {mute}. Observed: {observed}; blocked: {dropped}; live muted: {live}; unsupported: {unsupported}."
 msgstr ""
 
 msgid "{tool} - {name}"
@@ -6710,6 +7225,9 @@ msgid "{who} isn't logged in to a game that Uncle Farmer sees"
 msgstr ""
 
 msgid "{who}'s game is busy with {what}"
+msgstr ""
+
+msgid "{why} - no more {skill} this run ({n} done)"
 msgstr ""
 
 msgid "{w} by {h} tiles, {n} exits."

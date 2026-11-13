@@ -43,10 +43,8 @@ The main window has three tabs (Ctrl+1, Ctrl+2, Ctrl+3):
 - **Log:** everything the bot did, or only the important events.
 
 Each game in the Games list has its own menu: select it and press the Applications key or
-Shift+F10, or right-click it. It has Walk to, Scan now, Character settings, Bag and supplies, Chat,
-Private messages, Results, mute and unmute, and the jobs that run at once: Sell the collection now,
-Sell shards now, Clean the bag now, Store items now and Update shard prices. An entry that can't be
-used right now, such as a job while that game's bot runs, is greyed out.
+Shift+F10, or right-click it. It holds the Tools, Character and Run submenus described below. An
+entry that can't be used right now, such as a job while that game's bot runs, is greyed out.
 
 On the Plans tab, New plan and New script are buttons. Everything else for the selected plan or
 script is in its menu: Run selected, Edit, Duplicate, Export, Delete, New plan, New script and
@@ -57,16 +55,25 @@ The menu bar has:
 
 - **File:** Settings, the log and results folders, and Exit.
 - **View:** the three tabs.
-- **Run:** Start, Stop, Pause or go on, Stop every bot, Walk to a dungeon or map, Schedules,
-  Results and Speak the results.
 - **Game:** mute and unmute this game or every game, and Open another game window.
 - **Messages:** Private messages, Chat, and Let everyone get replies again.
-- **Character:** Settings, Bag and supplies, Scan now, Another character, and Import or export
-  character settings.
-- **Tools:** Gem Maker, Equipment Enhancer, Daily chores, Gathering and Dungeons.
 - **Plans:** New plan, New script, Edit, Duplicate, Delete, and Import or export plans.
 - **Help:** the guides, keyboard shortcuts, script commands, commands for trusted players, Check
   for updates, contact, the Telegram updates channel, Donate, and About.
+
+**Tools**, **Character** and **Run** are not on the menu bar. They are submenus of each game's own
+menu in the Games list (select the game, then the Applications key or Shift+F10):
+
+- **Tools:** Gem Maker, Equipment Enhancer, Daily chores, Gathering, Dungeons, XP loser, Sound
+  Silencer, and the jobs that run at once: Sell the collection now, Sell shards now, Clean the bag
+  now, Store items now, Restock now and Update shard prices.
+- **Character:** Settings, Bag and supplies, Scan now, Another character, and Export or Import
+  character settings.
+- **Run:** Start, Stop, Pause or go on, Stop every bot, Walk to a dungeon or map, Schedules, Results
+  and Speak the results.
+
+Their keys (F5, F6, Ctrl+G, Ctrl+P, Ctrl+B and the rest) work from the main window without opening
+the menu. Where this guide says Tools, Character or Run, it means these submenus.
 
 Entries that can't be used right now are greyed out: Start while the selected game's bot runs, or
 Duplicate when a script, not a plan, is selected.
@@ -190,6 +197,15 @@ bosses it sees.
 Every character has its own settings. A character the bot has never seen gets them from its first
 scan.
 
+**Teleport skills.** A Mage's Teleportation (city squares) and an Elf's Elven Teleportation (Soul
+Burial Village, mist gods Ruins and the other high-level lands) are used for travel whenever they
+make the trip shorter; they cost only mana. The bot walks out of a town's safe zone first (no skill
+or attack works inside one), deals with anything attacking it, since a hit breaks the 10-second
+channel, gets off its fusion beast, and picks the place from the game's list. A skill on no key is
+put on an empty skill key. The places are learned from the game's menu the first time. After three
+broken tries it goes another way. Character, Settings, Travel, "Use the class's teleport skill
+(Mage, Elf)" turns it off.
+
 ## The bag
 
 Character, Bag and supplies (Ctrl+B):
@@ -215,7 +231,7 @@ stays in the bag). The list is read when the job runs, so a change you just made
 
 ### Triggers: jobs before and after farming
 
-Character, Settings, **Triggers** has two lists of the same five jobs:
+Character, Settings, **Triggers** has two lists of the same six jobs:
 
 - **Sell shards** (Sell shards now in the game's menu): the shards on the Sell list, at the nearest Shard Market.
 - **Clean the bag** (Clean the bag now in the game's menu): throws away, where the character stands, only what
@@ -223,6 +239,9 @@ Character, Settings, **Triggers** has two lists of the same five jobs:
 - **Update shard prices** (Update shard prices in the game's menu).
 - **Gathering**, as set in Tools, Gathering.
 - **Store items** (Store items now in the game's menu): the Store list, as above.
+- **Restock supplies** (Restock now in the game's menu): fills every supply switched on in
+  Character, Bag and supplies up to its "fill up to" amount, from the storehouse first and then a
+  shop, even when it isn't down to its refill point yet.
 
 **Before farming** runs when a plan, or a script that farms, starts - after the character is
 scanned and before the day's chores and the first farming line. **After farming** runs when a
@@ -361,6 +380,17 @@ it. A monster that is attacking you, or one nearly dead, is finished first. It s
 HP hasn't fallen for 6 seconds. With the pet out of sight or no HP reading, nothing is assumed.
 
 ## Tools
+
+### Sound Silencer
+
+Tools, Sound Silencer (in the game's menu) mutes game sounds by their number. Type a sound's number
+(1 to 99999) and press Add; in the Sounds list, the item's menu (Applications key or Shift+F10)
+has Move to Mute List, Move to Sounds List, Rename and Remove. A name is optional. Nothing changes
+until you press Save, which stores both lists in settings.json and mutes the Mute List's sounds in
+the game at once; closing without saving drops the changes. The saved list is applied again each
+time Uncle Farmer starts or a game connects. A sound that was already playing may finish before it
+goes quiet. Scripts can wait for and mute sounds too (`sound_wait`, `sound_mute`, `sound_watch`;
+see the script guide).
 
 Both tools can use your own gang's craftsmen (gangs pay less), another gang's (type its name), or
 the nearest city's; a gang's craftsmen stand in its base's Outer hall. They never spend below your

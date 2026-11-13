@@ -225,13 +225,15 @@ class EditingMixin(FrameParts):
         from ..chores import ChoresDialog
         from ..dungeon import DungeonDialog
         from ..gathering import GatheringDialog
+        from ..xploss import XpLoserDialog
         cls, cmd, title = {"gem": (GemMakerDialog, "gem_maker", _("Gem Maker")),
                            "enhance": (EnhancerDialog, "enhance", _("Equipment Enhancer")),
                            "chores": (ChoresDialog, "chores", _("Daily chores")),
                            "gather": (GatheringDialog, "gather", _("Gathering")),
-                           "dungeon": (DungeonDialog, "dungeon", _("Dungeons"))}[which]
+                           "dungeon": (DungeonDialog, "dungeon", _("Dungeons")),
+                           "xploss": (XpLoserDialog, "lose_xp", _("XP loser"))}[which]
         # "Add where I stand" and "Use where I stand now" read the game
-        extra = (self.snapshot,) if which in ("gather", "dungeon") else ()
+        extra = (self.snapshot,) if which in ("gather", "dungeon", "xploss") else ()
         with cls(self, name, *extra) as d:
             code = d.ShowModal()
             cfg = getattr(d, "cfg", None)
@@ -262,6 +264,10 @@ class EditingMixin(FrameParts):
         whatever Character settings says about selling after farming."""
         self.log(_("Sell shards now: started by hand"))
         self.run_errand("sell_shards\n", _("Selling shards"))
+
+    def restock_now(self) -> None:
+        """Run an explicit supply top-up through the same job as farming triggers."""
+        self.run_errand("restock\n", _("Restocking supplies"))
 
     def sell_collection_now(self) -> None:
         """Sell the selected character's gathered fish, ore, or herbs right away."""

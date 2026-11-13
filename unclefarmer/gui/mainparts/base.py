@@ -21,6 +21,7 @@ from ...clock import CLOCK, Clock
 from ...i18n import _
 
 if TYPE_CHECKING:
+    from ...soundrestore import SoundRestore
     from ... import chat, messages, updater
     from ...engine.botparts.parts import Sighting, Where
     from ...engine.runner import Run
@@ -81,6 +82,7 @@ def duration_text(seconds: float) -> str:
 
 
 class FrameParts(wx.Frame):
+    sound_restorer: SoundRestore
     clock: Clock = CLOCK
     # ---------------------------------------------------------------- state
     s: dict[str, Any]                       # the app settings (settings.load_app)
@@ -148,6 +150,7 @@ class FrameParts(wx.Frame):
         def clean_bag_now(self) -> None: ...
         def update_shard_prices_now(self) -> None: ...
         def store_items_now(self) -> None: ...
+        def restock_now(self) -> None: ...
         def edit_other_profile(self) -> None: ...
         def first_run(self) -> None: ...
         def check_game(self) -> None: ...
