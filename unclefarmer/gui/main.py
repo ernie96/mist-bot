@@ -83,6 +83,7 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         self.silencer_windows: dict[int, SilencerDialog] = {}
         self.sound_restorer = SoundRestore()
         self.games = []          # [(pid, character, map name)]
+        self.unavailable_agents = {}  # pid -> (port, secret) for stale or unreachable agent records
         self.items = []          # [("plan"|"script", name)]
         self.log_lines = []      # [(text, important)]
         self.last_line = {}      # pid -> the latest log line of that game's run
@@ -93,6 +94,7 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         self.snap = None         # (pid, snapshot, when): the last reading of a game
         self.snap_busy = False
         self.scanning = set()    # characters being scanned on a worker thread
+        self.pending_logins = {} # profile -> when automatic login opened its client
         self.updating = False
         self.close_reason = ""   # why the window closes, when it isn't the player (teardown.log)
         self.hotkeys: list[int] = []     # the global hotkeys this window holds
@@ -316,19 +318,11 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
                          command(_("Let everyone get replies &again"), lambda e: self.forget_answered())],
                          ("messages_private", "messages_chat", "messages_reset"))
         plans = menu(_("&Plans"), [command(_("&New plan"), lambda e: self.new_plan(), "Ctrl+N"),
-                                    command(_("New &script"), lambda e: self.new_script(), "Ctrl+Shift+N"),
-                                    command(_("&Edit"), lambda e: self.edit_selected(), "Ctrl+E"),
-                                    command(_("D&uplicate"), lambda e: self.copy_plan(), "Ctrl+D"),
-                                    command(_("&Delete"), lambda e: self.delete_selected())],
-                     ("plans_new", "plans_new_script", "plans_edit", "plans_duplicate", "plans_delete"))
-        plan_transfer = wx.Menu()
-        add(plan_transfer, [command(_("E&xport plan"), lambda e: self.export_plan()),
-                            command(_("&Import plan"), lambda e: self.import_plan())],
-            ("plans_export", "plans_import"))
-        plans.AppendSubMenu(plan_transfer, _("Import or export plans"))
+                                    command(_("New &script"), lambda e: self.new_script(), "Ctrl+Shift+N")],
+                     ("plans_new", "plans_new_script"))
         self.action_menus = {"run": run_menu, "game": game_menu, "messages": messages_menu,
                              "character": character, "tools": tools_menu,
-                             "plans": plans, "plan_transfer": plan_transfer}
+                             "plans": plans}
         for current in self.action_menus.values():
             current.Bind(wx.EVT_MENU_OPEN, self.sync_action_menus)
         menu(_("&Help"), [command(_("&Quick guide"), lambda e: show_text(self, _("Quick guide"), GUIDE), "F1"),
@@ -347,6 +341,12 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
                           command(_("&About Uncle Farmer"), lambda e: info(self, _("Uncle Farmer {v}\nA farming bot for Mist World.",
                                                                         v=__version__)))])
         self.SetMenuBar(bar)
+        plan_shortcuts: list[tuple[int, Handler]] = [(ord("E"), lambda e: self.edit_selected()),
+                                                     (ord("D"), lambda e: self.copy_plan())]
+        for key, handler in plan_shortcuts:
+            command_id = wx.Window.NewControlId()
+            self.Bind(wx.EVT_MENU, handler, id=command_id)
+            accelerators.append(wx.AcceleratorEntry(wx.ACCEL_CTRL, key, command_id))
         self.SetAcceleratorTable(wx.AcceleratorTable(accelerators))
         self.Bind(wx.EVT_WINDOW_DESTROY, self.destroy_context_menu)
         self.sync_action_menus()
@@ -374,7 +374,8 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
         enabled = action_menu_states(available=available, running=running, any_running=bool(self.runs),
                                      has_items=bool(self.items), has_messengers=bool(self.messengers), selected=selected)
         for key, value in enabled.items():
-            self.action_items[key].Enable(value)
+            if key in self.action_items:
+                self.action_items[key].Enable(value)
         if event is not None:
             event.Skip()
 
@@ -480,7 +481,6 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
                 m.stop()
             for f in self.chats.values():
                 f.stop()
-        self.destroyed = True         # pending CallLater/CallAfter work must not touch the window
         with down.step("stop the sound readers", must=False):
             restorer = getattr(self, "sound_restorer", None)
             if restorer is not None:
@@ -506,7 +506,7 @@ class MainFrame(GamesMixin, RunsMixin, LogMixin, TalkMixin, ResultsMixin, Editin
             with down.step("stop listening to other programs", must=False):
                 remote.stop()
         with down.step("destroy the window", must=False):
-            self.Destroy()
+            self.destroyed = self.Destroy()  # only successful destruction authorizes the paused updater
 
 
 def _logs() -> str:
@@ -535,7 +535,7 @@ Main window
   Ctrl+Shift+E        Equipment Enhancer
   Ctrl+Shift+D        Daily chores
   Ctrl+Shift+F        Gathering: fishing, mining or collecting herbs
-  Ctrl+Shift+G        Dungeons: Scorpion Cave and Spider cave, once a day
+  Ctrl+Shift+G        Dungeons: the experience caves, one a day
   Ctrl+Shift+X        XP loser: die to guards so the next level stays far away
   Ctrl+P              Character settings
   Ctrl+B              Bag and supplies
@@ -638,7 +638,8 @@ supplies to their targets, withdrawing or buying only what is missing, even when
 down to their refill points yet.
 Character, Settings, Triggers: tick any of these jobs (and Gathering) to run by themselves before
 farming starts, after farming ends, or both - each stage has its own ticks.
-Tools, Dungeons (Ctrl+Shift+G): Scorpion Cave and Spider cave, each once a game day, for as many
+Tools, Dungeons (Ctrl+Shift+G): Spider cave, Scorpion Cave, Bottomless pit or White Bone Cave,
+one a game day, for as many
 kills as their 15 minutes give. Before setting out it tops up what you set on the Supplies tab (the
 pet's blue potions and Rice Rolls, your blue and red potions) from the storehouse or the shop; then
 it rides to the entrance, goes in, goes round the whole cave fighting whatever is in reach (area

@@ -11,6 +11,7 @@
     "benchmark.py",
     "build_native.py",
     "nightwatch.py",
+    "chestwatch.py",
     "profile_bot.py",
     "agent"
   ],

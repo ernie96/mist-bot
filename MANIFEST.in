@@ -12,7 +12,7 @@ include README.md CHANGELOG.md CONTRIBUTING.md FORK.md LICENSE THIRD_PARTY_NOTIC
 include pyproject.toml uv.lock requirements.txt requirements-dev.txt pyrightconfig.json .python-version
 include UncleFarmer.pyw nvdaControllerClient64.dll
 include benchmark.py build_exe.py build_native.py check.py ci_build.py docs_html.py
-include export_requirements.py nightwatch.py profile_bot.py release.py sync_upstream.py
+include chestwatch.py export_requirements.py nightwatch.py profile_bot.py release.py sync_upstream.py
 include bench_after.txt bench_baseline.txt
 
 graft unclefarmer

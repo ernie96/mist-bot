@@ -3,6 +3,9 @@
     uv run python sync_upstream.py            what's new upstream, and which files would conflict
     uv run python sync_upstream.py merge      merge it, settle the conflicts that always go the same way,
                                               rebuild the generated files, and say what is left
+    uv run python sync_upstream.py translations
+                                              rebuild the translations with the fork's own put back
+                                              (merge does it when no code conflict is left)
 
 Nothing is committed and nothing is pushed: look at what's left, finish it, run check.py, commit.
 Upstream's tags are never fetched (it has its own v1.0.1, not this fork's).
@@ -95,6 +98,17 @@ def restore_translations(before: dict[str, str]) -> int:
     return filled
 
 
+def translations(before: dict[str, str] | None = None) -> None:
+    """Rebuild the catalogs (the template gets the fork's own texts, empty in upstream's .po files),
+    put the fork's translations back from HEAD where they are empty, and compile again."""
+    if before is None:
+        before = {p: git("show", "HEAD:" + p) for p in git("ls-files", "lang").split() if p.endswith(".po")}
+    run("uv", "run", "python", "-m", "unclefarmer", "--strings")
+    print("Fork translations put back: %d" % restore_translations(before))
+    run("uv", "run", "python", "-m", "unclefarmer", "--strings")
+    git("add", "lang")
+
+
 def merge(theirs: str) -> None:
     if git("status", "--porcelain").strip():
         sys.exit("There are uncommitted changes: commit or stash them first.")
@@ -115,10 +129,13 @@ def merge(theirs: str) -> None:
     if "uv.lock" in left or "pyproject.toml" in left:
         run("uv", "lock")
     run("uv", "run", "python", "export_requirements.py")
-    print("Fork translations put back: %d" % restore_translations(before))
-    run("uv", "run", "python", "-m", "unclefarmer", "--strings")
-    git("add", "lang", "requirements.txt", "requirements-dev.txt", "uv.lock")
+    git("add", "requirements.txt", "requirements-dev.txt", "uv.lock")
     still = conflicted()
+    if still:
+        print("\nThe translations are rebuilt once the code merges: settle the files below, then run\n"
+              "  uv run python sync_upstream.py translations")
+    else:
+        translations(before)
     settled = sorted(set(left) - set(still))
     print("\nSettled: %s" % (", ".join(settled) or "nothing"))
     for path in ("README.md", "CONTRIBUTING.md"):
@@ -130,6 +147,9 @@ def merge(theirs: str) -> None:
 
 
 def main() -> None:
+    if sys.argv[1:] == ["translations"]:
+        translations()
+        return
     theirs = fetch()
     if sys.argv[1:] == ["merge"]:
         merge(theirs)

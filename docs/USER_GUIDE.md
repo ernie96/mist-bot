@@ -206,6 +206,14 @@ put on an empty skill key. The places are learned from the game's menu the first
 broken tries it goes another way. Character, Settings, Travel, "Use the class's teleport skill
 (Mage, Elf)" turns it off.
 
+**Treasure chests.** Now and then the game announces a treasure chest on a farming map ("There's
+a Shining Small Chest in Margit Rainforest..."); the first player to open it gets what's inside,
+usually arnebia and shards. When one comes into sight while farming, the bot finishes any fight,
+walks to it, selects it, presses Enter and chooses "Open the chest", says so, and the results
+count it. It leaves a chest near a boss or more than 80 steps out of its way, and one that won't
+open is left for five minutes. Advanced, Fighting, "Open the chests that turn up while farming"
+turns it off.
+
 ## The bag
 
 Character, Bag and supplies (Ctrl+B):
@@ -231,7 +239,7 @@ stays in the bag). The list is read when the job runs, so a change you just made
 
 ### Triggers: jobs before and after farming
 
-Character, Settings, **Triggers** has two lists of the same six jobs:
+Character, Settings, **Triggers** has two lists, Before farming and After farming. The jobs:
 
 - **Sell shards** (Sell shards now in the game's menu): the shards on the Sell list, at the nearest Shard Market.
 - **Clean the bag** (Clean the bag now in the game's menu): throws away, where the character stands, only what
@@ -242,6 +250,14 @@ Character, Settings, **Triggers** has two lists of the same six jobs:
 - **Restock supplies** (Restock now in the game's menu): fills every supply switched on in
   Character, Bag and supplies up to its "fill up to" amount, from the storehouse first and then a
   shop, even when it isn't down to its refill point yet.
+
+Each list runs from top to bottom, one step at a time. A step is one of these jobs or a saved
+script; select it and use its menu to switch it off, move it up or down, or edit it. A step can
+wait up to an hour after it succeeds before the next one starts ("Delay after success"), and can
+be marked DETERMINISTIC: if it fails, the rest of the list is skipped, and in the Before farming
+list farming doesn't start either. A step that farms (Dungeons, or a script with a farm or dungeon
+line) keeps the daily stop. Profiles from before the lists keep their ticked jobs in their old
+order.
 
 **Before farming** runs when a plan, or a script that farms, starts - after the character is
 scanned and before the day's chores and the first farming line. **After farming** runs when a
@@ -533,11 +549,13 @@ reached by going up past the top.
 
 ### Dungeons
 
-Tools, Dungeons (Ctrl+Shift+G) runs the cave a character can enter once a game day: Spider cave
-(level 40, entered at water curtained cave) or Scorpion Cave (level 60, entered at thousand miles
-of rivers). The game lets each character into one of them a day, not one of each. The visit gives
-15 minutes inside; the aim is as many kills as those minutes give. Caves for levels 80, 90 and 100
-will be added to the same list.
+Tools, Dungeons (Ctrl+Shift+G) runs the experience cave a character can enter once a game day:
+Spider cave (level 40, entered at water curtained cave), Scorpion Cave (level 60, thousand miles of
+rivers), the Bottomless pit (level 80, Valley of Luxuriant forests; not tested yet) or the White
+Bone Cave (level 90, ancient Sealed Land, reached by cable car). The game lets each character into
+one of them a day, not one of each. The visit gives 15 minutes inside; the aim is as many kills as
+those minutes give. A dungeon run started while the character is already inside one of the caves
+hunts on until the game moves it out. When the day's visit is already used, the bot says so.
 
 - **Caves tab:** choose the cave, or "The highest cave my level lets in" (the default). Below it
   the window says whether this character has had its cave today. A cave above your level isn't
@@ -631,6 +649,9 @@ runs next and whether it is on. Add is a button; Edit, Turn on or off, Delete an
 the selected schedule's menu (Applications key, Shift+F10, or right-click). Enter edits a schedule
 and Delete deletes it. Changes are saved straight away, in `schedules.json` beside the settings (an update never
 replaces it).
+
+Besides plans and scripts, a schedule can run one Tools job, or a character's whole Before farming
+or After farming list, on its own (the Tools and Triggers tabs of the schedule editor).
 
 - A scheduled plan starts as the Start button would, in the game that character is logged in to:
   the same log, results, farming day and end place.
@@ -791,6 +812,17 @@ sent again. A message longer than the game's 200 characters goes in parts, cut a
 the other.
 
 Nothing is read out and no tone plays while that game's own window is in front.
+
+**Replying.** In either chat tab, a message's menu (Applications key or Shift+F10) has Reply: the
+text box gets the sender's `@name` in front, and the reply goes to that channel or conversation
+even if you move to another one. Escape or Cancel reply leaves reply mode and keeps what you typed.
+
+**Chat filters.** A message's menu also has "Add to filter list", which hides every message with
+exactly that text, in every game's Chat window. "Chat filters" in either tab lists the hidden
+messages and the rules; a rule matches the exact message, text it contains, or a pattern with `*`
+and `?`, with or without matching case, and "Test filter" tries one on a sample. Changes there
+count when you press Save. Filters only hide lines in the Chat window: speech, tones, voice
+messages and private-message replies go on as before, and nothing is deleted.
 
 Chat is never saved: it is kept in memory while Uncle Farmer runs, and gone when you close it.
 

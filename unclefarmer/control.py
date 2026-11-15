@@ -171,10 +171,16 @@ TOOLS: tuple[Tool, ...] = (
 
     # ---------------------------------------------------------------- doing
     Tool("select_game", "Select a game in the Games list (what the player's own keys then act on).", GAME, kind=ACT),
-    Tool("start_plan", "Start a saved plan or script on a game, as the Start button does. Left out: what that "
-                       "character ran last.",
-         {**GAME, "name": _s("The plan or script."), "type": _s("plan or script (found by name when left out).",
-                                                                enum=["plan", "script"])}, kind=ACT),
+    Tool("start_plan", "Start a saved plan or script, one Tools job (type=tool, name=the job) or a character's "
+                       "Before or After farming list (type=trigger, name=before or after) on a game, as the Start "
+                       "button does. Left out: what that character ran last. With character and no game, a "
+                       "character that isn't logged in is logged in automatically (a game window is opened, and "
+                       "the game's own saved account is used): the answer then says it is waiting; call again in "
+                       "half a minute.",
+         {**GAME, "name": _s("The plan, script, job, or before/after."),
+          "type": _s("plan, script, tool or trigger (a plan or script is found by name when left out).",
+                     enum=["plan", "script", "tool", "trigger"]),
+          "character": _s("The character to run it for, logging it in when needed.")}, kind=ACT),
     Tool("stop", "Stop a game's run the safe way, as the Stop button does.", GAME, kind=ACT),
     Tool("stop_all", "Stop every running bot.", kind=ACT),
     Tool("pause", "Pause a game's run where it is (keys let go, the run not ended), so the player can play by hand.",
@@ -243,9 +249,11 @@ TOOLS: tuple[Tool, ...] = (
          {"character": _s("Profile or display name."), **GAME, "path": _s("The file."), **CONFIRM},
          ("path", "confirm"), kind=RISKY),
     Tool("add_schedule", "Add a schedule. repeat: once (date YYYY-MM-DD and time HH:MM), daily (time), weekly "
-                         "(time and days, 0=Monday..6=Sunday).",
-         {"character": _s("Profile or display name."), "name": _s("The plan or script."),
-          "type": _s("plan or script.", enum=["plan", "script"]), "repeat": _s("once, daily or weekly.",
+                         "(time and days, 0=Monday..6=Sunday). It runs a plan or script, one Tools job "
+                         "(type=tool) or the character's Before or After farming list (type=trigger).",
+         {"character": _s("Profile or display name."), "name": _s("The plan, script, job, or before/after."),
+          "type": _s("plan, script, tool or trigger.", enum=["plan", "script", "tool", "trigger"]),
+          "repeat": _s("once, daily or weekly.",
                                                                                 enum=["once", "daily", "weekly"]),
           "time": _s("HH:MM."), "date": _s("YYYY-MM-DD, for once."),
           "days": {"type": "array", "items": {"type": "integer"}, "description": "0=Monday .. 6=Sunday."},
@@ -256,9 +264,26 @@ TOOLS: tuple[Tool, ...] = (
          ("id", "enabled"), kind=ACT),
     Tool("delete_schedule", "Delete a schedule and its history.", {"id": _s("Its id."), **CONFIRM},
          ("id", "confirm"), kind=RISKY),
-    Tool("send_chat", "Send a line on a chat channel of the game, as the player. Ask the player first.",
+    Tool("send_chat", "Send a line on a chat channel of the game, as the player. reply_to puts that player's "
+                      "@name in front, as the Chat window's Reply does. Ask the player first.",
          {**GAME, "channel": _s("global, map, nearby, gang, team, international or private_channel."),
-          "text": _s("The line."), **CONFIRM}, ("channel", "text", "confirm"), kind=RISKY),
+          "text": _s("The line."), "reply_to": _s("A player's name to reply to."), **CONFIRM},
+         ("channel", "text", "confirm"), kind=RISKY),
+    Tool("get_chat_filters", "The chat filter rules: each hides chat lines whose text matches (mode exact, "
+                             "contains or wildcard with * and ?; case_sensitive). Filters only hide lines in the Chat "
+                             "window."),
+    Tool("set_chat_filters", "Replace the chat filter rules. Each rule {mode: exact|contains|wildcard, text, "
+                             "enabled, case_sensitive}; keep a rule's id to keep it.",
+         {"rules": {"type": "array", "items": {"type": "object"}}}, ("rules",), kind=ACT),
+    Tool("get_triggers", "A character's Before farming and After farming lists: the steps in order, each a Tools "
+                         "job or script:<name>, with its delay after success (seconds), enabled and deterministic "
+                         "(a failure stops the rest, and before farming, farming).",
+         {"character": _s("Profile or display name."), **GAME}),
+    Tool("set_triggers", "Replace one of a character's lists. Each step {action: a job name or script:<name>, "
+                         "delay: 0-3600, enabled, deterministic}.",
+         {"character": _s("Profile or display name."), **GAME,
+          "stage": _s("before or after.", enum=["before", "after"]),
+          "steps": {"type": "array", "items": {"type": "object"}}}, ("stage", "steps"), kind=ACT),
     Tool("send_private_message", "Send a private message to a player, as the player. Ask the player first.",
          {**GAME, "to": _s("The player's name or id."), "text": _s("The message."), **CONFIRM},
          ("to", "text", "confirm"), kind=RISKY),

@@ -32,6 +32,9 @@ msgstr ""
 msgid "&About Uncle Farmer"
 msgstr ""
 
+msgid "&Action:"
+msgstr ""
+
 msgid "&Add"
 msgstr ""
 
@@ -39,6 +42,9 @@ msgid "&Add a supply"
 msgstr ""
 
 msgid "&Add an item"
+msgstr ""
+
+msgid "&Add new filter"
 msgstr ""
 
 msgid "&Add where I stand"
@@ -92,13 +98,13 @@ msgstr ""
 msgid "&Chase monsters up to this many steps away (patrol loops):"
 msgstr ""
 
+msgid "&Chat filters"
+msgstr ""
+
 msgid "&Check (F5)"
 msgstr ""
 
 msgid "&Check only"
-msgstr ""
-
-msgid "&Clean the bag (game menu, Clean the bag now)"
 msgstr ""
 
 msgid "&Close"
@@ -120,6 +126,9 @@ msgstr ""
 msgid "&Copy the address"
 msgstr ""
 
+msgid "&DETERMINISTIC: stop the sequence if this action fails"
+msgstr ""
+
 msgid "&Daily chores"
 msgstr ""
 
@@ -138,6 +147,9 @@ msgstr ""
 msgid "&Delete"
 msgstr ""
 
+msgid "&Delete filter"
+msgstr ""
+
 msgid "&Donation, once a day:"
 msgstr ""
 
@@ -147,7 +159,13 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
+msgid "&Edit filter"
+msgstr ""
+
 msgid "&Email address:"
+msgstr ""
+
+msgid "&Enabled"
 msgstr ""
 
 msgid "&End:"
@@ -166,6 +184,9 @@ msgid "&Feed the gang's breed beast at the Animal Shed"
 msgstr ""
 
 msgid "&File"
+msgstr ""
+
+msgid "&Filters:"
 msgstr ""
 
 msgid "&Find the running game"
@@ -187,9 +208,6 @@ msgid "&Games:"
 msgstr ""
 
 msgid "&Gang name (another gang's):"
-msgstr ""
-
-msgid "&Gathering (as set in Tools, Gathering)"
 msgstr ""
 
 msgid "&Gem Maker"
@@ -242,9 +260,6 @@ msgid "&Import"
 msgstr ""
 
 msgid "&Import character settings"
-msgstr ""
-
-msgid "&Import plan"
 msgstr ""
 
 msgid "&Insert command"
@@ -341,6 +356,9 @@ msgstr ""
 msgid "&Only fight (names, separated by commas):"
 msgstr ""
 
+msgid "&Open the chests that turn up while farming"
+msgstr ""
+
 msgid "&Open the log folder"
 msgstr ""
 
@@ -366,9 +384,6 @@ msgid "&Pick from monsters near me"
 msgstr ""
 
 msgid "&Place:"
-msgstr ""
-
-msgid "&Plan or script:"
 msgstr ""
 
 msgid "&Plans"
@@ -404,10 +419,13 @@ msgstr ""
 msgid "&Replies, one per line:"
 msgstr ""
 
+msgid "&Reply"
+msgstr ""
+
 msgid "&Rest before the next fight below HP (%):"
 msgstr ""
 
-msgid "&Restock supplies (game menu, Restock now)"
+msgid "&Restore selected message"
 msgstr ""
 
 msgid "&Results"
@@ -435,9 +453,6 @@ msgid "&Schedules:"
 msgstr ""
 
 msgid "&Script commands"
-msgstr ""
-
-msgid "&Sell shards (game menu, Sell shards now)"
 msgstr ""
 
 msgid "&Sell what is gathered to the Aquaculture, Ore or Herb Buyer"
@@ -489,6 +504,9 @@ msgstr ""
 msgid "&Telegram updates channel"
 msgstr ""
 
+msgid "&Test filter"
+msgstr ""
+
 msgid "&Then:"
 msgstr ""
 
@@ -508,9 +526,6 @@ msgid "&Travel on fusion beast:"
 msgstr ""
 
 msgid "&Unmute this game"
-msgstr ""
-
-msgid "&Update shard prices (game menu, Update shard prices)"
 msgstr ""
 
 msgid "&Use the selected skill:"
@@ -603,6 +618,9 @@ msgstr ""
 msgid ", {n} threads"
 msgstr ""
 
+msgid "1 chest opened"
+msgstr ""
+
 msgid "1 game, bot running"
 msgstr ""
 
@@ -689,6 +707,13 @@ msgstr ""
 msgid "Action menu"
 msgstr ""
 
+msgid "Actions in execution &order:"
+msgstr ""
+
+msgid ""
+"Actions run from top to bottom. A failed DETERMINISTIC Before action also prevents farming. After runs automatically only when farming ends by itself."
+msgstr ""
+
 msgid "Activity:"
 msgstr ""
 
@@ -719,10 +744,16 @@ msgstr ""
 msgid "Add at least one farming spot."
 msgstr ""
 
+msgid "Add new filter"
+msgstr ""
+
 msgid "Add our &own gang"
 msgstr ""
 
 msgid "Add selected to Saved Sounds"
+msgstr ""
+
+msgid "Add to &filter list"
 msgstr ""
 
 msgid "Added to the draft. Choose Save to apply."
@@ -741,7 +772,7 @@ msgstr ""
 msgid "After a &time limit"
 msgstr ""
 
-msgid "After farming (when farming finishes by itself, never after Stop)"
+msgid "After farming"
 msgstr ""
 
 msgid "Agent"
@@ -854,7 +885,7 @@ msgstr ""
 msgid "Battlefield merit"
 msgstr ""
 
-msgid "Before farming (when a plan or a script that farms starts)"
+msgid "Before farming"
 msgstr ""
 
 msgid "Before moving on to the next spot (only with more than one spot)"
@@ -877,6 +908,9 @@ msgid "Between fights"
 msgstr ""
 
 msgid "Bot"
+msgstr ""
+
+msgid "Bottomless pit"
 msgstr ""
 
 msgid "Bought:"
@@ -906,6 +940,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "Cancel &reply"
+msgstr ""
+
 msgid "Caves"
 msgstr ""
 
@@ -924,6 +961,9 @@ msgstr ""
 msgid "Change target mode"
 msgstr ""
 
+msgid "Changes apply when you save."
+msgstr ""
+
 msgid "Changes are a draft until Save."
 msgstr ""
 
@@ -936,6 +976,10 @@ msgstr ""
 msgid "Character settings - {name}"
 msgstr ""
 
+msgid ""
+"Character settings, Triggers: the {stage} list can't be read ({err}) - open Character settings and save it again"
+msgstr ""
+
 msgid "Character sheet"
 msgstr ""
 
@@ -943,6 +987,9 @@ msgid "Character:"
 msgstr ""
 
 msgid "Chat - {name}"
+msgstr ""
+
+msgid "Chat filters"
 msgstr ""
 
 msgid "Chat needs the new agent in this game: restart the game."
@@ -957,11 +1004,20 @@ msgstr ""
 msgid "Check the bag for restocking every (seconds):"
 msgstr ""
 
+msgid "Chests opened: {n}"
+msgstr ""
+
 msgid "Chime"
 msgstr ""
 
 msgid ""
 "Choose &skills from what the game says about them (off: press the attack keys in turn)"
+msgstr ""
+
+msgid "Choose Before farming or After farming."
+msgstr ""
+
+msgid "Choose a character."
 msgstr ""
 
 msgid "Choose a city square:"
@@ -970,10 +1026,16 @@ msgstr ""
 msgid "Choose a command to insert at the cursor:"
 msgstr ""
 
+msgid "Choose a filter matching type."
+msgstr ""
+
 msgid "Choose a map."
 msgstr ""
 
-msgid "Choose a plan or script to run."
+msgid "Choose a tool or a saved script."
+msgstr ""
+
+msgid "Choose an action to run."
 msgstr ""
 
 msgid "Choose in a dialog"
@@ -995,9 +1057,6 @@ msgid "City squares"
 msgstr ""
 
 msgid "Cl&ear"
-msgstr ""
-
-msgid "Clea&n the bag (game menu, Clean the bag now)"
 msgstr ""
 
 msgid "Clean the &bag now"
@@ -1084,6 +1143,9 @@ msgstr ""
 msgid "Contact the developer"
 msgstr ""
 
+msgid "Contains text"
+msgstr ""
+
 msgid "Contribution"
 msgstr ""
 
@@ -1144,6 +1206,9 @@ msgid "Couldn't import the plan: {err}"
 msgstr ""
 
 msgid "Couldn't import the settings: {err}"
+msgstr ""
+
+msgid "Couldn't open it."
 msgstr ""
 
 msgid "Couldn't open it: {err}"
@@ -1225,6 +1290,9 @@ msgstr ""
 msgid "Deaths before stopping:"
 msgstr ""
 
+msgid "Delay after success (&seconds):"
+msgstr ""
+
 msgid "Delete the schedule for {what} ({who})?"
 msgstr ""
 
@@ -1240,6 +1308,9 @@ msgstr ""
 msgid "Ding"
 msgstr ""
 
+msgid "Disabled"
+msgstr ""
+
 msgid "Discard item"
 msgstr ""
 
@@ -1248,6 +1319,9 @@ msgstr ""
 
 msgid ""
 "Do the day's chores at the start of the &first farming run each game day"
+msgstr ""
+
+msgid "Does not match"
 msgstr ""
 
 msgid "Don't donate"
@@ -1325,9 +1399,6 @@ msgstr ""
 msgid "E&xport character settings"
 msgstr ""
 
-msgid "E&xport plan"
-msgstr ""
-
 msgid "Each sound needs an ID, a name, and a mute setting."
 msgstr ""
 
@@ -1337,10 +1408,22 @@ msgstr ""
 msgid "East edge (x):"
 msgstr ""
 
+msgid "Edit filter"
+msgstr ""
+
 msgid "Edit schedule"
 msgstr ""
 
 msgid "Elite"
+msgstr ""
+
+msgid "Enable/&disable"
+msgstr ""
+
+msgid "Enable/&disable filter"
+msgstr ""
+
+msgid "Enabled"
 msgstr ""
 
 msgid "End on a map &without monsters"
@@ -1380,6 +1463,9 @@ msgid "Enter a name for the plan."
 msgstr ""
 
 msgid "Enter a sound ID between 1 and 99999."
+msgstr ""
+
+msgid "Enter filter text or a pattern."
 msgstr ""
 
 msgid "Enter sound IDs, ranges, all, or off."
@@ -1442,6 +1528,9 @@ msgid ""
 "Everything the buyer lists is sold, except what you keep in Character, Bag and supplies (an item set to Keep, or the number you keep of it). Before the gang's area the bot sells what it carries, since that half hour can't be left and taken up again."
 msgstr ""
 
+msgid "Exact message"
+msgstr ""
+
 msgid "Experience"
 msgstr ""
 
@@ -1502,8 +1591,13 @@ msgstr ""
 msgid "Fill &up to:"
 msgstr ""
 
-msgid ""
-"Fills enabled supplies to their configured targets, even above their automatic refill thresholds."
+msgid "Filter list"
+msgstr ""
+
+msgid "Filter settings"
+msgstr ""
+
+msgid "Filter text or &pattern:"
 msgstr ""
 
 msgid "Fishing"
@@ -1579,9 +1673,6 @@ msgid "Gangs' production areas (a Lake, Mining Area or Herbal Garden)"
 msgstr ""
 
 msgid "Gangs, in &order (the bot goes to each in turn):"
-msgstr ""
-
-msgid "Gat&hering (as set in Tools, Gathering)"
 msgstr ""
 
 msgid "Gathe&ring"
@@ -1756,6 +1847,13 @@ msgstr ""
 msgid "Here, next to you."
 msgstr ""
 
+msgid "Hidden &messages and matching filters:"
+msgstr ""
+
+msgid ""
+"Hidden messages stay in the current chat buffers. Only filter rules are saved."
+msgstr ""
+
 msgid "Highest l&evel to make:"
 msgstr ""
 
@@ -1778,9 +1876,6 @@ msgid "How it works:"
 msgstr ""
 
 msgid "How the game works"
-msgstr ""
-
-msgid "How they run"
 msgstr ""
 
 msgid ""
@@ -1859,9 +1954,6 @@ msgid "If none of them is in the room, share with &anyone there"
 msgstr ""
 
 msgid "Import character settings"
-msgstr ""
-
-msgid "Import or export plans"
 msgstr ""
 
 msgid "Import plan"
@@ -2061,12 +2153,6 @@ msgstr ""
 msgid "Looking for your application."
 msgstr ""
 
-msgid "Lose e&xperience (as set in Tools, XP loser)"
-msgstr ""
-
-msgid "Lose experience (as set in Tools, XP lose&r)"
-msgstr ""
-
 msgid "Low HP"
 msgstr ""
 
@@ -2130,6 +2216,18 @@ msgstr ""
 msgid "Master: stable releases"
 msgstr ""
 
+msgid "Match &case"
+msgstr ""
+
+msgid "Matches"
+msgstr ""
+
+msgid "Matching &type:"
+msgstr ""
+
+msgid "Matching filters disabled. Save to restore these messages in chat."
+msgstr ""
+
 msgid "Messa&ge to {where}:"
 msgstr ""
 
@@ -2137,6 +2235,9 @@ msgid "Messa&ge:"
 msgstr ""
 
 msgid "Message about Mist Bot"
+msgstr ""
+
+msgid "Message added to the filter list."
 msgstr ""
 
 msgid "Mining"
@@ -2282,6 +2383,9 @@ msgstr ""
 msgid "Next panel"
 msgstr ""
 
+msgid "No"
+msgstr ""
+
 msgid "No Gem Maker, Equipment Enhancer or chores runs."
 msgstr ""
 
@@ -2312,6 +2416,9 @@ msgid "No development build of Uncle Farmer can be seen on GitHub yet."
 msgstr ""
 
 msgid "No email program opened. Write to {email} from your email."
+msgstr ""
+
+msgid "No enabled triggers are configured for this sequence."
 msgstr ""
 
 msgid "No farming spots yet."
@@ -2654,9 +2761,6 @@ msgstr ""
 msgid "Plan &name:"
 msgstr ""
 
-msgid "Plan or script"
-msgstr ""
-
 msgid ""
 "Plan {name} was exported to:\n"
 "{path}"
@@ -2675,6 +2779,9 @@ msgid "Plans"
 msgstr ""
 
 msgid "Plans and &scripts:"
+msgstr ""
+
+msgid "Plans and scripts"
 msgstr ""
 
 msgid "Players near:"
@@ -2825,19 +2932,16 @@ msgstr ""
 msgid "Reply lines"
 msgstr ""
 
+msgid "Replying to {name}: {message}"
+msgstr ""
+
 msgid "Rest &until HP (%):"
 msgstr ""
 
 msgid "Restart Uncle Farmer to switch the language."
 msgstr ""
 
-msgid "Restoc&k supplies (game menu, Restock now)"
-msgstr ""
-
 msgid "Restock &now"
-msgstr ""
-
-msgid "Restock now"
 msgstr ""
 
 msgid "Restock now: a restock is already running."
@@ -2858,6 +2962,10 @@ msgid "Restock now: supplies are at their configured targets."
 msgstr ""
 
 msgid "Restocking supplies"
+msgstr ""
+
+msgid ""
+"Restoring disables all matching rules, also restoring other messages they hide."
 msgstr ""
 
 msgid "Results"
@@ -2914,9 +3022,6 @@ msgstr ""
 msgid "S&top"
 msgstr ""
 
-msgid "S&tore items (game menu, Store items now)"
-msgstr ""
-
 msgid "S&tore items now"
 msgstr ""
 
@@ -2942,6 +3047,9 @@ msgid "Save as script"
 msgstr ""
 
 msgid "Save changes to the script?"
+msgstr ""
+
+msgid "Saved account email:"
 msgstr ""
 
 msgid "Saved. It's in the Plans tab as a script."
@@ -2993,9 +3101,6 @@ msgid "Script: {name}"
 msgstr ""
 
 msgid "Scripting &guide"
-msgstr ""
-
-msgid "Se&ll shards (game menu, Sell shards now)"
 msgstr ""
 
 msgid "Se&ttings"
@@ -3243,9 +3348,6 @@ msgstr ""
 msgid "Spider cave"
 msgstr ""
 
-msgid "St&ore items (game menu, Store items now)"
-msgstr ""
-
 msgid "St&ore:"
 msgstr ""
 
@@ -3418,6 +3520,12 @@ msgstr ""
 msgid "Tell them now and then that I'm a&way"
 msgstr ""
 
+msgid "Test &message:"
+msgstr ""
+
+msgid "That filter already exists."
+msgstr ""
+
 msgid ""
 "That is longer than the game's 200 characters: it goes in {n} parts, one every 2 seconds (3 on Global), as fast as the game allows."
 msgstr ""
@@ -3426,6 +3534,9 @@ msgid "That place is in your list already."
 msgstr ""
 
 msgid "That schedule is gone"
+msgstr ""
+
+msgid "That script no longer exists. Choose another action."
 msgstr ""
 
 msgid "That sound ID is already in the lists."
@@ -3462,6 +3573,10 @@ msgstr ""
 
 msgid ""
 "The agent isn't installed in the game yet, and without it a second game closes right after it starts. Open Settings now?"
+msgstr ""
+
+msgid ""
+"The agent isn't installed in the game yet. Install it in Settings first."
 msgstr ""
 
 msgid "The area is now 40 tiles around you."
@@ -3505,6 +3620,13 @@ msgid "The computer shuts down in {n} seconds. Cancel the shutdown?"
 msgstr ""
 
 msgid "The computer shuts down once the other bots have finished."
+msgstr ""
+
+msgid "The delay must be between 0 and {most} seconds."
+msgstr ""
+
+msgid ""
+"The delay runs before the next enabled action. Zero starts it immediately; the last action has no delay."
 msgstr ""
 
 msgid ""
@@ -3616,7 +3738,14 @@ msgstr ""
 msgid "The room"
 msgstr ""
 
+msgid ""
+"The saved {stage} list couldn't be read ({err}). It is shown from the old trigger ticks; OK saves this list in its place."
+msgstr ""
+
 msgid "The schedule isn't complete"
+msgstr ""
+
+msgid "The scheduled character and the script's login character are different."
 msgstr ""
 
 msgid ""
@@ -3630,6 +3759,9 @@ msgid "The script reads correctly."
 msgstr ""
 
 msgid "The script was saved, but the old file couldn't be removed: {err}"
+msgstr ""
+
+msgid "The script's login character is not a known saved character: {name}"
 msgstr ""
 
 msgid "The sound list must be a list of sound entries."
@@ -3653,6 +3785,12 @@ msgstr ""
 
 msgid ""
 "The throw-away list is empty. Choose what to throw away in Character, Bag and supplies first."
+msgstr ""
+
+msgid "The trigger sequence settings are invalid."
+msgstr ""
+
+msgid "The trigger's enabled setting must be true or false."
 msgstr ""
 
 msgid "The update couldn't start: {why}"
@@ -3753,10 +3891,6 @@ msgstr ""
 msgid "Tick the monsters to fight:"
 msgstr ""
 
-msgid ""
-"Ticked jobs run one after the other in this order, each exactly as from the game's Tools submenu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
-msgstr ""
-
 msgid "Time (HH:MM):"
 msgstr ""
 
@@ -3806,6 +3940,9 @@ msgstr ""
 msgid "Tone from &trusted players:"
 msgstr ""
 
+msgid "Tools"
+msgstr ""
+
 msgid "Total arnebia spent on items used: {n}"
 msgstr ""
 
@@ -3816,6 +3953,12 @@ msgid "Travel"
 msgstr ""
 
 msgid "Travel and pets"
+msgstr ""
+
+msgid "Trigger action"
+msgstr ""
+
+msgid "Trigger sequence completed with failures."
 msgstr ""
 
 msgid "Triggers"
@@ -3914,9 +4057,6 @@ msgid ""
 msgstr ""
 
 msgid "Unmute every &game"
-msgstr ""
-
-msgid "Up&date shard prices (game menu, Update shard prices)"
 msgstr ""
 
 msgid "Update"
@@ -4018,6 +4158,9 @@ msgid "Voice messages need the new agent in this game: restart the game."
 msgstr ""
 
 msgid "Wa&lk to a dungeon or map"
+msgstr ""
+
+msgid "Waiting {seconds} seconds after {job}"
 msgstr ""
 
 msgid "Walk d&iagonally across open ground (both direction keys at once)"
@@ -4138,6 +4281,16 @@ msgstr ""
 msgid "While farming, go and share just before each half &hour, then come back"
 msgstr ""
 
+msgid "White Bone Cave"
+msgstr ""
+
+msgid "Wildcard"
+msgstr ""
+
+msgid ""
+"Wildcards: * matches any text; ? matches one character. Not a regular expression."
+msgstr ""
+
 msgid "With a heal skill, red &potions only below HP (%):"
 msgstr ""
 
@@ -4159,9 +4312,6 @@ msgstr ""
 msgid "Would you like to switch to {language}?"
 msgstr ""
 
-msgid "Write the character's name: the game it is logged in to runs it."
-msgstr ""
-
 msgid "X:"
 msgstr ""
 
@@ -4176,6 +4326,9 @@ msgid "XP loser: {end} ({n} deaths)"
 msgstr ""
 
 msgid "Y:"
+msgstr ""
+
+msgid "Yes"
 msgstr ""
 
 msgid "Yesterday"
@@ -4196,6 +4349,9 @@ msgid ""
 msgstr ""
 
 msgid "a chat line"
+msgstr ""
+
+msgid "a chest in sight, {n} steps away: going to open it"
 msgstr ""
 
 msgid "a condition or value is missing"
@@ -4253,6 +4409,12 @@ msgstr ""
 msgid "already done today"
 msgstr ""
 
+msgid "already inside {cave}"
+msgstr ""
+
+msgid "already inside {cave}: hunting until the game moves us out"
+msgstr ""
+
 msgid "area attack"
 msgstr ""
 
@@ -4306,6 +4468,15 @@ msgid ""
 msgstr ""
 
 msgid "attacks {how}"
+msgstr ""
+
+msgid "automatic login could not start"
+msgstr ""
+
+msgid "automatic login finished"
+msgstr ""
+
+msgid "automatic login stopped"
 msgstr ""
 
 msgid "avoiding elites"
@@ -4470,6 +4641,9 @@ msgid "choose what? write: choose Tulip City"
 msgstr ""
 
 msgid "choosing \"{entry}\""
+msgstr ""
+
+msgid "chose \"Open the chest\" but the chest is still there"
 msgstr ""
 
 msgid "cleaning the bag"
@@ -4660,6 +4834,9 @@ msgstr ""
 msgid "critical"
 msgstr ""
 
+msgid "daily chores"
+msgstr ""
+
 msgid "daily chores finished: {list}"
 msgstr ""
 
@@ -4723,6 +4900,9 @@ msgstr ""
 
 msgid ""
 "end_at takes start, safe, hearthstone, here, or a map (and 'at x,y'): {what}"
+msgstr ""
+
+msgid "enhancing equipment"
 msgstr ""
 
 msgid "entrance unknown"
@@ -5023,6 +5203,10 @@ msgid ""
 "learned but on no skill key, so never used: {skills} - put them on a key (Ctrl+Alt+key in the skills panel)"
 msgstr ""
 
+msgid ""
+"learned where the exit from {map} lands on {dest}: {x},{y} - the atlas doesn't have it yet, please report it: {row}"
+msgstr ""
+
 msgid "leave (or quit team): I leave the team I'm in."
 msgstr ""
 
@@ -5099,6 +5283,9 @@ msgstr ""
 msgid "log in to a character first"
 msgstr ""
 
+msgid "login must be the first command in a script"
+msgstr ""
+
 msgid "looking after {pet}: HP {hp}/{max}"
 msgstr ""
 
@@ -5142,6 +5329,9 @@ msgid "made {n} {gem} from {used} {shard}"
 msgstr ""
 
 msgid "made {n} {gem}; {have} in the bag"
+msgstr ""
+
+msgid "making gems"
 msgstr ""
 
 msgid "making gems: {list}"
@@ -5508,6 +5698,10 @@ msgid ""
 "on foot: the travel fusion beast is set to none in the character settings"
 msgstr ""
 
+msgid ""
+"on foot: {beasts} isn't in the bot's list of fusion beasts yet, so it can't tell whether it is a Swift one - please report its description"
+msgstr ""
+
 msgid "on foot: {beast} isn't among our fusion beasts"
 msgstr ""
 
@@ -5542,6 +5736,12 @@ msgid "only {n} {kind} potions left"
 msgstr ""
 
 msgid "open games started without this version's agent: {n}"
+msgstr ""
+
+msgid "opened a chest ({n} this run)"
+msgstr ""
+
+msgid "opening a game for {name}"
 msgstr ""
 
 msgid "ore"
@@ -5714,6 +5914,9 @@ msgstr ""
 msgid "running"
 msgstr ""
 
+msgid "running a dungeon"
+msgstr ""
+
 msgid "running on_stop"
 msgstr ""
 
@@ -5724,6 +5927,9 @@ msgid "script finished"
 msgstr ""
 
 msgid "script stopped itself"
+msgstr ""
+
+msgid "script {name}"
 msgstr ""
 
 msgid "searching"
@@ -5751,6 +5957,9 @@ msgid "selling shards"
 msgstr ""
 
 msgid "selling shards: {list}"
+msgstr ""
+
+msgid "selling the collection"
 msgstr ""
 
 msgid "selling to the nearest {role}"
@@ -5831,6 +6040,9 @@ msgid ""
 msgstr ""
 
 msgid "started"
+msgstr ""
+
+msgid "starting automatic login"
 msgstr ""
 
 msgid "starting {what} as {name}"
@@ -6136,6 +6348,9 @@ msgid ""
 "the character sheet shows no Vitality yet (restart the game so it loads the new agent) - gathering until it runs out"
 msgstr ""
 
+msgid "the chest is gone: someone else opened it"
+msgstr ""
+
 msgid "the day's chores first"
 msgstr ""
 
@@ -6200,6 +6415,13 @@ msgstr ""
 
 msgid ""
 "the game ran out of memory and stopped working ({where}) - restart Mist World"
+msgstr ""
+
+msgid "the game refused the login request"
+msgstr ""
+
+msgid ""
+"the game says this character has already been in an experience dungeon today"
 msgstr ""
 
 msgid "the game won't let us hit {name} from here - next one"
@@ -6296,7 +6518,14 @@ msgstr ""
 msgid "the pet's amiability is {n} but there's no {item} in the bag"
 msgstr ""
 
+msgid "the plan's character has no saved account. Log in to it once first."
+msgstr ""
+
 msgid "the ride from {map} never arrived"
+msgstr ""
+
+msgid ""
+"the run started inside {map}, which can't be walked back into - ending on the nearest map without monsters"
 msgstr ""
 
 msgid ""
@@ -6352,6 +6581,9 @@ msgid ""
 msgstr ""
 
 msgid "the top level - nothing to lose"
+msgstr ""
+
+msgid "the way on at {cell} is still shut - its stage isn't cleared yet"
 msgstr ""
 
 msgid "the {item} on key {key} are used up"
@@ -6430,6 +6662,9 @@ msgid "this text is too long: {expr}"
 msgstr ""
 
 msgid "threw away {list}"
+msgstr ""
+
+msgid "through the teleport at {cell}"
 msgstr ""
 
 msgid "throwing away {n} {item} (the bag manager says so)"
@@ -6606,6 +6841,9 @@ msgid "write it as: chores [check] [only=bank,donation]"
 msgstr ""
 
 msgid "write it as: hold key seconds"
+msgstr ""
+
+msgid "write it as: login  or  login <character>"
 msgstr ""
 
 msgid ""
@@ -6837,6 +7075,14 @@ msgid "{map}: taking the {npc} to {dest}"
 msgstr ""
 
 msgid ""
+"{map}: the exit to {dest} brought me round in a loop - planning without it"
+msgstr ""
+
+msgid ""
+"{map}: the exit to {dest} put me at {x},{y}, not at {ax},{ay} as the atlas says - please report it: {row}"
+msgstr ""
+
+msgid ""
 "{map}: the gang base's way out is in its outer hall, walled off from here"
 msgstr ""
 
@@ -6851,6 +7097,12 @@ msgstr ""
 
 msgid ""
 "{menu}: not choosing by index ({why}) - choosing by the menu's text instead"
+msgstr ""
+
+msgid "{message} — hidden by {filters}"
+msgstr ""
+
+msgid "{mode}: {pattern} ({state})"
 msgstr ""
 
 msgid "{m} min"
@@ -6890,6 +7142,10 @@ msgid "{name} copy"
 msgstr ""
 
 msgid "{name} down ({n} so far)"
+msgstr ""
+
+msgid ""
+"{name} has more than one signed-out game; close the extras or log in first"
 msgstr ""
 
 msgid ""
@@ -7024,6 +7280,9 @@ msgstr ""
 msgid "{n} at level {lv}"
 msgstr ""
 
+msgid "{n} chests opened"
+msgstr ""
+
 msgid "{n} contribution"
 msgstr ""
 
@@ -7091,6 +7350,9 @@ msgid "{n} used up"
 msgstr ""
 
 msgid "{n} {shard} in the bag; a Level {lv} crystal takes {per}"
+msgstr ""
+
+msgid "{n}. {action} — {state}; delay {seconds} s; deterministic: {strict}"
 msgstr ""
 
 msgid "{opt} isn't a valid name pattern"
@@ -7207,6 +7469,9 @@ msgstr ""
 msgid "{stage}: done {ok}; didn't finish {bad}"
 msgstr ""
 
+msgid "{stage}: sequence stopped because {job} failed"
+msgstr ""
+
 msgid "{state} {what} for {m} min on {map}, HP {hp}%{mp}, {k} kills"
 msgstr ""
 
@@ -7248,7 +7513,7 @@ msgstr ""
 msgid "{where} failed: {err} (carrying on)"
 msgstr ""
 
-msgid "{who} isn't logged in to a game that Uncle Farmer sees"
+msgid "{who} isn't logged in to one available game"
 msgstr ""
 
 msgid "{who}'s game is busy with {what}"

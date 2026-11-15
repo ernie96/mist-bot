@@ -11,10 +11,10 @@ import random
 from collections.abc import Callable, Sequence
 from typing import Any
 
-from ... import atlas
+from ... import atlas, travel
 from ...settings import PK_MODES, TARGET_MODES
 from ...i18n import _
-from .. import beasts, bosses, corpses, keyslots, pets, xpcard
+from .. import beasts, bosses, chests, corpses, keyslots, pets, xpcard
 from .base import (MOVE_SHOT_REACH, Respawned, Stopped)
 from .parts import as_bot, EndPlace, Parts
 
@@ -155,6 +155,8 @@ class FarmingMixin(Parts):
                     continue
                 xpcard.on_farm(as_bot(self))   # a paused experience card runs again, or a new one starts
                 if bosses.keep_away(as_bot(self), snap, map_id, area):
+                    continue
+                if chests.open_nearby(as_bot(self), snap):
                     continue
                 if corpses.harvest(as_bot(self), snap):
                     continue          # Draw Blood, Skinning or Cut Flesh on a kill of ours
@@ -357,6 +359,11 @@ class FarmingMixin(Parts):
                                  speak=True)
                         return self._finish_safe()
                     mid, cell = self.start_place[0], (self.start_place[1], self.start_place[2])
+                    if self.map_id() != mid and travel.is_instance(mid):
+                        # a run started inside a dungeon that has moved us out: no way back in
+                        self.log(_("the run started inside {map}, which can't be walked back into - ending "
+                                   "on the nearest map without monsters", map=atlas.label(mid)))
+                        return self._finish_safe()
                     if self.spawns_at(mid, cell):
                         # (a city in a field, such as central plains: a start outside its walls is
                         # monster ground, and the nearest map without monsters may be underground)

@@ -203,6 +203,15 @@ class RemoteControl:
             raise ToolError("A bot is running on game %d: stop it first." % pid)
 
     def item(self, name: str, kind: str | None) -> tuple[str, str]:
+        from ..engine import triggers
+        if kind == "tool":
+            if name not in dict(triggers.TOOLS):
+                raise ToolError("tool is one of: %s" % ", ".join(job for job, _w in triggers.TOOLS))
+            return "tool", name
+        if kind == "trigger":
+            if name not in triggers.STAGES:
+                raise ToolError("A trigger list is before or after.")
+            return "trigger", name
         items: list[tuple[str, str]] = [("plan", n) for n in plans.names()] + \
                                        [("script", n) for n in plans.script_names()]
         found = [it for it in items if it[1].lower() == name.strip().lower() and (kind is None or it[0] == kind)]
@@ -520,13 +529,30 @@ class RemoteControl:
         return "Game %d is selected." % pid, None
 
     def t_start_plan(self, args: dict[str, Any]) -> Result:
-        pid = self.pid(args)
-        kind = args.get("type") if args.get("type") in ("plan", "script") else None
-        if args.get("name"):
-            item = self.item(str(args["name"]), kind)
-            answer = self.ui(lambda: self.w.start(pid, item, remote=True))
+        kind = args.get("type") if args.get("type") in ("plan", "script", "tool", "trigger") else None
+        item = self.item(str(args["name"]), kind) if args.get("name") else None
+        if args.get("character") and args.get("game") in (None, ""):
+            key = self.character({"character": args["character"]})
+            found, waiting = self.ui(self.w.automatic_login_window, key)
+            if found is None:
+                return "Waiting: %s. Call start_plan again in about 30 seconds." % (waiting or "no game yet"), {
+                    "waiting": True}
+            pid: int = found
+            if item is None:
+                last = settings.last_run_of(self.w.s, key)
+                if not last:
+                    raise ToolError("Which plan? %s has run nothing yet." % settings.profile_display(key))
+                last_kind, _sep, last_name = last.partition(":")
+                item = (last_kind, last_name)
+            chosen = item
+            answer = self.ui(lambda: self.w.start(pid, chosen, remote=True, profile=key))
         else:
-            answer = self.ui(lambda: self.w.start_bot(pid, None))
+            pid = self.pid(args)
+            if item is not None:
+                given = item
+                answer = self.ui(lambda: self.w.start(pid, given, remote=True))
+            else:
+                answer = self.ui(lambda: self.w.start_bot(pid, None))
         run = self.run_on(pid)
         if run is None:
             raise ToolError(answer or "It didn't start.")
@@ -841,7 +867,7 @@ class RemoteControl:
             out["character"] = settings.profile_name(self.character({"character": raw["character"]}))
         if raw.get("name"):
             out["item"] = "%s:%s" % self.item(str(raw["name"]), raw.get("type") if raw.get("type") in
-                                                ("plan", "script") else None)
+                                                ("plan", "script", "tool", "trigger") else None)
         for k in ("repeat", "time", "date", "days", "enabled"):
             if k in raw:
                 out[k] = raw[k]
@@ -891,7 +917,11 @@ class RemoteControl:
         channel = str(args.get("channel") or "").lower()
         if channel not in CHANNEL_NUMBERS:
             raise ToolError("channel is one of: %s" % ", ".join(CHANNEL_NUMBERS))
-        why = self.feed(self.pid(args)).say(CHANNEL_NUMBERS[channel], str(args["text"]))
+        text = str(args["text"])
+        if args.get("reply_to"):
+            from .. import chat_filters
+            text = chat_filters.reply_text(str(args["reply_to"]), text)
+        why = self.feed(self.pid(args)).say(CHANNEL_NUMBERS[channel], text)
         if why:
             raise ToolError(why)
         return "Sent.", None
@@ -908,6 +938,81 @@ class RemoteControl:
             raise ToolError("Private messages aren't ready in this game yet.")
         m.send(to, who, str(args["text"]), first=True)
         return "Sent to %s." % who, None
+
+    def t_get_chat_filters(self, args: dict[str, Any]) -> Result:
+        from .. import chat_filters
+        rules = chat_filters.dump(chat_filters.load(self.ui(lambda: dict(self.w.s))))
+        return "%d chat filters, %d on." % (len(rules), sum(1 for r in rules if r["enabled"])), rules
+
+    def t_set_chat_filters(self, args: dict[str, Any]) -> Result:
+        from .. import chat_filters
+        raw = args.get("rules")
+        if not jsonio.is_array(raw):
+            raise ToolError("rules is a list.")
+        rules: list[chat_filters.Filter] = []
+        for row in raw:
+            if not jsonio.is_object(row):
+                raise ToolError("Each rule is an object.")
+            rid = row.get("id")
+            try:
+                rule = chat_filters.make_filter(str(row.get("mode") or ""), str(row.get("text") or ""),
+                                                bool(row.get("enabled", True)), bool(row.get("case_sensitive", True)),
+                                                rid if isinstance(rid, str) else None)
+                rules = chat_filters.add(rules, rule)
+            except ValueError as e:
+                raise ToolError("%s: %s" % (row.get("text"), e)) from e
+        dumped = chat_filters.dump(rules)
+
+        def save() -> None:
+            self.w.s["chat_filters"] = dumped
+            settings.save_app(self.w.s)
+        self.ui(save)
+        return "Saved %d chat filters." % len(rules), dumped
+
+    def t_get_triggers(self, args: dict[str, Any]) -> Result:
+        from ..engine import triggers
+        key = self.character(args)
+        p = settings.load_profile(key)
+        try:
+            data = {stage: triggers.sequence(p, stage)["steps"] for stage in triggers.STAGES}
+        except ValueError as e:
+            raise ToolError(str(e)) from e
+        text = "; ".join("%s: %s" % (stage, ", ".join(s["action"] for s in rows if s["enabled"]) or "nothing")
+                         for stage, rows in data.items())
+        return text, data
+
+    def t_set_triggers(self, args: dict[str, Any]) -> Result:
+        from ..engine import triggers
+        key = self.character(args)
+        stage = str(args.get("stage") or "")
+        raw = args.get("steps")
+        if stage not in triggers.STAGES or not jsonio.is_array(raw):
+            raise ToolError("stage is before or after, and steps a list.")
+        rows: list[dict[str, Any]] = []
+        for row in raw:
+            if not jsonio.is_object(row) or not isinstance(row.get("action"), str):
+                raise ToolError("Each step has an action.")
+            action: str = row["action"]
+            if action.startswith("script:"):
+                self.item(action[7:].strip(), "script")
+            try:
+                rows.append(triggers.step(action, row.get("delay", 0), row.get("enabled", True),
+                                          row.get("deterministic", False)))
+            except ValueError as e:
+                raise ToolError("%s: %s" % (action, e)) from e
+        p = settings.load_profile(key)
+        old = p.get("trigger_sequences")
+        seqs: dict[str, Any] = dict(old) if jsonio.is_object(old) else {}
+        other = "after" if stage == "before" else "before"
+        if other not in seqs:                 # the other list keeps what it had, old ticks included
+            try:
+                seqs[other] = triggers.sequence(p, other)
+            except ValueError:
+                pass
+        seqs[stage] = {"steps": rows}
+        p["trigger_sequences"] = seqs
+        settings.save_profile(key, p)
+        return "Saved the %s farming list of %s: %d steps." % (stage, settings.profile_display(key), len(rows)), rows
 
     def t_set_messages_settings(self, args: dict[str, Any]) -> Result:
         values: dict[str, Any] = dict(args.get("values") or {}) if jsonio.is_object(args.get("values")) else {}

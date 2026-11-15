@@ -327,6 +327,14 @@ def test_keeping_the_bots_running_cancels_the_close(answers: list[str]) -> None:
 
 
 @pytest.mark.usefixtures("answers")
+def test_failed_window_destruction_does_not_authorize_an_update(monkeypatch: pytest.MonkeyPatch) -> None:
+    w = Closing()
+    monkeypatch.setattr(w, "Destroy", lambda: False)
+    w.on_close(Event())
+    assert not w.destroyed
+
+
+@pytest.mark.usefixtures("answers")
 def test_the_close_says_why_when_it_isn_t_the_player() -> None:
     w = Closing()
     w.close_reason = "the update to 9.9 is ready: the updater takes over"

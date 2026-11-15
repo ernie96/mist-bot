@@ -2,9 +2,134 @@
 
 ## Unreleased
 
+This version comes with game agent 68. Uncle Farmer offers it when it starts: close your games
+first, then start them again.
+
 - When Ernesto posts a message about Mist Bot on its web page, Mist Bot shows it once, in a
   window titled "Message about Mist Bot", the next time it starts. It waits until no bot is
   running and no other window is open. Escape closes it.
+
+**Fewer duplicate buttons and menu entries**
+
+- The Plans menu keeps New plan and New script. Edit (Ctrl+E), Duplicate (Ctrl+D), Delete, Export
+  and Import are on the plans list's context menu (the Applications key or Shift+F10).
+- Bag and supplies: the Move to Keep, Store, Sell and Throw Away buttons are gone; each list's
+  context menu moves the selected item.
+
+**Trigger lists and scheduled tools**
+
+- Character settings, Triggers: Before farming and After farming are ordered lists now. Each step is
+  a tool or a saved script, can be switched off, moved up or down, wait up to an hour before the
+  next step, and be marked DETERMINISTIC (if it fails, the rest of the list stops, and before
+  farming, farming doesn't start). The old ticks carry over in their old order.
+- Schedules has Tools and Triggers tabs: a tool or a whole trigger list can run on a schedule by itself.
+- A step that farms (Dungeons, or a script with a farm or dungeon line) keeps the daily stop: it
+  isn't started between the daily stop and the drop-time reset, and it stops at the daily stop like
+  any farming run. Only the waits between steps may run past it. A scheduled Dungeons run keeps it too.
+- When an After farming step fails, it is said and the run counts as failed, but closing the game or
+  shutting the PC down still happens, since farming itself ended by itself.
+- A saved list that can't be read says where to fix it, and Character settings still opens.
+
+**Gem Maker: make most finishes each level first**
+
+- Making the most from the bag no longer moves up a level while gems of a lower level could still
+  be combined (left over after a batch, or kept by a protected failure); it combines those, and
+  turns leftover shards into gems, first. One or two gems that can't make a combine stay, as do
+  the gems you keep.
+- Making a set number of gems still uses only the tries that number needs.
+
+**Golden Pegasus**
+
+- The Golden Pegasus fusion beast (Swift, speed +3.2, level 100) is known now: the bot rides it to
+  travel, gets off it for a fight, and offers it in "Travel on fusion beast" after a scan. It was
+  newer than the bot's list of beasts, so it was never chosen.
+- When the only fusion beast that could carry us is one the bot doesn't know yet, the log names it
+  once a run and asks for its description, instead of only saying there is no Swift beast.
+
+**Teleport stones**
+
+- With "Use teleport stones and the hearthstone from the bag" ticked (Character, Settings, Travel),
+  the bot also uses the stones of the villages and ruins outside the cities: Soul Burial Village,
+  Plague Abyss, Orchid woods Village, City of the Ancient tower, mist gods Ruins, West Sealing
+  Tower, Hermit Camp, East Sealing Tower and portal of the demon world. A West Sealing Tower stone
+  goes straight to ancient Sealed Land, where the White Bone Cave is entered.
+- The seal Teleportation stone (West or East Sealing Tower, or the portal of the demon world), and
+  the Black Gold stone's fifth place, City of the Ancient tower (next to the way into ancient
+  Sealed Land).
+
+**Travel**
+
+- Map exits whose landing the game's map data doesn't give no longer send the bot round in
+  loops. On the way to ancient Sealed Land, the small hall of Ancient Ruins looked like a short
+  cut and the bot went in and out of it for a minute before giving up.
+- The six landings of Ancient Ruins' small hall and of Plague Abyss back into Ancient Ruins were
+  measured in the game and added to the atlas. The atlas only carries each arrival's marker,
+  sources, point and walkable area; the bot works out its port and its routes to the map's other
+  ports when it reads the atlas, so they never go stale.
+- An exit with no landing in the data is taken to land beside the door it stands next to, as the
+  measured ones do. Where the bot really lands through one is learned and kept in
+  profiles/_learned_landings.json, and the log gives it as the atlas line to report, so it can be
+  added to the atlas for everyone.
+- An exit the same trip already went through is left out of the next plan, so no loop through
+  one can go on.
+- A landing further than a few cells from where the atlas says (a measurement gone wrong, or a
+  game update) is said in the log with the corrected atlas line to report. The bot goes on from
+  where it really is either way.
+
+**Dungeons**
+
+- Tools, Dungeons has two more experience dungeons: the White Bone Cave (level 90, entered at
+  ancient Sealed Land, reached by the cable car; tested: 204 kills in a visit) and the Bottomless
+  pit (level 80, entered at Valley of Luxuriant forests; untested so far). The highest cave my
+  level lets in picks them too.
+- Starting a dungeon run while already inside one of the caves (after the bot or the game was
+  restarted mid-visit) now hunts on until the game moves the character out, instead of leaving.
+  The end place "where the run started" then ends on the nearest map without monsters.
+- When the game turns the character away because the day's experience dungeon is used, the bot
+  says so.
+
+**Treasure chests**
+
+- Farming now opens the treasure chests that turn up on the map ("There's a Shining Small Chest in
+  Margit Rainforest..."). A chest in sight is walked to, selected, and opened with Enter and "Open
+  the chest", once any fight is over; never one near a boss, nor one more than 80 steps away. The
+  bot says each chest it opens, and the results count them. Before, the bot took a chest for a
+  town NPC (it has exactly an NPC's HP) and walked past it. On by default; Advanced, Fighting,
+  "Open the chests that turn up while farming".
+- `chestwatch.py`: a read-only watcher that writes down what the agent sees of chests (and of
+  anything else that isn't an ordinary monster), the game's chest broadcasts and what the bag gains,
+  for whoever teaches the bot more about chests.
+
+**Automatic login**
+
+- A schedule, or a script whose first line is `login <character>`, can log a character in by
+  itself: Uncle Farmer opens a game window for it when none is open, and the game's agent signs in
+  with an account the game itself has saved and chooses the character. The game keeps its saved
+  password; Uncle Farmer never reads, logs or stores it.
+
+**Chat**
+
+- Reply: a chat message's menu has Reply, which puts the sender's @name in front of what you type
+  and keeps the reply going to that channel or conversation.
+- Chat filters: "Add to filter list" on a message hides every message with that text, and the
+  Chat filters window manages the rules (exact text, text it contains, or a pattern with * and ?).
+  Filters only hide lines; speech, tones and replies go on as before.
+
+**Control by an AI assistant**
+
+- The assistant can also read and change the Before and After farming lists and the chat filters,
+  reply to a player in chat, schedule a single Tools job or a trigger list, and start a character
+  that isn't logged in (it is logged in with the game's saved account first).
+
+**Fixes**
+
+- Agent 68: the game left a network thread running after every reconnect and login, and a game
+  that reconnected a dozen times ran out of room to start new ones and froze. The agent now shuts
+  those threads down.
+- The bot walks through dungeon doors and the in-map teleport pads, and no longer spins on an
+  attacker it can't select.
+- Gem Maker levels up one level after another correctly.
+- The Roman Urdu translation is complete.
 
 ## 1.0.8
 

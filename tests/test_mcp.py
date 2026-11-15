@@ -386,3 +386,39 @@ def test_every_tool_answers_without_crashing(piped: Callable[[Window], mcpserver
     assert w.started and w.stopped
     assert settings.load_app()["pm_trusted"] == ["Kim"]
     assert b.call("list_schedules", {})["data"] == []
+
+
+def test_run_tool_knows_every_job_the_triggers_know() -> None:
+    from unclefarmer.engine import triggers
+    assert {job for job, _w in triggers.TOOLS} <= set(control.TOOL_NAMES)
+
+
+def test_trigger_lists_chat_filters_and_tool_schedules(piped: Callable[[Window], mcpserver.Bridge],
+                                                       tmp_path: Path) -> None:
+    w = FullWindow(os.getpid(), "Simchar", str(tmp_path / "schedules.json"))
+    w.s["mcp_control"] = True
+    settings.save_profile("Simchar", settings.load_profile("Simchar"))
+    b = piped(w)
+    got = b.call("get_triggers", {})
+    assert got["ok"] is True and set(got["data"]) == {"before", "after"}
+    bad = b.call("set_triggers", {"stage": "before", "steps": [{"action": "no_such_job"}]})
+    assert bad["ok"] is False
+    steps = [{"action": "clean_bag", "delay": 600}, {"action": "chores", "deterministic": True}]
+    assert b.call("set_triggers", {"stage": "before", "steps": steps})["ok"] is True
+    saved = b.call("get_triggers", {})["data"]["before"]
+    assert [(s["action"], s["delay"], s["deterministic"]) for s in saved] == [("clean_bag", 600.0, False),
+                                                                               ("chores", 0.0, True)]
+    assert b.call("set_chat_filters", {"rules": [{"mode": "regex", "text": "x"}]})["ok"] is False
+    dupe = [{"mode": "contains", "text": "gold"}, {"mode": "contains", "text": "gold"}]
+    assert b.call("set_chat_filters", {"rules": dupe})["ok"] is False
+    ok = b.call("set_chat_filters", {"rules": [{"mode": "wildcard", "text": "*selling*", "case_sensitive": False}]})
+    assert ok["ok"] is True and w.s["chat_filters"][0]["mode"] == "wildcard"
+    assert len(b.call("get_chat_filters", {})["data"]) == 1
+    tool = b.call("add_schedule", {"character": "Simchar", "name": "chores", "type": "tool", "repeat": "daily",
+                                   "time": "04:00"})
+    assert tool["ok"] is True and tool["data"]["item"] == "tool:chores"
+    trig = b.call("add_schedule", {"character": "Simchar", "name": "after", "type": "trigger", "repeat": "daily",
+                                   "time": "04:30"})
+    assert trig["ok"] is True and trig["data"]["item"] == "trigger:after"
+    assert b.call("start_plan", {"type": "tool", "name": "store_items"})["ok"] is False      # the stub never runs
+    assert w.started[-1] == (os.getpid(), ("tool", "store_items"))
