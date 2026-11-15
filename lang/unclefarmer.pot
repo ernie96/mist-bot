@@ -2136,6 +2136,9 @@ msgstr ""
 msgid "Messa&ge:"
 msgstr ""
 
+msgid "Message about Mist Bot"
+msgstr ""
+
 msgid "Mining"
 msgstr ""
 

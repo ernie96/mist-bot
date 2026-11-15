@@ -19,7 +19,7 @@ uv run python check.py                  everything else
   Upstream numbers its releases differently (1.1.0 while the fork was at 1.0.6).
 - **Requirements**: exported again from the merged `uv.lock`.
 - **Translations**: upstream's `.pot`, `.po` and `.mo`, then the fork's own Roman Urdu put back
-  where upstream's file has none (Donate, the Control tab), then rebuilt.
+  where upstream's file has none (Donate, the Control tab, the message title), then rebuilt.
 - **README.md and CONTRIBUTING.md**: the fork's. Upstream has rewritten both in a style the fork
   doesn't use. New facts in upstream's version are carried over by hand.
 
@@ -44,6 +44,7 @@ Each is held by a test in `tests/test_fork.py`.
 | One exe build (Nuitka onefile) | `build_exe.py`, `unclefarmer/paths.py` |
 | Contact, Telegram updates channel, donations (Ernesto's) | `unclefarmer/contact.py`, `unclefarmer/gui/contact.py`, Help menu in `unclefarmer/gui/main.py` |
 | Update check every 6 hours while open | `unclefarmer/gui/mainparts/updates.py`, `first_run` in `editing.py` |
+| A message from Ernesto, shown once (`message.txt` beside the web page; `message_seen` in settings.json) | new file `unclefarmer/message.py`; `check_message` in `unclefarmer/gui/mainparts/updates.py` |
 | Control by other programs (MCP) | new files `unclefarmer/control.py`, `unclefarmer/mcpserver.py`, `unclefarmer/gui/remote.py`; hooks listed below |
 | Web page | `site/mistbot/index.html` (www.kurnal.tech/mistbot/) |
 

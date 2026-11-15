@@ -6,10 +6,10 @@ import threading
 
 import wx
 
-from ... import __version__, applog, settings, updater
+from ... import __version__, applog, message, settings, updater
 from ...i18n import _
 from .. import agentfix
-from ..common import ask, ask_ok, error, info, save_file
+from ..common import ask, ask_ok, error, info, save_file, show_text
 from .base import FrameParts
 
 CHECK_EVERY_MS = 6 * 3600 * 1000   # while the window is open: a fix reaches a copy left open the same day
@@ -21,15 +21,56 @@ class UpdatesMixin(FrameParts):
     update_waiting: updater.Release | None    # found while busy: offered once nothing is in the way
     update_offered: set[str]                  # versions offered by the periodic check this session
     update_retry: bool                        # an OFFER_RETRY_MS wait is already set
+    update_asking: bool = False               # the update offer is on screen
+    message_waiting: tuple[int, str] | None = None  # the developer's message (message.py), shown once nothing is in the way
 
     def start_update_checks(self) -> None:
         """Look again every CHECK_EVERY_MS while the window is open (the start check is after_update's).
         Each tick reads the settings, so turning the check on or off in Settings counts at once."""
         self.update_waiting, self.update_offered, self.update_retry = None, set(), False
+        self.update_asking, self.message_waiting = False, None
         self.update_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, lambda e: self.update_tick(), self.update_timer)
         self.update_timer.Start(CHECK_EVERY_MS)
         applog.bootup.note("update check while open: every %d h" % (CHECK_EVERY_MS // 3_600_000))
+        self.check_message()
+
+    # ------------------------------------------------------------ the developer's message (message.py)
+    def check_message(self) -> None:
+        """At start, in the background: the message on the web page, shown if its number is higher
+        than the last one shown. Not tied to the update check setting; failures go to update.log."""
+        def look() -> None:
+            found = message.fetch()
+            if found is not None:
+                try:
+                    wx.CallAfter(self._message_found, found)
+                except RuntimeError:                 # the window went away meanwhile
+                    pass
+        threading.Thread(target=look, daemon=True).start()
+        applog.bootup.note("message check running in the background")
+
+    def _message_found(self, found: tuple[int, str]) -> None:
+        if self.destroyed or found[0] <= message.seen(self.s):
+            return
+        self.message_waiting = found
+        self._show_message_when_quiet()
+
+    def _show_message_when_quiet(self) -> None:
+        """Shown the way an update is offered: not while a bot runs, an update is under way or a
+        dialog is open; until then it is tried again every OFFER_RETRY_MS. The number is saved
+        first, so a crash or a second copy never shows it twice."""
+        found = self.message_waiting
+        if found is None or self.destroyed:
+            return
+        if self.updating or self.update_asking or self.runs or self._ui_busy():
+            wx.CallLater(OFFER_RETRY_MS, self._show_message_when_quiet)
+            return
+        self.message_waiting = None
+        number, text = found
+        updater.log("message %d shown" % number)
+        self.s[message.SEEN] = number
+        save_file(self, settings.save_app, self.s)
+        show_text(self, _("Message about Mist Bot"), text)
 
     def update_tick(self) -> None:
         """The periodic check. Quiet: nothing is said when there is no new version or GitHub can't
@@ -170,11 +211,16 @@ class UpdatesMixin(FrameParts):
         if updater.is_dev(rel["version"]):
             notes = _("This is a development build from the dev branch: the newest changes, not yet a stable "
                       "release, and it can break.") + "\n" + notes
-        if not ask(self, _("Uncle Farmer {v} is out (you have {cur}).\n\nWhat's new:\n{notes}\n\n"
-                           "Update now? Uncle Farmer closes, updates and starts again; your characters, plans, "
-                           "scripts and settings stay as they are.", v=rel["version"],
-                           cur=updater.installed_version(), notes=notes),
-                   _("Update")):
+        self.update_asking = True     # a message box isn't a wx.Dialog: _ui_busy can't see it
+        try:
+            yes = ask(self, _("Uncle Farmer {v} is out (you have {cur}).\n\nWhat's new:\n{notes}\n\n"
+                              "Update now? Uncle Farmer closes, updates and starts again; your characters, plans, "
+                              "scripts and settings stay as they are.", v=rel["version"],
+                              cur=updater.installed_version(), notes=notes),
+                      _("Update"))
+        finally:
+            self.update_asking = False
+        if not yes:
             if at_start:                      # not asked again at start for this one; the Help menu still offers it
                 self.s["skip_version"] = rel["version"]
                 save_file(self, settings.save_app, self.s)

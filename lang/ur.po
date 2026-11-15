@@ -2189,6 +2189,9 @@ msgstr "{where} ko pai&gham:"
 msgid "Messa&ge:"
 msgstr "Pai&gham:"
 
+msgid "Message about Mist Bot"
+msgstr "Mist Bot ke baare mein paigham"
+
 msgid "Mining"
 msgstr "Mining (kaan kani)"
 

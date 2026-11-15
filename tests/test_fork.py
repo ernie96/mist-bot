@@ -56,6 +56,14 @@ def test_the_update_check_also_runs_while_open() -> None:
     assert "self.start_update_checks()" in first_run
 
 
+def test_the_developers_message_is_read_at_start() -> None:
+    from unclefarmer import message
+    assert message.URL == "https://www.kurnal.tech/mistbot/message.txt"
+    pytest.importorskip("wx")
+    from unclefarmer.gui.mainparts import updates
+    assert "self.check_message()" in inspect.getsource(updates.UpdatesMixin.start_update_checks)
+
+
 def test_control_by_other_programs_is_wired_and_off_by_default() -> None:
     pytest.importorskip("wx")
     from unclefarmer.gui import remote

@@ -1,5 +1,11 @@
 # What's new
 
+## Unreleased
+
+- When Ernesto posts a message about Mist Bot on its web page, Mist Bot shows it once, in a
+  window titled "Message about Mist Bot", the next time it starts. It waits until no bot is
+  running and no other window is open. Escape closes it.
+
 ## 1.0.8
 
 **Control by an AI assistant**
