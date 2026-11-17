@@ -817,7 +817,12 @@ class FightingMixin(Parts):
         if math.hypot(mob["x"] - at[0], mob["y"] - at[1]) >= self.UNSELECTED_MOVED:
             n = 0
         n += 1
-        wait = min(self.UNSELECTED_MAX, self.UNSELECTED_SKIP * 3 ** (n - 1))
+        # Saturate before multiplying: an unbounded power overflows before min can cap it.
+        wait = min(self.UNSELECTED_MAX, self.UNSELECTED_SKIP)
+        for _step in range(n - 1):
+            if wait >= self.UNSELECTED_MAX:
+                break
+            wait = min(self.UNSELECTED_MAX, wait * 3)
         rows[mob["id"]] = (n, (mob["x"], mob["y"]), now + wait)
         self.skip[mob["id"]] = now + wait
         if len(rows) > 500:
@@ -1201,7 +1206,8 @@ class FightingMixin(Parts):
             now = self.clock.time()
             self.sleep(max(0.02, min(sb.ready_in(now), f.check_at - now, 0.5)))
             return "again"
-        if sb is not None and isinstance(picked, tuple) and sb.confirm and p.get("press_burst", True):
+        if (sb is not None and isinstance(picked, tuple) and sb.confirm and p.get("press_burst", True)
+                and not (sb.cls == "Elf" and picked[1] in ("Pyroblast", "Blazing Storm"))):
             if self._fight_burst(f, sb, picked):
                 return "return"
         elif picked:

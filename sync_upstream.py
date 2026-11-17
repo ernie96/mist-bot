@@ -17,6 +17,9 @@ The files settled here, and how (FORK.md says why):
     put back where upstream's file has none, then rebuilt with `python -m unclefarmer --strings`
   - README.md and CONTRIBUTING.md: this fork's (upstream rewrites them in its own style; new facts
     are carried over by hand, which this says)
+  - the fork's updater (FORK_OWNED): kept as the fork has it, conflicting or not; upstream's own
+    updater files (FORK_DROPPED: bootstrap.exe, its recovery, their tests and docs) left out. Code
+    elsewhere that calls upstream's updater still has to be found: check.py's pyright does that.
 Everything else that conflicts is listed for a person to settle: CHANGELOG.md (upstream's new
 entries go under "Unreleased", above this fork's released versions), docs/USER_GUIDE.md and code.
 Then tests/test_fork.py says whether the merge undid anything this fork depends on.
@@ -32,6 +35,13 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 REMOTE, BRANCH = "upstream", "dev"
 OURS = ("pyproject.toml", "unclefarmer/__init__.py", "README.md", "CONTRIBUTING.md")
+# The fork's own updater (one signed exe): these stay as the fork has them after every merge, even
+# when they merged without a conflict (a clean merge can still pull in calls to upstream's updater).
+FORK_OWNED = ("unclefarmer/updater.py", "unclefarmer/gui/mainparts/updates.py", "release.py", "build_exe.py",
+              "tests/test_updater.py", "tests/test_update_channels.py", "tests/test_ci_build.py")
+# Upstream's own updater (bootstrap.exe and its recovery), which the fork leaves out.
+FORK_DROPPED = re.compile(r"^(unclefarmer/update_recovery\.py|unclefarmer/native/bootstrap\.c|"
+                          r"docs/UPDATER_[A-Z_]+\.md|tests/test_update(r)?_(recovery|hardening|reliability)\.py)$")
 REGENERATED = re.compile(r"^(lang/.*\.(pot|po|mo)|requirements(-dev)?\.txt|uv\.lock)$")
 
 
@@ -98,11 +108,17 @@ def restore_translations(before: dict[str, str]) -> int:
     return filled
 
 
+def head_catalogs() -> dict[str, str]:
+    """This fork's .po files as committed (a language new from upstream has none to put back)."""
+    names = git("ls-tree", "-r", "--name-only", "HEAD", "--", "lang").split()
+    return {p: git("show", "HEAD:" + p) for p in names if p.endswith(".po") and "LC_MESSAGES" not in p}
+
+
 def translations(before: dict[str, str] | None = None) -> None:
     """Rebuild the catalogs (the template gets the fork's own texts, empty in upstream's .po files),
     put the fork's translations back from HEAD where they are empty, and compile again."""
     if before is None:
-        before = {p: git("show", "HEAD:" + p) for p in git("ls-files", "lang").split() if p.endswith(".po")}
+        before = head_catalogs()
     run("uv", "run", "python", "-m", "unclefarmer", "--strings")
     print("Fork translations put back: %d" % restore_translations(before))
     run("uv", "run", "python", "-m", "unclefarmer", "--strings")
@@ -113,10 +129,18 @@ def merge(theirs: str) -> None:
     if git("status", "--porcelain").strip():
         sys.exit("There are uncommitted changes: commit or stash them first.")
     report(theirs)
-    po_files = [p for p in git("ls-files", "lang").split() if p.endswith(".po")]
-    before = {p: git("show", "HEAD:" + p) for p in po_files}
+    before = head_catalogs()
     r = subprocess.run(["git", "merge", "--no-ff", "--no-commit", theirs], cwd=ROOT, capture_output=True, text=True)
     print(r.stdout.strip())
+    left = conflicted()
+    for path in git("diff", "--name-only", "--cached", "--diff-filter=A").split("\n") + left:
+        if path and FORK_DROPPED.match(path):
+            git("rm", "-q", "-f", "--", path)
+            print("  left out (upstream's updater): %s" % path)
+    for path in FORK_OWNED:
+        if git("ls-tree", "HEAD", "--", path).strip():
+            git("checkout", "HEAD", "--", path)
+            git("add", "--", path)
     left = conflicted()
     for path in left:
         if path in OURS or path == "uv.lock":

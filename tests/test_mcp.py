@@ -270,7 +270,7 @@ def test_game_state_and_raw_agent_commands_read_the_game(piped: Callable[[Window
     b = piped(w)
     state = b.call("game_state", {})
     assert state["ok"] is True, state["text"]
-    assert state["data"]["character"] == "Simchar" and state["data"]["map"]
+    assert state["data"]["character"] == "Simchar" and state["data"]["map"] and "xp_needed" in state["data"]
     raw = b.call("game_state", {"part": "self"})
     assert raw["ok"] is True and raw["data"]
     off = b.call("agent_command", {"command": "mem self", "confirm": True})

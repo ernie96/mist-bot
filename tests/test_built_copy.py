@@ -151,6 +151,7 @@ class Window:
         self.update_waiting: updater.Release | None = None      # the check while open (UpdatesMixin)
         self.update_offered: set[str] = set()
         self.update_retry = False
+        self.said: list[str] = []
 
     def __getattr__(self, name: str) -> Any:
         from unclefarmer.gui import main
@@ -162,6 +163,9 @@ class Window:
 
     def SetStatusText(self, text: str) -> None:
         self.status.append(text)
+
+    def say(self, text: str, run: object = None) -> None:
+        self.said.append(text)
 
 
 class Started:

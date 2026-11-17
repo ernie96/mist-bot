@@ -117,7 +117,8 @@ TOOLS: tuple[Tool, ...] = (
     Tool("list_games", "The open Mist World games with the agent: pid, character, server, map, and the run on each.",
          {"refresh": _b("Look for newly opened or closed games first.")}),
     Tool("game_state", "A game's live state read from the game itself. part=summary (default): map, position, HP, "
-                       "MP, pet, bag load, drop time, nearby players and monsters. Other parts give the agent's raw "
+                       "MP, level and the experience the next level still needs, pet, bag load, drop time, nearby "
+                       "players and monsters. Other parts give the agent's raw "
                        "reading: all, state, self, bag, slots, skills, equipment, beasts, pets, modes, ui, entities.",
          {**GAME, "part": _s("summary or one of the agent's parts.", enum=["summary", *MEM_PARTS])}),
     Tool("read_log", "Lines the bot wrote to its Log tab (what every run does and says), oldest first. Each has a "

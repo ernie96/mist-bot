@@ -13,7 +13,7 @@ We'll start with something small and gradually build up to more powerful scripts
 
 ## Sign in before a script
 
-Put `login` as the first command in a scheduled script: the schedule's selected character supplies the identity. `login "Character - S1"` is also available when the script itself should name the character. If that character is already in the selected game, Uncle Farmer uses it. Otherwise it uses one signed-out game; when there is none, it opens one game window, waits for its agent, then uses the saved sign-in and the real character list to select the matching character ID. The address is learned when the character is first seen and is shown read-only in Character Settings, Overview; no password is stored. The command stops safely if the character has not been seen before, its saved account is unavailable, or more than one game is signed out.
+Put `login` as the first command in a scheduled script: the schedule's selected character supplies the identity. `login "Character - S1"` or `login "Character - S2"` is also available when the script itself should name the character. If that character is already in the selected game, Uncle Farmer uses it. Otherwise it uses one signed-out game; when there is none, it opens one game window, waits for its agent, selects the saved character's server directly, then uses the saved sign-in and the real character list to select the matching character ID. The address is learned when the character is first seen and is shown read-only in Character Settings, Overview; no password is stored. The command stops safely if the character has not been seen before, its saved account or server is unavailable, or more than one game is signed out.
 
 ## 1. Your first script
 
@@ -377,9 +377,23 @@ For example:
 
 This tells the bot to end the run while an hour of the day's drop time remains. The bot may continue running for a few minutes after leaving the monsters.
 
-This setting applies to the current run only and takes priority over your character's own **Drop time to save** setting under **Bag and supplies → Full bag**.
+This setting applies to the current run only and takes priority over your character's own **Drop time to save** setting under **Character → Settings → Fighting**.
 
 You can also configure the same setting in a plan's **When to stop** page.
+
+### Stopping before the next level
+
+You can use `keep_level` to end the run before the character reaches its next level.
+
+    keep_level <experience>
+
+For example:
+
+    keep_level 100000
+
+This tells the bot to go somewhere safe and end the run once the next level needs less than 100,000 experience. The character sheet gives that number, and the bot reads it after every kill. Inside a dungeon it only says so, since leaving would lose the visit; and it doesn't go into an experience dungeon once the next level is that close. `keep_level 0` means no such stop for this run.
+
+This setting applies to the current run only and takes priority over your character's own **Stop before the next level** setting under **Character → Settings → Fighting**. You can also set it on a plan's **When to stop** page.
 
 ### Running commands when the run ends
 
@@ -805,7 +819,7 @@ This runs only the bank and donation chores.
 
 ### Losing experience
 
-The `lose_xp` command dies to guards on purpose, as set under **Tools → XP loser**, until the next level needs at least the experience you set (or until it has lost as much as you set).
+The `lose_xp` command dies to guards on purpose, as set under **Tools → XP loser**, until the next level needs at least the experience you set (or until it has lost as much as you set). Where it dies, at the nearest guard or at the nearest village, is that window's choice too.
 
     lose_xp          die to guards until the goal is met
     lose_xp check    only read the experience and look for guards; nothing changes
@@ -1204,6 +1218,7 @@ Use this section when you need a quick reminder of a command or its syntax.
     stop [message]
     on_stop ... end
     keep_drop <minutes>
+    keep_level <experience>
 
 ### Decisions and loops
 

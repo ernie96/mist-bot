@@ -1,5 +1,176 @@
 # What's new
 
+## Unreleased
+
+This version comes with game agent 70. Uncle Farmer offers it when it starts: close your games
+first, then start them again.
+
+**Reconnecting**
+
+- When the connection to the game drops during a run, the run reconnects and goes on. Only a
+  connection that really dropped is reconnected: a character the server takes away for a while
+  is waited for, and a refused try is tried again every 10 seconds.
+
+**Brazilian Portuguese**
+
+- Uncle Farmer is translated into Brazilian Portuguese (Settings, Language), Mist Bot's own texts
+  (the Control tab, Donate, the Telegram channel, the message window) included.
+
+**XP loser: die at the nearest village**
+
+- Tools, XP loser has a new choice, **Where to die**: at the nearest guard (as before), or at the
+  nearest village. The game brings a dead character back at the last town it walked into, so the
+  bot walks into the village first; its gate guards stand a few steps from there, so each death is
+  much quicker: on Tuneful
+  Wetland a death took 11 seconds at Aria Village against 29 at Tulip City, whose guards stand far
+  out past its streets. The villages come from the game's own map table (16 of them, from mettle
+  village to Orchid woods Village). A village with no guard to fight is left for the next nearest;
+  and if the game brings the character back somewhere else, the bot says so and dies at the
+  nearest guard instead.
+
+**Automatic login picks the character's server**
+
+- A scheduled script's `login` now selects the saved character's server (S1 or S2) before signing
+  in with the saved account, so a character on the other server is found. `login "Name - S2"`
+  works as `login "Name - S1"` does. The game has to be started again to load the new agent (69).
+
+**The fusion beast after a death**
+
+- Right after a death the game refuses a fusion beast without a word, and a refused press made
+  the next try wait for the game's gap between two fusion changes: the XP loser stood still about
+  ten seconds after each respawn before its beast came, then rode up to the guard just to get off
+  again. The beast now waits until six and a half seconds after the death and goes on at the
+  first press, so the character rides off a few seconds after it is back.
+
+**Sales counted in the run that earned them**
+
+- The arnebia a sale brings in is counted in the results again. The game takes the shards out
+  of the bag first and pays a moment later: when the money came in after the sale was over, the
+  results put it under the next job (for example "Updating shard prices"), and the farming run's
+  earnings left it out. Selling shards, selling fish, ore and herbs, and selling to a shop now
+  wait for the money (three seconds at most).
+
+**Settings and learned data survive a busy disk and two writers at once**
+
+- A settings file another program held open for a moment (an antivirus, a backup) was taken
+  for a broken one: it went to settings.json.corrupt and the defaults were saved in its place.
+  A file that can't be read is now left alone, read again after a short wait, and nothing is
+  saved over it until it can be read. The same goes for the character profiles.
+- The sound silencer, the scheduler and the main window each saved the whole settings file, so
+  one could put back a value another had just saved (the daily stop time, the sound list). A
+  save now writes only what its holder changed, onto the file as it is then.
+- A run saving what it learned (the hearthstone's square, gathering places) no longer puts back
+  the character settings as they were when it started: changes made while it ran stay.
+- A run whose results couldn't be saved (a full disk) left the window saying it was already
+  running until the app was restarted. The run now always ends; the results are still shown in
+  the log, and the failure is said.
+- A scheduled run whose save failed was taken for done and never started. It now starts at the
+  next look, once.
+- The results window could fail with "dictionary changed size during iteration" while a run
+  was adding to them.
+- The game's options file (mw.exe.vmoptions), the learned dungeon entrances, item weights and
+  landings, the daily chores' list, shard prices and survey records are written whole or not at
+  all, and two saves at once no longer lose one of them.
+
+**XP loser attacks the guard with your basic attack**
+
+- The XP loser pressed whatever skill was on your first attack key, once. For a Hunter that is
+  often Escape, which jumped away from the guard. Other first-key skills started no fight at all,
+  and the guard was left as "didn't strike back".
+- It now uses your class's basic attack: Bash, Valiant Strike, Blade Strike, Arcane Shot, Magic
+  Sphere, Fireball, Retribution or Shadow Arrow. If that skill is on no key, it is put on an empty
+  one first. If it is on the other skill page, the page is turned. It is pressed again every second
+  until you fall, so a press the game drops (just after getting off the beast) no longer ends the try.
+- The log says which key it attacks with.
+
+**The walk to death wormhole finds its circle**
+
+- The walking assistant reached hidden water cave but never found the death wormhole's circle:
+  the game calls it "Wormhole teleportation Circle", a name that doesn't start with the
+  dungeon's, so the bot walked past it. The circle's name is in the dungeon list now.
+- The five circles of hidden water cave (death wormhole, wolf head mountain, bubble cube, ice
+  maze, Herbal Mountain) have their places now, measured in the game: the walk goes straight to
+  the right one instead of trying each stone room in turn.
+- When none of the marked entrances is the dungeon's circle, the log now names the other
+  circles seen on the way, so a circle with an unexpected name is easy to report.
+
+**Every class's talents, as the game lists them**
+
+- The Warrior's defensive talents were missing (Defensive Stance, Sturdy Sentry, Defensive
+  Barrier): the Orc has talents of the same names, and only the Orc's were kept. The Warrior has
+  its ten talents again.
+- The Orc's Defensive Stance carried the Warrior's text; it now says it can't be used with
+  Rampage Stance, as the game does.
+- Talents whose text says "Require ..." all say which talent they need (four Hunter and Mage
+  talents and the Warrior's Precise Block didn't).
+- The gang talents (Imperious, Focus, Ravage, Havoc, Anger, Brutal ... and their Aggressive and
+  Defensive ranks) are in their own Gang group instead of the general talents, with the second
+  "Anger (Aggressive)" rank that was missing.
+  These are the talents a gang develops at its Head of inner hall (gang Affairs Management, Gang
+  Skill Management), three per gang at most.
+
+**Fourteen more dungeon entrances placed**
+
+- The entrances of fourteen dungeons are in the dungeon list now, read in the game: the walking
+  assistant goes straight to them instead of trying each entrance marked on the map.
+- Three of them couldn't be found before: open sea, space battleship and Treasure pavilion
+  stand in the south-east of far off regions, far from the two entrances the game's files mark
+  there ("none of the entrances marked on far off regions is the open sea circle").
+- Lisa's Ukulele has no circle: you go in by talking to Villager Lisa, which the bot now knows.
+- The others: Dryad Jungle, zagrama canyon, Machine Fortress, Silver Peak, bottomless pit
+  (Valley of Luxuriant forests), fully mountain, Machining plant (far off regions), graceful
+  mountain (water curtained cave), Baru Grottoe and Elemental Maze (thousand miles of rivers).
+
+**Stop before the next level**
+
+- For characters you keep at their level: Character, Settings, Fighting has a new group, **Drop
+  time and experience**, with **Stop before the next level** (off by default) and how much
+  experience the next level must still need (100,000 by default). The character sheet is read
+  after every kill; once the next level needs less, Uncle Farmer says so, leaves the monsters and
+  ends the run. The After farming list runs next, so the XP loser can win some experience back.
+- A run that starts with the next level already that close doesn't set out: it says so before
+  the Before farming list and does nothing else, instead of going all the way to the farm.
+- Inside a dungeon it only says so, once: leaving would lose the visit. It doesn't go into an
+  experience dungeon once the next level is that close, and the day's cave is still yours.
+- A plan's When to stop page can set it for that plan, in place of the character's setting, as
+  it can the drop time to save; scripts have `keep_level <experience>` (0: no such stop).
+- **Stop when the day's drop time runs out** and **Drop time to save** moved from Bag and
+  supplies, Full bag, to the same new group in Character, Settings, Fighting, beside the other
+  reasons to stop. Your settings stay as they were.
+
+**From a secret room, the nearest shop is the one outside the door**
+
+- A run that started inside a secret room chose its Shard Broker, storehouse or other shop as if
+  every city were as far: leaving a secret room puts you back where you came in, which the map
+  data can't say. A room entered from Tulip City sent the bot by cable car to central plains'
+  Shard Broker, right past Tulip City's. It now leaves the room first, then picks the nearest one
+  from where it comes out, as it already did from a gang base.
+
+**A start again on the farm goes straight back to farming**
+
+- Character settings, Triggers, Before farming has a new tick, **Skip this list when the run
+  starts on its first farming map** (off by default). After a Stop, starting the plan again where
+  the character was farming used to run the whole Before farming list first - Update shard prices
+  always walks to a Shard Broker, so that was a trip to town and back every time. With the tick,
+  a run that starts on its first farming map leaves the list out and says so.
+
+**XP loser stays in all mode, and puts your PK mode back**
+
+- Guards strike back only when hit in all mode, but a walk to the guard could switch the PK mode
+  back to your profile's (a monster in the way, a ride's NPC), so the hit came in a peaceful mode
+  and the guard never answered. The XP loser now keeps all mode for the whole run and checks it
+  right before every hit.
+- When the run ends - done, out of guards, or stopped by you - your PK mode is put back. After
+  Stop it used to stay in all mode ("please set it back by hand"). On a map that holds its own PK
+  mode, Uncle Farmer says which mode to set once you leave it.
+
+**No town trip right after throwing things away**
+
+- When the bag filled up and the bag manager's rules threw things away right where you farm, the
+  sheet could still show the old load for a moment, and the bot went to town anyway. It now reads
+  the load again for up to 3 seconds and keeps farming once it is under your mark. A bag that is
+  really full of things you keep still gets the trip (or stop) you chose.
+
 ## 1.0.9
 
 This version comes with game agent 68. Uncle Farmer offers it when it starts: close your games

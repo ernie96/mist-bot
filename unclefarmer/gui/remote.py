@@ -298,7 +298,8 @@ class RemoteControl:
                 "map": where.get("name"), "map_id": where.get("id"), "x": round(x, 1), "y": round(y, 1),
                 "hp": me.get("hp"), "maxhp": me.get("maxhp"),
                 "mp": vit.get("mp") if vit.get("mp", -1) >= 0 else sheet.get("mp"), "maxmp": sheet.get("maxmp"),
-                "level": sheet.get("level"), "bag_load": sheet.get("load"), "bag_max": sheet.get("maxload"),
+                "level": sheet.get("level"), "xp_needed": sheet.get("xp_needed"),
+                "bag_load": sheet.get("load"), "bag_max": sheet.get("maxload"),
                 "drop_seconds_left": sheet.get("drop_seconds"), "pet": nearby.pet_text(s),
                 "players": nearby.players_text(s), "monsters": monsters[:25]}
         text = "%s on %s at %d, %d. HP %s/%s. Pet: %s. Players: %s. Monsters in view: %d." % (

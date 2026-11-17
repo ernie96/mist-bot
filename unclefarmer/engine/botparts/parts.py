@@ -70,6 +70,7 @@ class Parts:
     last_seen: Callable[[str], Sighting | None] | None  # where a player was last seen, and how long ago
     tell: Callable[[str], None] | None             # answers the player who asked for this run
     kind: str
+    reconnect: Callable[[], bool] | None
 
     # ---------------------------------------------------------------- state the engine modules keep
     # on the bot for a run (pets, team heals, repairs, follow, gathering...): set where they are used,
@@ -102,6 +103,7 @@ class Parts:
     crossing_poison: bool       # a travel leg into or across Polson Wetland without the talent (travel.py)
     warned_poison: bool         # the Polson Wetland warning was said this run
     said_beast_waits: bool      # "the fusion beast waits until no attack for QUIET seconds" said
+    said_after_death: bool      # "the fusion beast waits N s ... after a death" said
     pet_hp_log: list[tuple[float, float]]  # (time, HP) of the pet out, the last few seconds
     pet_hp_id: int | None       # the pet those readings are of
     pet_threat_until: float     # the pet counts as under attack until then (its HP fell fast)
@@ -161,6 +163,7 @@ class Parts:
     pack_min: int
     start_place: Where | None
     drop_keep: int | None
+    level_keep: int | None
     agent_state: bool
     agent_keys: bool
     agent_ask: bool
@@ -194,6 +197,7 @@ class Parts:
     last_hp: float | None
     last_combat: float
     last_attacked: float
+    last_death: float
     hp_seen: float | None
     _speech: str
     _speech_at: float
@@ -291,6 +295,9 @@ class Parts:
         def bag_check(self) -> bool: ...
         # farming.py
         def drop_time_check(self, sheet: dict[str, Any]) -> None: ...
+        def level_check(self, sheet: dict[str, Any], inside: bool = False) -> None: ...
+        def level_goal(self) -> int | None: ...
+        def level_before_start(self) -> None: ...
         def set_modes(self) -> None: ...
         def restock_now(self, start: bool = False) -> bool: ...
         def restock_on_the_way(self) -> None: ...

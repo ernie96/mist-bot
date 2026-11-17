@@ -115,9 +115,13 @@ def test_learn_weight_rejects_bad_measurements(monkeypatch: pytest.MonkeyPatch, 
     assert not (tmp_path / "w.json").exists()
 
 
-def test_learn_weight_survives_an_unwritable_path(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(bagrules, "WEIGHTS", "Z:\\nope\\w.json")
-    assert bagrules.learn_weight("Wolf Pelt", 500, 480, 4) == 5.0   # still returns the weight
+def test_learn_weight_survives_an_unwritable_path(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # a folder that can't exist on any computer: its parent is a file (a drive letter such as Z: can
+    # be a real drive, and the weights were then written there)
+    (tmp_path / "a file").write_text("", encoding="utf-8")
+    monkeypatch.setattr(bagrules, "WEIGHTS", str(tmp_path / "a file" / "nope" / "w.json"))
+    # no error out of it, and no weight claimed as learned when it couldn't be kept
+    assert bagrules.learn_weight("Wolf Pelt", 500, 480, 4) is None
 
 
 # ---------------------------------------------------------------- about

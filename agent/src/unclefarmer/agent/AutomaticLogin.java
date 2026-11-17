@@ -36,14 +36,22 @@ final class AutomaticLogin {
     }
 
     /** Starts the native saved-account connection, then selects only when this ID is in its picker. */
-    static String start(String email, String idText) {
+    static String start(String email, String idText, String serverText) {
         final int id;
+        final int server;
         try {
             id = Integer.parseInt(idText);
         } catch (RuntimeException ignored) {
             return "{\"ok\":false,\"error\":\"invalid character id\"}";
         }
         if (id <= 0) return "{\"ok\":false,\"error\":\"invalid character id\"}";
+        if ("S1".equalsIgnoreCase(serverText)) {
+            server = 1;
+        } else if ("S2".equalsIgnoreCase(serverText)) {
+            server = 2;
+        } else {
+            return "{\"ok\":false,\"error\":\"invalid saved server\"}";
+        }
         if (email == null || !EMAIL.matcher(email).matches()) {
             return "{\"ok\":false,\"error\":\"invalid saved account\"}";
         }
@@ -54,7 +62,9 @@ final class AutomaticLogin {
                 return "{\"ok\":false,\"error\":\"another saved account is already connecting\"}";
             }
             if (connected == null) {
-                String problem = startSavedAccount(email);
+                String problem = selectSavedServer(server);
+                if (problem != null) return "{\"ok\":false,\"error\":\"" + Protocol.jsonEscape(problem) + "\"}";
+                problem = startSavedAccount(email);
                 if (problem != null) return "{\"ok\":false,\"error\":\"" + Protocol.jsonEscape(problem) + "\"}";
             }
             running = true;
@@ -67,6 +77,31 @@ final class AutomaticLogin {
     static String status() {
         return "{\"ok\":true,\"running\":" + running + ",\"status\":\""
                 + Protocol.jsonEscape(status) + "\"}";
+    }
+
+    /** Dismisses a connection-error screen, then invokes the selected account's native Login path. */
+    static String reconnect(final String idText) {
+        final int id;
+        try { id = Integer.parseInt(idText); } catch (RuntimeException ignored) { return "{\"ok\":false,\"error\":\"invalid character id\"}"; }
+        final String connected = connectedAccount();
+        final String email = connected == null ? selectedAccount() : connected;
+        if (id <= 0 || email == null) return "{\"ok\":false,\"error\":\"no saved account selected\"}";
+        synchronized (LOCK) {
+            if (running) return "{\"ok\":false,\"error\":\"automatic login is already running\"}";
+            // A character the server took away for a while (op 33, back with op 32) leaves the
+            // connection up: a second login on top of it would press Enter in the world and open
+            // another connection beside the live one. Only a dropped connection is reconnected.
+            if (connectionAlive()) return "{\"ok\":false,\"error\":\"the game is still connected\"}";
+            running = true; status = "dismissing connection error";
+            new Thread(new Runnable() { @Override public void run() { try {
+                Keys.tap("enter", 60L); Thread.sleep(300L); status = "logging in";
+                String problem = startSavedAccount(email);
+                status = problem == null && waitForCharacter(id, System.currentTimeMillis() + WORLD_TIMEOUT_MILLIS)
+                        ? "ready" : (problem == null ? "timed out loading character" : problem);
+            } catch (InterruptedException ignored) { Thread.currentThread().interrupt(); status = "cancelled"; }
+              finally { running = false; } } }, "Uncle Farmer reconnect").start();
+        }
+        return "{\"ok\":true,\"id\":" + id + "}";
     }
 
     private static void waitForPicker(final int id) {
@@ -116,6 +151,59 @@ final class AutomaticLogin {
         return false;
     }
 
+    /**
+     * Selects the same server state the native Server row's Left/Right action writes, without
+     * moving the user's menu focus or sending an input event.  The saved-account constructor
+     * itself always receives byte 1 (as the normal Login action does).
+     */
+    private static String selectSavedServer(final int wanted) {
+        final Frame window = Memory.window();
+        if (window == null) return "no game window";
+        try {
+            final Object screens = staticField(window.getClass(), "h");
+            if (!(screens instanceof List)) return "server selector is unavailable";
+            final List<?> entries = (List<?>) screens;
+            int found = -1;
+            for (int n = 0; n < entries.size(); n++) {
+                Object entry = entries.get(n);
+                Object kind = field(entry, "a");
+                if (kind instanceof Integer && ((Integer) kind).intValue() == 23) {
+                    found = n;
+                    break;
+                }
+            }
+            if (found < 0) return "server selector is unavailable";
+            final Object serverEntry = entries.get(found);
+            final Object serverList = staticField(Class.forName("game.aJ"), "b");
+            final Object servers = field(serverList, "b");
+            if (!(servers instanceof List)) return "server selector is unavailable";
+            Object selectedServer = null;
+            for (Object server : (List<?>) servers) {
+                Object id = field(server, "a");
+                if (id instanceof Integer && ((Integer) id).intValue() == wanted) {
+                    selectedServer = server;
+                    break;
+                }
+            }
+            if (selectedServer == null) return "saved server is unavailable";
+            final Object chosen = selectedServer;
+            final Object label = field(chosen, "c");
+            if (!(label instanceof String)) return "saved server is unavailable";
+            synchronized (serverList) {
+                setField(serverList, "d", Integer.valueOf(wanted));
+                setField(serverEntry, "d", Integer.valueOf(wanted));
+                setField(serverEntry, "c", label);
+            }
+            Object selected = field(serverEntry, "d");
+            Object active = field(serverList, "d");
+            return selected instanceof Integer && ((Integer) selected).intValue() == wanted
+                    && active instanceof Integer && ((Integer) active).intValue() == wanted ? null
+                    : "could not select the saved server";
+        } catch (Throwable ignored) {
+            return "could not select the saved server";
+        }
+    }
+
     /** The exact native constructor the Login button uses for an existing saved account. */
     private static String startSavedAccount(String email) {
         Frame window = Memory.window();
@@ -154,6 +242,17 @@ final class AutomaticLogin {
         Object connection = companion.getConstructor().newInstance();
         companion.getMethod("a", companion).invoke(null, connection);
         companion.getMethod("a").invoke(null);
+    }
+
+    /** True while the game's current connection (game.N's channel) is open. */
+    static boolean connectionAlive() {
+        try {
+            Object client = Class.forName("game.N").getMethod("a").invoke(null);
+            Object channel = field(client, "c");
+            return channel != null && DeadLinks.active(channel);
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 
     private static String connectedAccount() {
@@ -250,5 +349,11 @@ final class AutomaticLogin {
         Field field = type.getDeclaredField(name);
         field.setAccessible(true);
         return field.get(null);
+    }
+
+    private static void setField(Object target, String name, Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(target, value);
     }
 }

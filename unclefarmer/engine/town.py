@@ -109,12 +109,16 @@ def nearest(b: Bot, role: str | None, candidates: Sequence[Npc] | None = None,
 
 
 def _step_out_first(b: Bot, target: Npc | None) -> bool:
-    """In a gang base whose way out we haven't seen yet (the run started inside it), with the chosen
-    NPC on another map: walk out first, so the nearest one is chosen from where we come out rather
-    than by the data's order. (Dungeons are left as travel plans it: a travel item may beat the
-    Action menu there.) True when we left (choose again)."""
+    """In a gang base or a secret room whose way out we haven't seen yet (the run started inside
+    it), with the chosen NPC on another map: get out first, so the nearest one is chosen from where
+    we come out rather than by the data's order. Both send us back to where we came in from, which
+    the map data can't say: from a secret room entered from Tulip City, every Shard Broker cost the
+    same "leave", and the one on central plains won - a cable car ride away from Tulip City's.
+    (Dungeons are left as travel plans it: a travel item may beat the Action menu there.) True
+    when we left (choose again)."""
     here = b.map_id()
-    if target is None or target[0] == here or travel.gang_exit(here) is None or here in ways_out(b):
+    closed = travel.gang_exit(here) is not None or atlas.kind(here) == "secret_room"
+    if target is None or target[0] == here or not closed or here in ways_out(b):
         return False
     leave = getattr(b, "leave_here", None)
     if leave is None:
@@ -476,7 +480,8 @@ def sell(b: Bot, item: str, n: int | None=None):
     role = knowledge.buyer_role(item)
     if not buyers and role is None:
         raise Stopped(_("I don't know who buys {item}", item=item))
-    have = counts(b).get(item.lower(), 0)
+    before = counts(b)
+    have = before.get(item.lower(), 0)
     if have <= 0:
         return 0
     n = have if n is None else min(n, have)
@@ -493,7 +498,10 @@ def sell(b: Bot, item: str, n: int | None=None):
         pick(b, item_pattern(item), n)
     finally:
         b.close_dialogs()
-    sold = have - counts(b).get(item.lower(), 0)
+    after = counts(b)
+    sold = have - after.get(item.lower(), 0)
+    if sold > 0:
+        InventoryTransaction(before).paid(b, after)     # the money comes in after the items go
     b.log(_("sold {n} {item}", n=sold, item=item))
     stats.moved(b, "sold", item, sold)
     return sold
@@ -577,6 +585,8 @@ def sell_collection(b: Bot, kinds: tuple[str, ...] = ("fish", "ore", "herb")) ->
         b.close_dialogs()
         after = transaction.settle(b) if transaction.expected else transaction.before
         moved = transaction.removed(after)
+        if moved:
+            after = transaction.paid(b, after)      # the money comes in after the items go
         got = after.get("arnebia", 0) - before
         for item, n in moved:
             b.log(_("sold {n} {item}", n=n, item=item))
@@ -786,11 +796,19 @@ def _fill(b: Bot, r: dict[str, Any], missing: int, *, stock: int | None = None) 
     got = 0
     options: dict[str, int] = {"stock": stock} if stock is not None else {}
     if store:
-        got += withdraw(b, item, missing, **options)
+        # Normal and restricted items can occupy separate storage rows. One
+        # withdrawal takes only one row; reopen the list before resorting to a shop.
+        while missing > 0:
+            taken = withdraw(b, item, missing, **options)
+            got += taken
+            remaining = (max(0, stock - counts(b).get(item.lower(), 0)) if stock is not None
+                         else max(0, missing - taken))
+            progressed = taken > 0 and remaining < missing
+            missing = remaining
+            if not progressed:
+                break
     if stock is not None:
         missing = max(0, stock - counts(b).get(item.lower(), 0))
-    else:
-        missing -= got
     if missing > 0 and shop:
         got += buy(b, item, missing, **options) or 0
     return got
@@ -991,7 +1009,10 @@ def _note_shard_sales(b: Bot, transaction: InventoryTransaction, todo: list[tupl
     if not transaction.expected:
         for name, n in todo:
             transaction.expect(name, -n)
-    moved = transaction.removed(transaction.settle(b))
+    after = transaction.settle(b)
+    moved = transaction.removed(after)
+    if moved:
+        transaction.paid(b, after)      # the money comes in after the shards go: count it here
     for name, gone in moved:
         b.log(_("sold {n} {item} at the Shard Market", n=gone, item=name))
         stats.moved(b, "sold", name, gone)
@@ -1423,8 +1444,17 @@ def save_shard_prices(prices: Mapping[str, int]) -> list[tuple[str, int, int]]:
     file's own layout. Only valid prices of shards it has are written (read_market_prices); one that
     isn't a positive whole number is never written over a good one. Returns [(shard, old, new)] of
     the prices that changed."""
-    with open(paths.data_file(SHARDS_FILE), encoding="utf-8") as f:
-        text = f.read()
+    # The whole read-change-save holds the lock of the file it writes (the learned copy beside the
+    # app; the shipped one is read only): two markets read at once each wrote their prices over the
+    # other's.
+    written = paths.learned_file(SHARDS_FILE)
+    os.makedirs(os.path.dirname(written), exist_ok=True)
+    with json.lock_for(written):
+        return _save_shard_prices(paths.data_file(SHARDS_FILE), prices)
+
+
+def _save_shard_prices(source: str, prices: Mapping[str, int]) -> list[tuple[str, int, int]]:
+    text = json.read_text(source)
     data: object = json.loads(text)
     shards: object = data.get("shards") if json.is_object(data) else None
     if not json.is_object(data) or not json.is_object(shards):

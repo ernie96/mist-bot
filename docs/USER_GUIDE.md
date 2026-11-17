@@ -121,9 +121,10 @@ brings it near them.
 
 ### When to stop
 
-A time limit, a clock time, a kill count, an item running low. The drop time, a full bag, the last
-death you allow, broken gear and the last potion used up stop it by themselves (character
-settings).
+A time limit, a clock time, a kill count, an item running low. The drop time, the next level
+coming close (if you ask for it), a full bag, the last death you allow, broken gear and the last
+potion used up stop it by themselves (character settings). A plan can set its own drop time to
+save, or stop before the next level, in place of the character's setting.
 
 ### Where to end
 
@@ -214,6 +215,22 @@ count it. It leaves a chest near a boss or more than 80 steps out of its way, an
 open is left for five minutes. Advanced, Fighting, "Open the chests that turn up while farming"
 turns it off.
 
+**Drop time and the next level.** Character, Settings, Fighting, "Drop time and experience" holds
+two reasons to end a run:
+
+- "Stop when the day's drop time runs out" (on by default), with "Drop time to save (minutes)":
+  the run ends while that much of the day's public area drop time is still left; 0 uses all of it.
+- "Stop before the next level" (off by default), with "Stop when the next level needs less than
+  (experience)" (100,000 by default), for a character you keep at its level. The bot reads how
+  much experience the next level still needs after every kill; under your number it says so, goes
+  somewhere safe and ends the run. It also checks before a run sets out and doesn't start farming
+  when the next level is already that close. Inside a dungeon it never leaves (the visit would be
+  lost): it says once that the level is close, and it doesn't go into a cave when it already is.
+
+A run that ends this way ended by itself, so the After farming list runs next: put Lose experience
+(the XP loser) there to win some experience back. A plan's When to stop page can set either one for
+that plan only; in a script, `keep_drop` and `keep_level`.
+
 ## The bag
 
 Character, Bag and supplies (Ctrl+B):
@@ -224,7 +241,8 @@ Character, Bag and supplies (Ctrl+B):
   Gem Maker.
 - **Other items:** Keep, Store, Sell or Throw away.
 - **Supplies:** which potions and food are refilled, and from where.
-- **Full bag:** what happens when the bag is full, and stopping when the day's drop time runs out.
+- **Full bag:** what happens when the bag is full. (Stopping when the day's drop time runs out is
+  in Character, Settings, Fighting, with the next level.)
   Full means full: the bot farms until the load reaches its limit (or stops rising just under it
   while monsters keep dying), unless you set a lower mark there.
 
@@ -258,6 +276,11 @@ be marked DETERMINISTIC: if it fails, the rest of the list is skipped, and in th
 list farming doesn't start either. A step that farms (Dungeons, or a script with a farm or dungeon
 line) keeps the daily stop. Profiles from before the lists keep their ticked jobs in their old
 order.
+
+Above the Before farming list, "Skip this list when the run starts on its first farming map" (off
+by default) is for stopping and starting again where the character was farming: a run that starts
+on the map its plan farms first leaves the Before farming list out and farms at once, and the log
+says so. A run that starts anywhere else, or goes into a dungeon first, runs the list as usual.
 
 **Before farming** runs when a plan, or a script that farms, starts - after the character is
 scanned and before the day's chores and the first farming line. **After farming** runs when a

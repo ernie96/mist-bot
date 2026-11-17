@@ -15,7 +15,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from .. import applog, daily, gameinstall, phrases, scan, settings, stats, trust
+from .. import applog, atlas, daily, gameinstall, phrases, scan, settings, stats, trust
 from ..clock import CLOCK, Clock, clock_for
 from ..errors import carry_on
 from ..i18n import _
@@ -39,7 +39,8 @@ AGENT_SHEET = 43    # from here `ask sheet` reads the character sheet without th
 AGENT_SLOTS = 46    # from here `slot <n>` presses an attack key through the game's own key method, no keyboard
                     # (45 had it too, but never let the key go: the game then refused every walk)
 AGENT_SERVER = 58   # from here `server` identifies the live S1/S2 route without a game packet
-AGENT_LOGIN = 67    # from here automatic login includes the companion game connection
+AGENT_LOGIN = 69    # from here automatic login also selects the profile's saved server
+AGENT_RECONNECT = 70 # from here `reconnect <id>` logs a dropped game back in with its saved account
 
 def _write_log(line: str) -> None:
     """Every run line to today's log; a broken log must never stop a run (applog says so once)."""
@@ -86,6 +87,8 @@ class Run(threading.Thread):
         self.clock = clock
         self.started = self.clock.time()
         self.walk = walk
+        self.done_called = False      # on_done() has run: it runs once, however the end went
+        self.end_failures: list[tuple[str, Exception]] = []   # what failed on the way out (the end goes on regardless)
 
     def farmed(self) -> bool:
         """The after-stop action (close the game, shut the PC down) is for the end of farming: a
@@ -225,12 +228,12 @@ class Run(threading.Thread):
                             "the new one"))
         character = self.profile or ""
         email = settings.load_profile(character).get("login_email")
-        entity_id = settings.profile_id(character)
-        if not isinstance(email, str) or not email or not entity_id:
-            raise Stopped(_("the plan's character has no saved account. Log in to it once first."))
+        entity_id, server = settings.profile_id(character), settings.profile_server(character)
+        if not isinstance(email, str) or not email or not entity_id or not server:
+            raise Stopped(_("the plan's character has no saved account or server. Log in to it once first."))
         if link.send("arm") != "armed":
             raise Stopped(_("the game refused the login request"))
-        reply = link.json("autologin %s %s" % (email, entity_id))
+        reply = link.json("autologin %s %s %s" % (email, entity_id, server))
         if not reply.get("ok"):
             raise Stopped(str(reply.get("error") or _("automatic login could not start")))
         self.log(_("starting automatic login"), speak=True)
@@ -273,9 +276,9 @@ class Run(threading.Thread):
             if guard != "on":
                 self.log(_("couldn't stop your Ctrl/Shift/Alt reaching this game: {why}", why=guard))
         if agent < AGENT_POINTS:
-            profile["points_key"] = ""     # an older agent can't read the T key's answer
+            settings.set_not_saved(profile, "points_key", "")     # an older agent can't read the T key's answer
         if agent < AGENT_SPEECH:
-            profile["vitals_key"] = ""     # an older agent can't read the own-HP key's answer
+            settings.set_not_saved(profile, "vitals_key", "")     # an older agent can't read the own-HP key's answer
         elif app.get("game_speech", "running") in ("running", "always") and link.send("speech") == "on":
             self.muted = link.send("speech off") == "off"
             if self.muted:
@@ -310,8 +313,32 @@ class Run(threading.Thread):
         bot.locate = getattr(self, "locate", None)   # where another of our characters is (follow, come)
         bot.last_seen = getattr(self, "last_seen", None)   # where our games last saw a trusted player
         bot.tell = getattr(self, "tell", None)       # answers the player who asked for this run
+        bot.reconnect = lambda: self._reconnect_saved_character(bot, agent)
         self.bot = bot
         return bot
+
+    def _reconnect_saved_character(self, bot: Bot, agent: int) -> bool:
+        link = self.link
+        entity_id = settings.profile_id(self.profile or "")
+        if link is None or not entity_id or agent < AGENT_RECONNECT:
+            return False
+        try:
+            if link.send("arm") != "armed" or not link.json("reconnect %s" % entity_id).get("ok"):
+                return False
+            while not self.stop_event.wait(0.25):
+                state = link.json("autologinstatus")
+                if state.get("running"):
+                    continue
+                if state.get("status") != "ready":
+                    return False
+                link.send("keysup")
+                bot.held.clear()
+                bot.guarding = self._arm(link, agent, bot.p, settings.load_app()) == "on"
+                self.log(_("automatic reconnection finished"), speak=True)
+                return True
+        except (AgentError, OSError, Stopped):
+            return False
+        return False
 
     def _set_up(self, bot: Bot, snap: dict[str, Any], profile: dict[str, Any], found: dict[str, Any], agent: int,
                 app: dict[str, Any]) -> None:
@@ -371,7 +398,9 @@ class Run(threading.Thread):
         script = Runner(bot, text)          # read first: a script that doesn't parse does nothing
         if kind not in ("errand", "tool") and not self.walk:
             if triggers.farms(script.main, script.subs):
-                self._before_farming()
+                self._level_first(bot, script.main)
+                if not self._on_the_farm(bot, script):
+                    self._before_farming()
             cfg = chores.config(bot.p)
             if cfg.get("before_farming") and chores.due(self.profile or self.character, cfg):
                 bot.log(_("the day's chores first"))
@@ -409,6 +438,32 @@ class Run(threading.Thread):
                 self.ended_by_itself = (not self.stop_event.is_set() and not getattr(e, "stay", False)
                                         and not getattr(e, "asked", False))
         return reason
+
+    @staticmethod
+    def _level_first(bot: Bot, main: list[Any]) -> None:
+        """Before anything else in a run that farms: the plan's own keep_level (its script's
+        top-level line, which only runs after the Before farming list), then "Stop before the
+        next level" checked from where we stand - a run that would stop on its first sheet at
+        the farm doesn't set out."""
+        for node in main:
+            if getattr(node, "kind", "") == "keep_level":
+                bot.level_keep = node.opts["xp"]
+        bot.level_before_start()
+
+    @staticmethod
+    def _on_the_farm(bot: Bot, script: Runner) -> bool:
+        """With "Skip this list when the run starts on its first farming map" ticked: the run
+        starts on the map it farms first (a Stop and a start again where it was farming), so the
+        Before farming list - often a trip to town and back - is left out. True (and said) then."""
+        if not bot.p.get("skip_before_on_farm", False):
+            return False
+        first = triggers.first_farm_map(script.main, script.subs)
+        here = bot.map_id()
+        if first is None or first not in (triggers.HERE, here):
+            return False
+        bot.log(_("already on {map}, where this run farms first - the Before farming list is skipped",
+                  map=atlas.label(here)))
+        return True
 
     def _before_farming(self) -> None:
         """Run the saved preparation sequence once. An ordinary unchecked failure is logged;
@@ -464,7 +519,39 @@ class Run(threading.Thread):
 
     # ---------------------------------------------------------------- the end
     def _end(self, app: dict[str, Any], reason: str) -> None:
-        """However it ended: the results finished, the game let go, said, saved and reported."""
+        """However it ended: the results finished, the game let go, said, saved and reported - and
+        then, whatever of that failed, on_done() once, which takes the run off the window's list.
+        Results that couldn't be saved (a full disk) once left the window saying "Already running"
+        with Start greyed out until the app was restarted. What failed is logged after on_done and
+        passed to carry_on (in tests: raised), the first failure first, never one hiding another."""
+        failures: list[tuple[str, Exception]] = []
+        try:
+            self._wrap_up(app, reason, failures)
+        except Exception as e:      # nothing on the way out may keep the run on the list
+            failures.append(("ending the run", e))
+        finally:
+            self._done(reason, failures)
+
+    def _done(self, reason: str, failures: list[tuple[str, Exception]]) -> None:
+        if self.done_called:
+            return
+        self.done_called = True
+        try:
+            self.on_done(reason, self)
+        except Exception as e:
+            failures.append(("telling the window the run ended", e))
+        self.end_failures = list(failures)
+        for where, e in failures:
+            try:
+                self.log(_("couldn't finish the run ({where}): {err}", where=where, err=e))
+            except Exception:
+                pass                # the log is the window too; the failure still goes to carry_on
+        if len(failures) == 1:
+            carry_on(failures[0][1], failures[0][0])
+        elif failures:
+            carry_on(ExceptionGroup("the run's end", [e for _w, e in failures]), "the run's end")
+
+    def _wrap_up(self, app: dict[str, Any], reason: str, failures: list[tuple[str, Exception]]) -> None:
         bot = self.bot
         if self.tally:
             self._last_readings(bot)
@@ -488,7 +575,11 @@ class Run(threading.Thread):
             except Exception as e:
                 carry_on(e, "telling the player the run stopped")
         if self.tally:
-            self.tally.save()
+            try:
+                self.tally.save()
+            except Exception as e:  # the results are still reported below, from memory
+                failures.append(("saving the results", e))
+                self.log(_("couldn't save the results: {err}", err=e), speak=True)
             r, *jobs = self.tally.results()
             for line in stats.report(r, _("Results of {what}", what=self.title)).splitlines():
                 self.log(line)
@@ -497,7 +588,6 @@ class Run(threading.Thread):
                     self.log(line)
             if app.get("results_speak", "end") == "end":
                 self.log(stats.short(r, self.tally.drop_left), speak=True)
-        self.on_done(reason, self)
 
     def _pause_card(self, bot: Bot | None) -> None:
         """A farming run over: its running experience card paused (xp_card_pause), so the minutes

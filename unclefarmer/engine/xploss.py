@@ -21,8 +21,12 @@ What the game says and does (its help pages, the NPC texts, and game.i read with
 The run: put the pet away (it would fight the guard), switch the PK mode to all, then for each
 death: find a guard - in sight, else a spot where one was seen before (profiles/_learned_guards.json,
 filled whenever a guard is in sight), else the nearest town - walk into reach, outside the safe zone
-(right up to it when a wall is in the way), get off the fusion beast, select it and press the first attack key once; drink nothing and fight nothing until dead; respawn in the city; read
-the sheet again. A guard that doesn't strike back is hit again, then left for another. It ends when
+(right up to it when a wall is in the way), get off the fusion beast, select it and attack it with
+the class's basic attack (Bash, Valiant Strike, Blade Strike, Arcane Shot, Magic Sphere, Fireball,
+Retribution, Shadow Arrow), pressed again every second until dead - never the first attack key as
+it is set, which can be a jump (a Hunter's Escape) or a skill that needs more than a target; drink
+nothing and fight nothing else; respawn in the city; read the sheet again. A guard that doesn't
+strike back is walked to and hit again, then left for another. It ends when
 the next level needs at least the goal, after max_deaths deaths, or when deaths stop costing
 experience (the level's start: the game takes no level away). The PK mode the game had is put back
 at the end, whatever ended it.
@@ -38,19 +42,26 @@ import threading
 from collections.abc import Collection
 from typing import Any
 
-from .. import atlas, jsonio as json, paths
+from .. import atlas, jsonio as json, paths, travel
 from ..i18n import N_, _
 from ..settings import PK_MODES
-from . import beasts, pets, town
+from . import beasts, combat, pets, town
 from .bot import Bot, Respawned, Stopped
 
 MODES = ("until", "lose")
 MODE_NAMES = (N_("until the next level needs at least"), N_("lose this much experience"))
+# Where to die: at the nearest guard, or at the nearest village. The game brings a dead character
+# back at the last town it walked into, and a village's gate guards are a few steps from its
+# respawn point: on Tuneful Wetland a death took 11 s at Aria Village and 29 s at Tulip City, where
+# the guards stand 70 tiles from the square (the median of 607 and 29 deaths, 2026-11-16).
+WHERE = ("guard", "village")
+WHERE_NAMES = (N_("at the nearest guard"), N_("at the nearest village (you respawn next to its guards)"))
 DEFAULTS: dict[str, Any] = {
     "mode": "until",          # "until": the next level needs at least `until_needed`; "lose": lose `lose` XP
     "until_needed": 0,
     "lose": 0,
     "max_deaths": 30,         # never more deaths than this in one run
+    "where": "guard",         # WHERE
 }
 ALL_MODE = PK_MODES.index("all mode")
 GUARD = re.compile(r"\bguard\b", re.I)
@@ -60,7 +71,12 @@ GUARDS_SEEN = "_learned_guards.json"   # in the profiles folder: the player's ow
 SPOTS_PER_MAP = 12
 SAME_SPOT = 6.0           # tiles: a guard seen this close to a known spot is that spot
 HIT_WAIT = 10.0           # seconds a guard has to strike back after a hit
-HITS = 3                  # hits on one guard before trying another
+PRESS_EVERY = 1.0         # seconds between presses of the basic attack while we wait to fall
+HITS = 2                  # walks up to one guard (each with HIT_WAIT of attacks) before trying another
+# skills never used to start the guard's fight when the basic attack isn't on a key: they move us
+# (a Hunter's Escape jumps away), aim at ourselves, or hit nobody
+NOT_AN_ATTACK = {"mobility", "engage", "teleport", "resurrect", "heal", "party_buff", "self_buff",
+                 "dispel", "defensive", "taunt", "reactive"}
 SKIP = 120.0              # seconds a guard that wouldn't fight is left alone
 STALLS = 2                # deaths in a row that cost no experience: none left to lose on this level
 SEARCH = 240.0            # seconds spent walking around a map looking for a guard
@@ -68,12 +84,30 @@ SEARCH_WALKS = 12         # ... and never more walks than this (a walk that ends
 LOOK = 0.5
 GATE_LOOK = 8             # tiles around the middle of a town's side to find walkable ground outside it
 CLOSE = 1.5              # tiles: right next to a guard, for when a wall is in the way from further off
+VILLAGE_MAX = 90          # tiles: a town no wider and no taller than this is a village (Aria Village 35,
+                          # Orchid woods Village 89 x 90; the smallest city, Violet City, 101)
+VILLAGE_MIN = 20          # ... and no narrower: thinner town rows are a wall's strip or a doorway
+VILLAGE_NEAR = 20         # tiles from a village's edge: its own gate guards
+BACK_NEAR = 40            # tiles from a village's edge: a respawn this close is that village's
+VILLAGE_TRIES = 3         # villages tried, nearest first, before dying at the nearest guard instead
+# The game brings a dead character back at the last town whose safe zone it walked into, not at the
+# town nearest to where it fell: dying at a village's gates on the way in, never inside, brought
+# it back at Tulip City (seen live, 2026-11-17). So we walk in first, then out to the gate guards.
+INSIDE = 3                # tiles past a village's edge: well inside it
+SETTLE = 1.0              # seconds inside, for the game to take the village as the respawn point
+ENTER_TRIES = 3           # walks into the village (each one already steps around players and walls)
+RIDE_FROM = 30            # tiles from the village: further than this, the walk in is ridden
+Village = tuple[int, str, int, int, int, int]     # (map, name, x1, y1, x2, y2)
 _seen_lock = threading.Lock()
 # For the run, over the profile: the city's respawn and no crystals (handle_death), no potions, heal
 # skills, buffs or fighting back (they would only keep the guard busy longer), and no stop for HP or
 # deaths - dying is the point.
+# pk_mode: the bot's set_modes() puts the PK mode back to the profile's before a fight with a
+# monster in the way of a walk and after an NPC talk (a ride); for this run that is all mode, or the
+# walk to the guard switched it back to a peaceful mode and the hit made no guard strike.
 DYING: dict[str, Any] = {"respawn": "city", "use_resurrection_crystal": False, "stop_on_deaths": False,
-                         "stop_on_panic": False, "hp_below": 0, "smart_skills": False, "fight_back": False}
+                         "stop_on_panic": False, "hp_below": 0, "smart_skills": False, "fight_back": False,
+                         "pk_mode": ALL_MODE}
 
 
 def config(p: dict[str, Any]) -> dict[str, Any]:
@@ -174,9 +208,22 @@ def gate_cells(mid: int, me: dict[str, Any]) -> list[tuple[int, int]]:
         m = atlas.model(mid)
     except (OSError, ValueError, KeyError):
         return []
+    ours = m.comp_of(cx, cy) if m.ok(cx, cy) else None     # only ground we can walk to
+    return _edges(mid, zone, (x, y), ours)
+
+
+def _edges(mid: int, zone: tuple[int, int, int, int], me: tuple[float, float],
+           comp: int | None = None) -> list[tuple[int, int]]:
+    """A walkable cell just outside the middle of each side of the town `zone`, nearest to `me`
+    first (on the ground part `comp`, when given)."""
+    try:
+        m = atlas.model(mid)
+    except (OSError, ValueError, KeyError):
+        return []
+    x, y = me
+    ours = comp
     x1, y1, x2, y2 = zone
     mx, my = (x1 + x2) // 2, (y1 + y2) // 2
-    ours = m.comp_of(cx, cy) if m.ok(cx, cy) else None     # only ground we can walk to
     out: list[tuple[int, int]] = []
     for px, py in ((mx, y1 - 2), (x2 + 2, my), (mx, y2 + 2), (x1 - 2, my)):
         c = m.nearest_walkable(px, py, radius=GATE_LOOK, comp=ours)
@@ -184,6 +231,87 @@ def gate_cells(mid: int, me: dict[str, Any]) -> list[tuple[int, int]]:
             out.append((int(c[0]), int(c[1])))
     out.sort(key=lambda c: math.hypot(c[0] - x, c[1] - y))
     return out
+
+
+def villages(skip: Collection[tuple[int, int, int]] = ()) -> list[Village]:
+    """Every village of the game's map table: a town safe zone from VILLAGE_MIN to VILLAGE_MAX
+    tiles on each side, not inside a city, on a map the atlas knows that isn't a dungeon. skip:
+    (map, x1, y1) of villages to leave out."""
+    out: list[Village] = []
+    for mid in atlas.maps():
+        if travel.is_instance(mid):
+            continue                  # a dungeon or a gang base: no way to come back to it on foot
+        towns = [r for r in atlas.safe_zone_rows(mid) if len(r) >= 5 and r[4] == "town"]
+        for r in towns:
+            x1, y1, x2, y2 = int(r[0]), int(r[1]), int(r[2]), int(r[3])
+            if not (VILLAGE_MIN <= x2 - x1 <= VILLAGE_MAX and VILLAGE_MIN <= y2 - y1 <= VILLAGE_MAX)                     or (mid, x1, y1) in skip:
+                continue
+            if any(o is not r and o[0] <= x1 and o[1] <= y1 and o[2] >= x2 and o[3] >= y2 for o in towns):
+                continue              # a square inside a city (Tulip City has one), not a village
+            out.append((mid, str(r[5]) if len(r) > 5 and r[5] else "", x1, y1, x2, y2))
+    return out
+
+
+def village_name(v: Village) -> str:
+    """'Aria Village on Tuneful Wetland (1081)', or 'the village at 48,48 on ...' for an unnamed one."""
+    if v[1]:
+        return _("{village} on {map}", village=v[1], map=atlas.label(v[0]))
+    return _("the village at {x},{y} on {map}", x=(v[2] + v[4]) // 2, y=(v[3] + v[5]) // 2, map=atlas.label(v[0]))
+
+
+def off_village(v: Village, x: float, y: float) -> float:
+    """Tiles from (x, y) to the village's zone (0 inside it)."""
+    dx = max(v[2] - x, 0.0, x - v[4])
+    dy = max(v[3] - y, 0.0, y - v[5])
+    return math.hypot(dx, dy)
+
+
+def well_inside(v: Village, x: float, y: float) -> bool:
+    """(x, y) is INSIDE tiles or more past every edge of the village (or near its middle, for a
+    narrow one)."""
+    mx, my = min(INSIDE, (v[4] - v[2]) // 2), min(INSIDE, (v[5] - v[3]) // 2)
+    return v[2] + mx <= x <= v[4] - mx and v[3] + my <= y <= v[5] - my
+
+
+def inside_cell(v: Village) -> tuple[int, int]:
+    """A walkable cell in the middle of the village (its middle itself with no map data)."""
+    cx, cy = (v[2] + v[4]) // 2, (v[3] + v[5]) // 2
+    try:
+        m = atlas.model(v[0])
+    except (OSError, ValueError, KeyError):
+        return cx, cy
+    c = m.nearest_walkable(cx, cy, radius=max(v[4] - v[2], v[5] - v[3]) // 2)
+    if c is None or off_village(v, c[0], c[1]) > 0:
+        return cx, cy
+    return int(c[0]), int(c[1])
+
+
+# ---------------------------------------------------------------------------------------- the attack
+def attack_key(b: Bot) -> tuple[str, int | None, float | None]:
+    """The key that hits the guard, as (key, skill page or None, range or None): the class's basic
+    attack (data/skills.json role "base_attack"), put on an empty skill key when it is on none (as
+    a teleport is); else the first skill on the keys that attacks a target; else the profile's
+    first attack key. The first attack key itself is no good: a Hunter's is often Escape, which
+    jumps away from the guard, and a Mage's Ice Orb started no fight (live 2026-11-13/15)."""
+    sb = b.skillbook or combat.SkillBook(b)
+    b.skillbook = sb
+    if sb.ok and sb.cls:
+        name = next((s["name"] for s in combat.knowledge().get(sb.cls, []) if s.get("role") == "base_attack"), None)
+        got = b.spell_slot(name) if name else None
+        if got is not None:
+            x = got[1]
+            return str(x["key"]), (int(x["slot"]) - 1) // 10, x.get("range")
+        sb = b.skillbook or sb
+    if sb.ok:
+        up = sb.page()
+        for page in sorted(sb.slots, key=lambda pg: pg != up):
+            for x in sb.slots[page]:
+                if x.get("role") not in NOT_AN_ATTACK:
+                    return str(x["key"]), page, x.get("range")
+    keys: list[str] = list(b.p.get("attack_keys") or [])
+    if not keys:
+        raise Stopped(_("no attack key in Character settings - the guard can't be hit"), final=True)
+    return keys[0], None, None
 
 
 # ---------------------------------------------------------------------------------------- the game's numbers
@@ -209,24 +337,57 @@ def pk_name(mode: object) -> str:
     return "?"
 
 
+def saved_pk(p: dict[str, Any]) -> int | None:
+    """The PK mode the profile farms with, or None when it leaves the mode as it is."""
+    v = p.get("pk_mode")
+    return v if p.get("set_modes", True) and isinstance(v, int) and 0 <= v < len(PK_MODES) else None
+
+
 def modes(b: Bot) -> dict[str, Any]:
     m = b.a.json("mem modes")
     return m if json.is_object(m) and "error" not in m else {}
 
 
-def set_pk(b: Bot, want: int) -> bool:
-    """Press the PK mode key until the game's mode is `want`. False when it is locked or won't change."""
+def set_pk(b: Bot, want: int, after_stop: bool = False) -> bool:
+    """Press the PK mode key until the game's mode is `want`. False when it is locked or won't change.
+    after_stop: the run is ending - press through the agent directly, as b.key() and b.sleep()
+    refuse every press once the run was stopped, and the mode must still go back."""
     m = modes(b)
     if m.get("pk") == want:
         return True
     if not m or m.get("pk_locked"):
         return False
+    key = b.p.get("pk_key") or "b"
     for _i in range(len(PK_MODES) + 1):
-        b.key(b.p.get("pk_key") or "b")
-        b.sleep(0.3)
+        if after_stop:
+            if not b.a.send("key %s 60" % key).startswith("tapped"):
+                return False
+            b.clock.sleep(0.3)
+        else:
+            b.key(key)
+            b.sleep(0.3)
         if modes(b).get("pk") == want:
             return True
     return False
+
+
+def put_back_pk(b: Bot, was: int) -> None:
+    """At the end of the run, whatever ended it: the PK mode back to what it was."""
+    try:
+        m = modes(b)
+        if m.get("pk") == was:
+            return
+        if m.get("pk_locked"):
+            # the game holds this map's own mode and gives ours (all mode) back when we leave
+            b.log(_("the PK mode is locked on this map: it turns back to all mode when you leave - "
+                    "please set it to {mode} then", mode=pk_name(was)), speak=True)
+            return
+        if set_pk(b, was, after_stop=True):
+            b.log(_("PK mode back to {mode}", mode=pk_name(was)))
+            return
+    except Exception as e:   # the game closed or the link broke: nothing more can be pressed
+        b.log(_("couldn't put the PK mode back ({why})", why=e))
+    b.log(_("couldn't put the PK mode back to {mode} - please set it by hand", mode=pk_name(was)), speak=True)
 
 
 # ---------------------------------------------------------------------------------------- the run
@@ -237,10 +398,16 @@ class _Run:
         self.deaths0 = int(getattr(b, "deaths", 0) or 0)
         self.skip: dict[int, float] = {}
         self.locked: set[int] = set()       # maps where the PK mode can't be changed
+        self.attack: tuple[str, int | None, float | None] | None = None   # attack_key(), read once
+        self.where = cfg.get("where") if cfg.get("where") in WHERE else "guard"
+        self.village: Village | None = None              # the village we die at (where "village")
+        self.entered = False                             # ... and we walked into it: we respawn there
+        self.left_villages: set[tuple[int, int, int]] = set()   # (map, x1, y1) with no guard to fight
 
     # -- finding a guard
-    def look(self) -> dict[str, Any] | None:
-        """The nearest guard in sight we may try now; never one on a map where all mode is locked."""
+    def look(self, around: Village | None = None) -> dict[str, Any] | None:
+        """The nearest guard in sight we may try now; never one on a map where all mode is locked.
+        around: only one at that village's gates."""
         b = self.b
         snap = b.snap()
         me: dict[str, Any] = snap.get("self") or {}
@@ -250,10 +417,19 @@ class _Run:
         note(b.map_id(), found)
         if b.map_id() in self.locked:
             return None
+        if around is not None:
+            found = [e for e in found if b.map_id() == around[0] and off_village(around, e["x"], e["y"]) <= VILLAGE_NEAR]
         return found[0] if found else None
 
     def find(self) -> dict[str, Any] | None:
-        """A guard in sight; else walk to where one was seen; else the nearest town; else around."""
+        """A guard in sight; else walk to where one was seen; else the nearest town; else around.
+        Dying at a village: one at the gates of the nearest village with guards first."""
+        if self.where == "village":
+            g = self.at_village()
+            if g is not None:
+                return g
+            self.where = "guard"
+            self.b.log(_("no village with a guard to fight nearby - dying at the nearest guard instead"))
         g = self.look()
         if g is not None:
             return g
@@ -284,6 +460,94 @@ class _Run:
             b.travel(place[0], (int(place[2]), int(place[3]) + 1))
             return self.look() or self.search()
         return None
+
+    def at_village(self) -> dict[str, Any] | None:
+        """A guard at the gates of our village: the nearest village first, walked to, its gates
+        looked at one by one; a village with none to fight is left for the next nearest."""
+        b = self.b
+        for _try in range(VILLAGE_TRIES):
+            v = self.village or self.pick_village()
+            if v is None:
+                return None
+            if self.village is None:
+                self.village = v
+                b.log(_("dying at {village}: the game brings us back right next to its guards",
+                        village=village_name(v)))
+            if not self.entered and not self.enter(v):
+                b.log(_("couldn't walk into {village} - trying another village", village=village_name(v)))
+                self.left_villages.add((v[0], v[2], v[3]))
+                self.village = None
+                continue
+            g = self.look(v)
+            if g is not None:
+                return g
+            zone = (v[2], v[3], v[4], v[5])
+            me = b.me()
+            start = (float(me.get("x", 0)), float(me.get("y", 0))) if b.map_id() == v[0] \
+                else ((v[2] + v[4]) / 2, (v[3] + v[5]) / 2)
+            for cell in _edges(v[0], zone, start):
+                if b.map_id() != v[0]:
+                    b.travel(v[0], cell)
+                else:
+                    b.walk_to(cell, near=lambda _me, v=v: self.look(v) is not None)
+                g = self.look(v)
+                if g is not None:
+                    return g
+            b.log(_("no guard to fight at {village} - trying another village", village=village_name(v)))
+            self.left_villages.add((v[0], v[2], v[3]))
+            self.village, self.entered = None, False
+        return None
+
+    def enter(self, v: Village) -> bool:
+        """Walk into the village: the game only brings us back at a town we walked into."""
+        b = self.b
+        b.log(_("walking into {village} first: the game brings us back at the last town we walked into",
+                village=village_name(v)))
+        cell = inside_cell(v)
+        def deep(me: dict[str, Any]) -> bool:
+            return b.map_id() == v[0] and well_inside(v, float(me.get("x", 0)), float(me.get("y", 0)))
+        def inside() -> bool:
+            me = b.me()
+            return b.map_id() == v[0] and off_village(v, float(me.get("x", 0)), float(me.get("y", 0))) <= 0
+        if b.map_id() != v[0]:
+            b.travel(v[0], cell)          # rides the fusion beast on the way, as every trip does
+        for _walk in range(ENTER_TRIES):
+            if deep(b.me()):
+                break
+            me = b.me()
+            if b.map_id() == v[0] and off_village(v, float(me.get("x", 0)), float(me.get("y", 0))) > RIDE_FROM:
+                beasts.ensure(b, beasts.TRAVEL)   # a long way on foot otherwise (1 min 42 s to Aria)
+            if b.walk_to(cell, near=deep) == "map":
+                return False
+        if not inside():
+            return False
+        b.sleep(SETTLE)
+        self.entered = True
+        return True
+
+    def pick_village(self) -> Village | None:
+        """The village cheapest to reach from here, of those not left out."""
+        rows = [v for v in villages(self.left_villages) if v[0] not in self.locked]
+        if not rows:
+            return None
+        by_spot = {(v[0], float((v[2] + v[4]) // 2), float((v[3] + v[5]) // 2)): v for v in rows}
+        spot = town.nearest(self.b, None, candidates=[(k[0], "Village", k[1], k[2]) for k in by_spot])
+        return by_spot.get((spot[0], float(spot[2]), float(spot[3]))) if spot is not None else None
+
+    def came_back(self) -> None:
+        """After a respawn: dying at a village is only worth it when the game brings us back
+        there. Else say where it did, and die at the nearest guard from now on."""
+        v = self.village
+        if self.where != "village" or v is None:
+            return
+        b = self.b
+        me = b.me()
+        if b.map_id() == v[0] and off_village(v, float(me.get("x", 0)), float(me.get("y", 0))) <= BACK_NEAR:
+            return
+        b.log(_("the game brought us back on {map} at {x},{y}, not at {village} - dying at the nearest "
+                "guard instead", map=atlas.label(b.map_id()), x=int(me.get("x", 0)), y=int(me.get("y", 0)),
+                village=village_name(v)), speak=True)
+        self.where, self.village, self.entered = "guard", None, False
 
     def _far(self, spot: town.Npc) -> bool:
         me = self.b.me()
@@ -331,44 +595,59 @@ class _Run:
             g.update(now)
         return there(b.me())
 
-    def strike(self, g: dict[str, Any]) -> bool:
-        """Into reach, select it, one press of the first attack key. False when it can't be hit."""
+    def strike(self, g: dict[str, Any]) -> str | None:
+        """Into reach, select it, one press of the basic attack. The key pressed, or None when it
+        can't be hit."""
         b = self.b
-        reach = max(1.5, min(float(b.reach()), 18.0) - 0.5)
+        if self.attack is None:
+            self.attack = attack_key(b)
+            b.log(_("attacking guards with the {key} key", key=self.attack[0]))
+        key, page, rng = self.attack
+        far = float(rng) if rng else float(b.reach())
+        reach = max(1.5, min(far, 18.0) - 0.5)
         if not self.approach(g, reach):
-            return False
+            return None
         # off the fusion beast first, as a player does it by hand (recorded 2026-11-13: ride up,
         # put the beast away, then attack); the travel there leaves us on the Swift one, whose
         # skills are off, so the attack key did nothing
         beasts.off(b)
+        # the walk here may have changed it (a new map's own mode, a fight on the way): a hit in
+        # any other mode makes no guard strike back
+        if not self.all_mode():
+            return None
         reply = b.a.send("select %d" % g["id"])
         if reply != "selected" and reach > CLOSE and ("clear line" in reply or "reach" in reply):
             # guards stand at gates and walls: from the attack's range a wall is often in between
             # (live 2026-11-13: "refused: -39 isn't in a clear line"), so walk right up to it
             if not self.approach(g, CLOSE):
-                return False
+                return None
             reply = b.a.send("select %d" % g["id"])
         if reply != "selected":
             b.log(_("can't select the guard: {why}", why=reply))
-            return False
-        keys: list[str] = list(b.p.get("attack_keys") or [])
-        if not keys:
-            raise Stopped(_("no attack key in Character settings - the guard can't be hit"), final=True)
-        b.key(keys[0])
-        return True
+            return None
+        sb = b.skillbook
+        if page is not None and sb is not None and sb.page() != page:
+            sb.flip_to(page)              # the basic attack sits on the other skill page
+        b.key(key)
+        return key
 
-    def wait_for_death(self, g: dict[str, Any]) -> bool:
-        """After a hit: wait, drinking nothing. True when the guard is striking (or we died)."""
+    def wait_for_death(self, key: str) -> bool:
+        """After a hit: press the basic attack again every second, drinking nothing. True when the
+        guard is striking (or we died); False when HIT_WAIT passed without a hit on us."""
         b = self.b
         hp0 = int(b.me().get("hp", 0) or 0)
         end = b.clock.time() + HIT_WAIT
+        pressed = b.clock.time()
         while b.clock.time() < end:
             b.check()
-            me = b.me()
-            if int(me.get("hp", 1) or 0) <= 0:
+            hp = int(b.me().get("hp", 1) or 0)
+            if hp <= 0:
                 self.died()
-            if int(me.get("hp", 0) or 0) < hp0:
-                end = max(end, b.clock.time() + HIT_WAIT)   # it is hitting: keep waiting
+            if hp < hp0:
+                end = max(end, b.clock.time() + HIT_WAIT)   # it is hitting: keep at it until we fall
+            if b.clock.time() - pressed >= PRESS_EVERY:
+                b.key(key)                  # one press may be lost (a cast lock after the beast)
+                pressed = b.clock.time()
             b.sleep(LOOK)
         return int(b.me().get("hp", 0) or 0) < hp0
 
@@ -387,7 +666,10 @@ class _Run:
         mid = b.map_id()
         if mid in self.locked:
             return False
+        if modes(b).get("pk") == ALL_MODE:
+            return True
         if set_pk(b, ALL_MODE):
+            b.log(_("PK mode: all mode (guards can be hit only in it)"))
             return True
         self.locked.add(mid)
         b.log(_("the PK mode can't be changed on {map} - looking for guards elsewhere", map=atlas.label(mid)))
@@ -412,13 +694,15 @@ class _Run:
                 if not self.all_mode():
                     continue              # walked onto a map where it is locked: look elsewhere
                 for _hit in range(HITS):
-                    if not self.strike(g):
+                    key = self.strike(g)
+                    if key is None:
                         break
-                    while self.wait_for_death(g):
-                        pass              # it is striking: wait on until we fall (Respawned)
+                    while self.wait_for_death(key):
+                        pass              # it is striking: keep hitting until we fall (Respawned)
                 self.skip[int(g["id"])] = b.clock.time() + SKIP
                 b.log(_("the guard didn't strike back - trying another"))
             except Respawned:
+                self.came_back()
                 now = xp_needed(b)
                 if now is None:
                     raise Stopped(_("can't read the experience from the character sheet any more"), final=True)
@@ -462,7 +746,9 @@ def run(b: Bot, cfg: dict[str, Any], check_only: bool = False) -> str:
                 pk=pk_name(m.get("pk")),
                 locked=_(" (locked here)") if m.get("pk_locked") else ""), speak=True)
         return "checked"
-    was_pk = m.get("pk")
+    # on a map that holds its own PK mode, the game keeps ours aside and "pk" is the map's: then
+    # the one the bot farms with is the one to come back to
+    was_pk = m.get("pk") if not m.get("pk_locked") else saved_pk(b.p)
     saved = b.p
     b.p = {**saved, **DYING}
     b.dying_on_purpose = True
@@ -477,12 +763,7 @@ def run(b: Bot, cfg: dict[str, Any], check_only: bool = False) -> str:
         b.dying_on_purpose = False
         b.p = saved
         if isinstance(was_pk, int) and was_pk != ALL_MODE:
-            try:
-                if not set_pk(b, was_pk):
-                    b.log(_("couldn't put the PK mode back to {mode} - please set it by hand",
-                            mode=pk_name(was_pk)), speak=True)
-            except Stopped:
-                b.log(_("the PK mode is still all mode - please set it back by hand"), speak=True)
+            put_back_pk(b, was_pk)
     end = {
         "done": _("done: the next level needs at least {goal} experience", goal=target),
         "deaths": _("stopped after {n} deaths, as you set", n=r.deaths),

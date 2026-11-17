@@ -20,6 +20,12 @@ uv run python check.py                  everything else
 - **Requirements**: exported again from the merged `uv.lock`.
 - **Translations**: upstream's `.pot`, `.po` and `.mo`, then the fork's own Roman Urdu put back
   where upstream's file has none (Donate, the Control tab, the message title), then rebuilt.
+  `sync_upstream.py translations` does this step again on its own. A language new from upstream
+  has none of the fork's texts: translate them in its .po file.
+- **The fork's updater** (`updater.py`, the update window, `release.py`, `build_exe.py` and their
+  tests): the fork's, even where upstream's changes merged without a conflict. Upstream's own
+  updater (`bootstrap.exe`, `update_recovery.py`, its tests and docs) is left out. A call into
+  upstream's updater elsewhere still has to be found by hand; pyright in `check.py` finds it.
 - **README.md and CONTRIBUTING.md**: the fork's. Upstream has rewritten both in a style the fork
   doesn't use. New facts in upstream's version are carried over by hand.
 

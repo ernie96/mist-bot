@@ -555,6 +555,9 @@ msgstr "&Kya karna hai:"
 msgid "&When the bag is full:"
 msgstr "&Jab basta bhar jaye:"
 
+msgid "&Where to die:"
+msgstr "&Kahan marna hai:"
+
 msgid "&Write an email"
 msgstr "&Email likhein"
 
@@ -1385,17 +1388,14 @@ msgstr "Draw Blood (khoon)"
 msgid "Drink below (%):"
 msgstr "Kitne (%) se neeche peeyein:"
 
-msgid "Drop time"
-msgstr "Drop ka waqt"
+msgid "Drop time and experience"
+msgstr "Drop time aur experience"
 
 msgid "Drop time left: {h} h {m} min"
 msgstr "Drop time baqi: {h} h {m} min"
 
 msgid "Drop time not read yet."
 msgstr "Drop time abhi nahi parha."
-
-msgid "Drop time to &save (minutes):"
-msgstr "Drop ka waqt &mahfooz karne ke liye (minute):"
 
 msgid "Drop time to save (minutes):"
 msgstr "Drop ka waqt mahfooz karne ke liye (minute):"
@@ -2758,6 +2758,12 @@ msgstr "&Waqfa ya jari"
 msgid "P&ets (ticked ones come out, first ready one first):"
 msgstr "P&ets (tick wale bahar aate hain, pehle jo tayyar ho pehle):"
 
+msgid "PK mode back to {mode}"
+msgstr "PK mode wapas {mode} par kar diya"
+
+msgid "PK mode: all mode (guards can be hit only in it)"
+msgstr "PK mode: all mode (guards ko sirf isi mein mara ja sakta hai)"
+
 msgid "Pacifist mode"
 msgstr "Pur-aman mode"
 
@@ -3361,6 +3367,11 @@ msgstr "Istemal hui skills: {casts} casts, kul {dmg} damage"
 msgid "Skinning"
 msgstr "Skinning (khaal)"
 
+msgid ""
+"Skip this list when the run starts on its first farming &map (a Stop, then a start again where it was farming)"
+msgstr ""
+"Yeh list chhor dein jab run apne pehle farming &map par shuru ho (Stop, phir wahin dobara shuru jahan farming ho rahi thi)"
+
 msgid "Snow mountain prince"
 msgstr "Snow mountain prince"
 
@@ -3519,6 +3530,14 @@ msgstr "Bohat zyada &maut ke baad rukein"
 msgid "Stop and send &voice"
 msgstr "rok kar &voice bhejein"
 
+msgid ""
+"Stop bef&ore the next level (never inside a dungeon: there it only says so)"
+msgstr ""
+"Agle level se &pehle rukein (dungeon ke andar kabhi nahin: wahan sirf batata hai)"
+
+msgid "Stop before the next &level (instead of the character's setting)"
+msgstr "Agle &level se pehle rukein (kirdaar ki setting ki jagah)"
+
 msgid "Stop every day"
 msgstr "Har roz rok"
 
@@ -3543,8 +3562,11 @@ msgstr "Jab &Vitality itni reh jaye to rukein (0: khatam hone tak):"
 msgid "Stop when HP stays &low"
 msgstr "Jab HP &kam reh jaye to rukein"
 
-msgid "Stop when the day's &drop time runs out"
-msgstr "Rok dein jab din ka &drop waqt khatam ho jaye"
+msgid "Stop when the day's drop &time runs out"
+msgstr "Rok dein jab din ka drop &waqt khatam ho jaye"
+
+msgid "Stop when the next level needs less than (experience):"
+msgstr "Rukein jab agle level ko is se kam experience chahiye ho:"
 
 msgid "Stop when the potions run &out (unless a restock rule brings more)"
 msgstr ""
@@ -3720,9 +3742,9 @@ msgid "The bot drinks it as soon as that much {what} is missing."
 msgstr "jaise hi itna {what} kam hota hai, bot ise pee leta hai."
 
 msgid ""
-"The bot finds a guard (in sight, where one was seen before, or in the nearest town), switches the PK mode to all mode, hits the guard once and lets it kill the character: no potions, no heals, no fighting back. It respawns in the city and goes again until the next level needs at least that much experience. The pet is put away first, and the PK mode is put back at the end. Deaths wear your gear like any death; a black-name character (Morality -1000 or lower) can lose worn gear when it dies, so the XP loser won't run for one."
+"The bot finds a guard (in sight, where one was seen before, or in the nearest town), switches the PK mode to all mode, hits the guard once and lets it kill the character: no potions, no heals, no fighting back. It respawns in the city and goes again until the next level needs at least that much experience. At the nearest village, it walks into the nearest village first (the game brings a dead character back at the last town it walked into), then dies at its gates, so each death is quicker (on Tuneful Wetland, 11 seconds at Aria Village against 29 at Tulip City); if the game brings it back somewhere else, it dies at the nearest guard instead. The pet is put away first, and the PK mode is put back at the end. Deaths wear your gear like any death; a black-name character (Morality -1000 or lower) can lose worn gear when it dies, so the XP loser won't run for one."
 msgstr ""
-"Bot ek guard dhoondta hai (nazar mein, jahan pehle dekha gaya, ya qareebi shehar mein), PK mode all mode par karta hai, guard ko ek baar maarta hai aur character ko marne deta hai: na potion, na heal, na jawabi larai. Woh shehar mein dobara zinda hota hai aur tab tak dobara jata hai jab tak agle level ko kam az kam itni experience na chahiye. Pehle pet wapas rakha jata hai, aur aakhir mein PK mode wapas lagaya jata hai. Har maut ki tarah gear ghista hai; black-name character (Morality -1000 ya kam) marne par pehna hua gear kho sakta hai, is liye XP loser us ke liye nahi chalega."
+"Bot ek guard dhoondta hai (nazar mein, jahan pehle dekha gaya, ya qareebi shehar mein), PK mode all mode par karta hai, guard ko ek baar maarta hai aur character ko marne deta hai: na potion, na heal, na jawabi larai. Woh shehar mein dobara zinda hota hai aur tab tak dobara jata hai jab tak agle level ko kam az kam itni experience na chahiye. Qareebi gaon wale choice mein woh pehle qareebi gaon ke andar jata hai (game mare hue character ko us aakhri shehar mein wapas lata hai jis mein woh dakhil hua tha), phir us ke darwazon par marta hai, is liye har maut jaldi hoti hai (Tuneful Wetland par Aria Village mein 11 seconds, Tulip City mein 29); agar game use kahin aur wapas laye to woh is ke bajaye qareebi guard ke paas marta hai. Pehle pet wapas rakha jata hai, aur aakhir mein PK mode wapas lagaya jata hai. Har maut ki tarah gear ghista hai; black-name character (Morality -1000 ya kam) marne par pehna hua gear kho sakta hai, is liye XP loser us ke liye nahi chalega."
 
 msgid "The bot isn't running."
 msgstr "Bot nahi chal raha."
@@ -4610,6 +4632,11 @@ msgstr "pehle se {cave} ke andar"
 msgid "already inside {cave}: hunting until the game moves us out"
 msgstr "pehle se {cave} ke andar: jab tak game bahar na nikale, shikar jaari"
 
+msgid ""
+"already on {map}, where this run farms first - the Before farming list is skipped"
+msgstr ""
+"pehle se {map} par hain, jahan yeh run pehle farming karta hai - Before farming list chhor di gayi"
+
 msgid "area attack"
 msgstr "area hamla"
 
@@ -4641,6 +4668,12 @@ msgid "arrived on {map} at {x},{y} - planning the way on from here"
 msgstr ""
 "{map} par {x},{y} par pohanch gaye - yahan se aage ka rasta bana rahe hain"
 
+msgid "at the nearest guard"
+msgstr "qareebi guard ke paas"
+
+msgid "at the nearest village (you respawn next to its guards)"
+msgstr "qareebi gaon mein (aap us ke guards ke paas dobara zinda hote hain)"
+
 msgid "at {time}"
 msgstr "{time} par"
 
@@ -4664,6 +4697,9 @@ msgid ""
 msgstr ""
 "{secs} s pehle hamla hua - fusion beast {quiet} s bina hamle ke guzarne tak intezar karta hai"
 
+msgid "attacking guards with the {key} key"
+msgstr "guards par {key} key se hamla"
+
 msgid "attacks {how}"
 msgstr "hamla {how}"
 
@@ -4675,6 +4711,9 @@ msgstr "khudkar login mukammal hua"
 
 msgid "automatic login stopped"
 msgstr "khudkar login ruk gaya"
+
+msgid "automatic reconnection finished"
+msgstr "khudkar dobara rabt mukammal ho gaya"
 
 msgid "avoiding elites"
 msgstr "elites se bachte hue"
@@ -4857,6 +4896,9 @@ msgstr "chun raha hoon \"{entry}\""
 msgid "chose \"Open the chest\" but the chest is still there"
 msgstr "\"Open the chest\" chuna lekin chest abhi bhi wahan hai"
 
+msgid "circles seen on {map}: {names}"
+msgstr "{map} par nazar aaye circles: {names}"
+
 msgid "cleaning the bag"
 msgstr "basta saaf kar rahe hain"
 
@@ -4914,6 +4956,10 @@ msgstr "{shard} shamil nahi kar sake"
 msgid "couldn't cast {skill} ({why}) - trying again in 5 minutes"
 msgstr "{skill} cast nahi ho saki ({why}) - 5 minute baad dobara koshish"
 
+msgid "couldn't confirm the repair with a {tool} - not marked repaired"
+msgstr ""
+"{tool} se marammat ki tasdeeq nahi ho saki - marammat shuda nahi maana gaya"
+
 msgid "couldn't finish at the game's end: {err}"
 msgstr "game ke end par mukammal nahi kar sake: {err}"
 
@@ -4922,6 +4968,9 @@ msgstr "mehfooz tareeqe se mukammal nahi kar sake: {err}"
 
 msgid "couldn't finish the results: {err}"
 msgstr "nataij mukammal nahi kar sake: {err}"
+
+msgid "couldn't finish the run ({where}): {err}"
+msgstr "run mukammal tareeqe se khatam nahi kar sake ({where}): {err}"
 
 msgid "couldn't get back to {place}: {why}"
 msgstr "{place} par wapas nahi ja sake: {why}"
@@ -4970,6 +5019,9 @@ msgstr "menu entry tak nahi ja sake"
 msgid "couldn't open the Gem Craftsman's shard synthesis"
 msgstr "Gem Craftsman ki shard synthesis khol nahi sake"
 
+msgid "couldn't put the PK mode back ({why})"
+msgstr "PK mode wapas nahi ho saka ({why})"
+
 msgid "couldn't put the PK mode back to {mode} - please set it by hand"
 msgstr "PK mode wapas {mode} par nahi ho saka - meharbani kar ke khud lagayein"
 
@@ -4999,6 +5051,9 @@ msgstr "respawn nahi ho saka - baraye meharbani khud karein"
 
 msgid "couldn't restock {item}: {why}"
 msgstr "{item} restock nahin ho saka: {why}"
+
+msgid "couldn't save the results: {err}"
+msgstr "nataij save nahi kar sake: {err}"
 
 msgid "couldn't save the shard prices: {err}"
 msgstr "shards ki qeematein mahfooz nahi ho sakin: {err}"
@@ -5047,6 +5102,9 @@ msgstr "attack ka woh page nahi khol sake jis par {skill} hai"
 
 msgid "couldn't type into the game: {why}"
 msgstr "game mein type nahi kar sake: {why}"
+
+msgid "couldn't walk into {village} - trying another village"
+msgstr "{village} ke andar nahi ja saka - doosra gaon try kar raha hai"
 
 msgid "couldn't {what} the experience card: {why} - trying again in a minute"
 msgstr ""
@@ -5116,6 +5174,10 @@ msgstr "drop: aaj kitna drop time baqi hai."
 
 msgid "dungeon - you leave by its chest, not on foot"
 msgstr "dungeon - yahan se aap is ke chest ke zariye nikalte hain, paidal nahi"
+
+msgid "dying at {village}: the game brings us back right next to its guards"
+msgstr ""
+"{village} par mar rahe hain: game hamein us ke guards ke bilkul paas wapas lata hai"
 
 msgid "dying costs no more experience on this level - stopped"
 msgstr "is level par marne se ab experience kam nahi hoti - ruk gaye"
@@ -5216,6 +5278,10 @@ msgstr ""
 
 msgid "following {name}"
 msgstr "{name} ke saath chal raha hoon"
+
+msgid "found it: {npc} at {x},{y} - but couldn't save it for next time"
+msgstr ""
+"mil gaya: {npc} {x},{y} par - lekin agli baar ke liye save nahi kar sake"
 
 msgid "found it: {npc} at {x},{y} - remembered"
 msgstr "mil gaya: {npc} {x},{y} par - yaad rakh liya"
@@ -5410,6 +5476,11 @@ msgstr "{who} ki team mein shamil ho gaya ({team}): {who} par bharosa hai"
 msgid "keep_drop takes the minutes of drop time to save, 0 to 1440: {what}"
 msgstr ""
 "keep_drop ko mahfooz karne wale drop ke waqt ke minute chahiyein, 0 se 1440: {what}"
+
+msgid ""
+"keep_level takes the experience the next level must still need, 0 to {most}: {what}"
+msgstr ""
+"keep_level ko woh experience chahiye jo agle level ke liye baqi rehna chahiye, 0 se {most} tak: {what}"
 
 msgid "kept in the bag, as their rules say: {list}"
 msgstr "baste mein rakhe, jaisa un ke rules kehte hain: {list}"
@@ -5679,6 +5750,10 @@ msgstr ""
 msgid "no guard here - going to the nearest town, {map}"
 msgstr "yahan koi guard nahi - qareebi shehar ja rahe hain, {map}"
 
+msgid "no guard to fight at {village} - trying another village"
+msgstr ""
+"{village} par larne ke liye koi guard nahi - doosra gaon try kar rahe hain"
+
 msgid "no known entrance for the dungeon {name}"
 msgstr "dungeon {name} ka koi maloom entrance nahi"
 
@@ -5755,6 +5830,11 @@ msgstr "aisa koi kaam nahi: {names} (yeh hain: {all})"
 
 msgid "no such dungeon: {name} (there are: {all})"
 msgstr "aisa koi dungeon nahi: {name} (yeh hain: {all})"
+
+msgid ""
+"no village with a guard to fight nearby - dying at the nearest guard instead"
+msgstr ""
+"aas paas koi gaon nahi jahan larne ke liye guard ho - is ke bajaye qareebi guard ke paas mar rahe hain"
 
 msgid "no way from {a} to {b} - go there yourself and start again"
 msgstr ""
@@ -6359,6 +6439,9 @@ msgstr "ruk gaya"
 msgid "stopped after {n} deaths, as you set"
 msgstr "{n} maut ke baad ruk gaye, jaisa aap ne rakha"
 
+msgid "stopped before the next level"
+msgstr "agle level se pehle ruk gaye"
+
 msgid "stopped by you"
 msgstr "aap ne rok diya"
 
@@ -6531,8 +6614,10 @@ msgstr "jahan guards hain wahan PK mode badla nahi ja sakta"
 msgid "the PK mode is locked here - leaving it as {mode}"
 msgstr "yahan PK mode locked hai - {mode} hi rehne de rahe hain"
 
-msgid "the PK mode is still all mode - please set it back by hand"
-msgstr "PK mode abhi bhi all mode hai - meharbani kar ke khud wapas lagayein"
+msgid ""
+"the PK mode is locked on this map: it turns back to all mode when you leave - please set it to {mode} then"
+msgstr ""
+"is map par PK mode locked hai: yahan se nikalte hi all mode ho jayega - tab meharbani kar ke {mode} lagayein"
 
 msgid "the Pet Trainer offers no rebirth"
 msgstr "Pet Trainer rebirth nahi de raha"
@@ -6668,6 +6753,16 @@ msgid ""
 "the follow attack doesn't walk us to the monster here - walking up to them ourselves"
 msgstr ""
 "yahan follow attack humein monster tak nahi le jata - khud un tak chal rahe hain"
+
+msgid ""
+"the fusion beast waits {secs} s: the game refuses one this soon after a death"
+msgstr ""
+"fusion beast {secs} s intezar karta hai: game maut ke itni jaldi baad koi fusion beast nahi deta"
+
+msgid ""
+"the game brought us back on {map} at {x},{y}, not at {village} - dying at the nearest guard instead"
+msgstr ""
+"game hamein {map} par {x},{y} par wapas laya, {village} par nahi - is ke bajaye qareebi guard ke paas mar rahe hain"
 
 msgid "the game can't be read: {why}"
 msgstr "game nahi parhi ja sakti: {why}"
@@ -6812,8 +6907,29 @@ msgid ""
 msgstr ""
 "agle level ko pehle hi {xp} experience chahiye (maqsad {goal}) - kam karne ko kuch nahi"
 
+msgid ""
+"the next level needs only {n} experience - going somewhere safe and stopping"
+msgstr ""
+"agle level ko sirf {n} experience chahiye - kisi mahfooz jagah ja kar ruk rahe hain"
+
+msgid "the next level needs only {n} experience - not going into {cave}"
+msgstr "agle level ko sirf {n} experience chahiye - {cave} mein nahin ja rahe"
+
+msgid "the next level needs only {n} experience - not starting to farm"
+msgstr ""
+"agle level ko sirf {n} experience chahiye - farming shuru nahin kar rahe"
+
+msgid ""
+"the next level needs only {n} experience - the dungeon goes on, leaving would lose the visit"
+msgstr ""
+"agle level ko sirf {n} experience chahiye - dungeon jaari hai, bahar nikalne se visit zaya ho jati"
+
 msgid "the next level needs {n} experience"
 msgstr "agle level ko {n} experience chahiye"
+
+msgid "the next level needs {n} experience; farming stops under {goal}"
+msgstr ""
+"agle level ko {n} experience chahiye; {goal} se kam par farming ruk jayegi"
 
 msgid "the officer offers no hunting bounty"
 msgstr "afsar hunting bounty nahi de raha"
@@ -6830,9 +6946,10 @@ msgstr "pet"
 msgid "the pet's amiability is {n} but there's no {item} in the bag"
 msgstr "pet ki amiability {n} hai lekin baste mein {item} nahi"
 
-msgid "the plan's character has no saved account. Log in to it once first."
+msgid ""
+"the plan's character has no saved account or server. Log in to it once first."
 msgstr ""
-"Plan ke kirdar ka koi mahfooz account nahi. Pehle ek martaba is mein login karein."
+"Plan ke kirdar ka koi mahfooz account ya server nahi. Pehle ek martaba is mein login karein."
 
 msgid "the ride from {map} never arrived"
 msgstr "{map} se sawari kabhi nahi pohanchi"
@@ -6900,6 +7017,9 @@ msgstr ""
 
 msgid "the top level - nothing to lose"
 msgstr "sab se ooncha level - kam karne ko kuch nahi"
+
+msgid "the village at {x},{y} on {map}"
+msgstr "{map} par {x},{y} wala gaon"
 
 msgid "the way on at {cell} is still shut - its stage isn't cleared yet"
 msgstr ""
@@ -7102,6 +7222,11 @@ msgstr "{name} ka voice message - Chat (Ctrl+T) mein sunein"
 msgid "walk to the enemy"
 msgstr "dushman tak chalo"
 
+msgid ""
+"walking into {village} first: the game brings us back at the last town we walked into"
+msgstr ""
+"pehle {village} ke andar ja raha hai: game humein us aakhri shehar mein wapas lata hai jis mein hum dakhil hue the"
+
 msgid "walking on to {cell}"
 msgstr "{cell} ki taraf aage chal rahe hain"
 
@@ -7127,9 +7252,12 @@ msgid "went to {name} as they asked"
 msgstr "un ke kehne par {name} ke paas chala gaya"
 
 msgid ""
-"when the day's drop time is used up; when the bag is full of things you keep; after the last death you allow; when broken gear can't be repaired. Those are set per character, in Character, Settings and Bag and supplies."
+"when the day's drop time is used up; before the next level, if you asked for it; when the bag is full of things you keep; after the last death you allow; when broken gear can't be repaired. Those are set per character, in Character, Settings and Bag and supplies."
 msgstr ""
-"jab din ka drop time khatam ho jaye; jab basta un cheezon se bhar jaye jo aap rakhte hain; aap ki ijazat wali aakhri maut ke baad; jab toota hua equipment theek na ho sake. Yeh har kirdaar ke liye alag, Kirdaar, Tarteeb aur Basta aur saman mein set hote hain."
+"jab din ka drop time khatam ho jaye; agle level se pehle, agar aap ne kaha ho; jab basta un cheezon se bhar jaye jo aap rakhte hain; aap ki ijazat wali aakhri maut ke baad; jab toota hua equipment theek na ho sake. Yeh har kirdaar ke liye alag, Kirdaar, Tarteeb aur Basta aur saman mein set hote hain."
+
+msgid "when the next level needs less than {n} experience"
+msgstr "jab agle level ko {n} se kam experience chahiye ho"
 
 msgid "when {item} is below {n}"
 msgstr "jab {item} {n} se kam ho"
@@ -7843,6 +7971,9 @@ msgstr "{tool} - {name}"
 msgid "{tool} check"
 msgstr "{tool} check"
 
+msgid "{village} on {map}"
+msgstr "{map} par {village}"
+
 msgid "{what} for {who} is waiting: {why}"
 msgstr "{who} ke liye {what} intezar mein hai: {why}"
 
@@ -7918,6 +8049,12 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgid "Clea&n the bag (game menu, Clean the bag now)"
 #~ msgstr "Basta saa&f karein (game menu, Clean the bag now)"
 
+#~ msgid "Drop time"
+#~ msgstr "Drop ka waqt"
+
+#~ msgid "Drop time to &save (minutes):"
+#~ msgstr "Drop ka waqt &mahfooz karne ke liye (minute):"
+
 #~ msgid "E&xport plan"
 #~ msgstr "Mansooba e&xport karein"
 
@@ -7950,6 +8087,9 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgid "Plan or script"
 #~ msgstr "Mansooba ya script"
 
+#~ msgid "Preparing the update to {v}"
+#~ msgstr "{v} ka update tayyar ho raha hai"
+
 #~ msgid ""
 #~ "Questions, ideas, or want to donate? Write to the developer at {email}. Bugs are best reported on GitHub, so everyone can see the fix: {issues}"
 #~ msgstr ""
@@ -7973,11 +8113,24 @@ msgstr "{w} bar {h} tiles, {n} exits."
 #~ msgid "St&ore items (game menu, Store items now)"
 #~ msgstr "Cheezein st&orehouse mein rakhein (game menu, Store items now)"
 
+#~ msgid "Stop when the day's &drop time runs out"
+#~ msgstr "Rok dein jab din ka &drop waqt khatam ho jaye"
+
 #~ msgid "Talk with other players and the developer in the Telegram group: {link}"
 #~ msgstr "Doosre players aur developer se Telegram group mein baat karein: {link}"
 
+#~ msgid ""
+#~ "The bot finds a guard (in sight, where one was seen before, or in the nearest town), switches the PK mode to all mode, hits the guard once and lets it kill the character: no potions, no heals, no fighting back. It respawns in the city and goes again until the next level needs at least that much experience. The pet is put away first, and the PK mode is put back at the end. Deaths wear your gear like any death; a black-name character (Morality -1000 or lower) can lose worn gear when it dies, so the XP loser won't run for one."
+#~ msgstr ""
+#~ "Bot ek guard dhoondta hai (nazar mein, jahan pehle dekha gaya, ya qareebi shehar mein), PK mode all mode par karta hai, guard ko ek baar maarta hai aur character ko marne deta hai: na potion, na heal, na jawabi larai. Woh shehar mein dobara zinda hota hai aur tab tak dobara jata hai jab tak agle level ko kam az kam itni experience na chahiye. Pehle pet wapas rakha jata hai, aur aakhir mein PK mode wapas lagaya jata hai. Har maut ki tarah gear ghista hai; black-name character (Morality -1000 ya kam) marne par pehna hua gear kho sakta hai, is liye XP loser us ke liye nahi chalega."
+
 #~ msgid "The delay must be a finite number of seconds, zero or greater."
 #~ msgstr "Waqfa seconds mein aik mehdood adad hona chahiye, zero ya us se zyada."
+
+#~ msgid ""
+#~ "The update is being prepared: Uncle Farmer closes by itself in a moment."
+#~ msgstr ""
+#~ "Update tayyar ho raha hai: Uncle Farmer thori der mein khud band ho jaye ga."
 
 #~ msgid ""
 #~ "Ticked jobs run one after the other in this order, each exactly as from the game's Tools submenu. A job ticked in both lists runs once before and once after farming. A job that can't finish is said and the next one still runs; Stop ends them. Store items uses the bag manager's storage list as it is at that moment."
@@ -7994,3 +8147,15 @@ msgstr "{w} bar {h} tiles, {n} exits."
 
 #~ msgid "Up&date shard prices (game menu, Update shard prices)"
 #~ msgstr "Shards ki qeematein up&date karein (game menu, Update shard prices)"
+
+#~ msgid "the PK mode is still all mode - please set it back by hand"
+#~ msgstr "PK mode abhi bhi all mode hai - meharbani kar ke khud wapas lagayein"
+
+#~ msgid "the plan's character has no saved account. Log in to it once first."
+#~ msgstr ""
+#~ "Plan ke kirdar ka koi mahfooz account nahi. Pehle ek martaba is mein login karein."
+
+#~ msgid ""
+#~ "when the day's drop time is used up; when the bag is full of things you keep; after the last death you allow; when broken gear can't be repaired. Those are set per character, in Character, Settings and Bag and supplies."
+#~ msgstr ""
+#~ "jab din ka drop time khatam ho jaye; jab basta un cheezon se bhar jaye jo aap rakhte hain; aap ki ijazat wali aakhri maut ke baad; jab toota hua equipment theek na ho sake. Yeh har kirdaar ke liye alag, Kirdaar, Tarteeb aur Basta aur saman mein set hote hain."
