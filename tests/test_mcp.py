@@ -96,7 +96,7 @@ def test_every_tool_has_its_handler_and_a_clean_schema() -> None:
         schema = t.schema()
         assert schema["type"] == "object"
         assert set(t.required) <= set(schema["properties"]), t.name
-        if t.kind == control.RISKY and "confirm" in t.properties and t.name not in ("run_tool", "voice_message"):
+        if t.kind == control.RISKY and "confirm" in t.properties and t.name not in ("run_tool", "voice_message", "market"):
             assert "confirm" in t.required, t.name
     assert len({t.name for t in control.TOOLS}) == len(control.TOOLS)
 
@@ -390,7 +390,41 @@ def test_every_tool_answers_without_crashing(piped: Callable[[Window], mcpserver
 
 def test_run_tool_knows_every_job_the_triggers_know() -> None:
     from unclefarmer.engine import triggers
-    assert {job for job, _w in triggers.TOOLS} <= set(control.TOOL_NAMES)
+    assert {job.split()[0] for job, _w in triggers.TOOLS} <= set(control.TOOL_NAMES)
+
+
+@pytest.mark.parametrize("args", [
+    {"action": "scan"}, {"action": "scan", "count_sellers": True},
+    {"action": "search", "item": "Lesser Blood | Worthless Blood", "cheapest": True, "max": 50, "pages": 3},
+    {"action": "search", "category": "materials"}, {"action": "seller", "sellers": [1234, 5678]},
+    {"action": "buy", "item": "Lesser Blood", "count": 10, "max": 50, "cap": 500, "check": True},
+    {"action": "buy", "item": "Lesser Blood", "count": 10, "max": 50, "confirm": True},
+])
+def test_every_market_line_the_tool_builds_passes_the_script_check(args: dict[str, Any]) -> None:
+    from unclefarmer.engine import script
+    line = remote.RemoteControl.market_line(args["action"], args)
+    assert script.check(line) is None, line
+
+
+def test_market_buying_and_publishing_need_confirm(piped: Callable[[Window], mcpserver.Bridge]) -> None:
+    w = Window(pid=os.getpid(), character="Simchar")
+    w.s["mcp_control"] = True
+    b = piped(w)
+    no = b.call("market", {"action": "buy", "item": "Lesser Blood", "count": 5, "max": 40})
+    assert no["ok"] is False and "confirm=true" in no["text"] and w.errands == []
+    look = b.call("market", {"action": "buy", "item": "Lesser Blood", "count": 5, "max": 40, "check": True})
+    assert look["ok"] is True and w.errands[-1][1].startswith("market buy check ")
+    assert b.call("market", {"action": "seller"})["ok"] is False
+    assert b.call("market", {"action": "search", "category": "nonsense"})["ok"] is False
+    no = b.call("run_tool", {"tool": "construction_scan", "publish": "broadcast"})
+    assert no["ok"] is False and "confirm=true" in no["text"]
+    yes = b.call("run_tool", {"tool": "construction_scan", "publish": "broadcast", "confirm": True})
+    assert yes["ok"] is True and w.errands[-1][1] == "construction_scan auto=broadcast\n"
+    assert b.call("run_tool", {"tool": "gem_breaker"})["ok"] is False          # breaking can't be undone
+    assert b.call("run_tool", {"tool": "gem_breaker", "check_only": True})["ok"] is True
+    assert b.call("run_tool", {"tool": "bounties"})["ok"] is True
+    empty = b.call("market_results", {})
+    assert empty["ok"] is True and "materials" in empty["data"]["categories"]
 
 
 def test_trigger_lists_chat_filters_and_tool_schedules(piped: Callable[[Window], mcpserver.Bridge],

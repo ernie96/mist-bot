@@ -157,7 +157,7 @@ Farmer if it isn't open. A connection must know a secret the window writes at ea
 programs on this computer control Uncle Farmer (MCP)" is on; it is off by default. Raw agent
 commands (`agent_command`) need a second setting.
 
-There are 69 tools: the games and their live state, starting, stopping and pausing runs, scripts
+There are 71 tools: the games and their live state, starting, stopping and pausing runs, scripts
 and the Tools jobs, plans and scripts, character and app settings (checked against their types
 before saving), schedules, results, the log (numbered, so a caller can wait for new lines), chat,
 private messages, voice messages, team actions, the Sound Silencer, the agent, updates and closing.

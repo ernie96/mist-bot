@@ -64,8 +64,8 @@ The menu bar has:
 **Tools**, **Character** and **Run** are not on the menu bar. They are submenus of each game's own
 menu in the Games list (select the game, then the Applications key or Shift+F10):
 
-- **Tools:** Gem Maker, Equipment Enhancer, Daily chores, Gathering, Dungeons, XP loser, Sound
-  Silencer, and the jobs that run at once: Sell the collection now, Sell shards now, Clean the bag
+- **Tools:** Gem Maker, Gem Breaker, Equipment Enhancer, Daily chores, Hunting bounties,
+  Construction scanner, Gathering, Dungeons, XP loser, Market searcher and buyer, Sound Silencer, and the jobs that run at once: Sell the collection now, Sell shards now, Clean the bag
   now, Store items now, Restock now and Update shard prices.
 - **Character:** Settings, Bag and supplies, Scan now, Another character, and Export or Import
   character settings.
@@ -231,6 +231,19 @@ A run that ends this way ended by itself, so the After farming list runs next: p
 (the XP loser) there to win some experience back. A plan's When to stop page can set either one for
 that plan only; in a script, `keep_drop` and `keep_level`.
 
+**Demonized elites.** Some maps have demonized elites (demonized Boar, demonized black bear,
+demonized Water Elf...), much stronger than the monsters around them. They are fought like any
+other monster unless you tick "Leave demonized elites alone" (Advanced, Fighting); then the bot
+never picks one, and only fights one that attacks it.
+
+**When HP stays low.** Character settings, Low HP, "When HP stays low" says what to do when HP
+stays under the Low HP mark (30%) for a few seconds (3) whatever the potions and heals did: fight
+on (the default), stop so you can take over, or, while farming, go to town with the hearthstone,
+heal to 90% (three minutes at most), restock and come back. A hit breaks the hearthstone's cast;
+after three tries the bot fights on and doesn't try again for a minute. Without a hearthstone it
+says so once and fights on. The third flee within 30 minutes ends the run in town: the map is too
+hard for now. Never in a dungeon, on a trip or in town.
+
 ## The bag
 
 Character, Bag and supplies (Ctrl+B):
@@ -255,6 +268,10 @@ nearest storehouse, the same way a bag trip does. The log says what went in, wha
 what wasn't in the bag, and what the storehouse didn't take (when it is full, whatever didn't fit
 stays in the bag). The list is read when the job runs, so a change you just made counts.
 
+A full storehouse still takes more of an item it already holds; one it holds none of is turned
+away ("item storage is full"). The bot says which items stay in the bag and doesn't take them
+back to the storehouse for the rest of the run, unless something is taken out of it.
+
 ### Triggers: jobs before and after farming
 
 Character, Settings, **Triggers** has two lists, Before farming and After farming. The jobs:
@@ -276,6 +293,11 @@ be marked DETERMINISTIC: if it fails, the rest of the list is skipped, and in th
 list farming doesn't start either. A step that farms (Dungeons, or a script with a farm or dungeon
 line) keeps the daily stop. Profiles from before the lists keep their ticked jobs in their old
 order.
+
+"Skip this list when the run starts on its first farming map" is on by default now. Supplies and
+the bag are still looked after while farming: the bot goes to town by itself when a supply is down
+to its minimum or the bag is full. In these lists Update shard prices is skipped while the prices
+are less than 8 hours old (on this PC, by any character), and the log says how old they are.
 
 Above the Before farming list, "Skip this list when the run starts on its first farming map" (off
 by default) is for stopping and starting again where the character was farming: a run that starts
@@ -452,12 +474,49 @@ your reserve, no protection rune left, nothing left to make from, no more shards
 Gem Craftsman making nothing for three rounds in a row although there is still something to combine
 (a round that made nothing because of a slow answer or a menu that didn't open is tried again).
 
+"Make a gem" can make this many more, as many as it can, or until the bag holds this many (the
+gems already there count, so starting again after an interruption doesn't make too many). From
+level 2 the shards a failed combine leaves are kept for the +20% on the next combines, and become
+gems only at the level asked for. Nothing is spent until the craftsman's page names the gem being
+made; if the game makes nothing of a batch, the Gem Maker asks for half as many before giving up.
+
+### Gem Breaker
+
+Open **Tools, Gem Breaker** or press **Ctrl+Shift+B**. It uses the Gem Craftsman's **break into shards**. Breaking can't be undone, so nothing is ticked at first, the window shows what would go, and **Start** asks once more.
+
+A gem breaks into 3 gems of the level below, for free, and a Level 1 gem into 3 Level 1 shards. So a Level 2 gem ends up as 9 shards and a Level 3 gem as 27. That is less than it took to make them.
+
+- **Gems to break**: the colours that may be broken.
+- **Highest gem level to break**: gems above it are left alone. It starts at 2, so the gems you put in your equipment are safe until you raise it. Gems at or below it are broken all the way down.
+- **Break down to**: shards, or gems of a level you choose.
+- **Keep at least**: how many gems of each colour and level stay.
+- **Enhance Crystals**: Weapon and Equipment crystals have their own boxes, their own highest level and their own number to keep, off at first. They turn straight into shards and cost arnebia, as their page says; the arnebia you keep is never spent.
+- **Sell shards by the bag manager's rules**: off at first. Does what **Sell shards now** does: gem and crystal shards marked to sell go to the Shard Market, and what you keep or store stays.
+
+What a break leaves can weigh more than what it took: when the game says "overweight", the Gem Breaker asks for fewer. If not even one fits, it sells when that box is ticked and carries on; otherwise, or when nothing sells, it stops with a message.
+
 ### Equipment Enhancer
 
 Tools, Equipment Enhancer (Ctrl+Shift+E) enhances your equipment up to the level you choose (+12 at
 most), with protection runes. It makes its Enhance Crystals from crystal shards out of the
 storehouse or bought at the Shard Broker: a stock of crystals before it starts, and a set number
 more when they run out.
+
+### Hunting bounties
+
+Open **Tools, Hunting bounties** after your character has landed the killing blow on a boss. Each officer pays for bosses of his own, so tick the officers you want: Guard Captain Suke, Chancellor Bren, General Paul, or Colonel Demar. The bot visits them from nearest to farthest and tells you what each one answered. **Check only** walks there and reads the menus without collecting.
+
+This is not a daily chore, so you can run it whenever you have something to collect. In a script, use `bounties` or `bounties check`.
+
+### Construction scanner
+
+**Tools, Construction scanner** shows how far your gang's constructions are: the Magic Cannon and Supply Camp being built, and the Crystal Turret and Wall barricade of every highland. **Scan the constructions** visits each one without repairing or building anything. Open the window again afterwards to read the result, the least complete first.
+
+**Copy** puts the short report on the clipboard. A gang elder can also **Publish** it as a gang announcement, a broadcast (which plays a sound) or a system message. The bot always asks first. A new announcement replaces only the older reports published by the same character, never another elder's.
+
+To do this automatically, open **Run, Schedules**, go to the **Tools** tab and add one of the three "scanning the constructions" tasks for your elder. At the set time the bot scans and publishes without asking. It publishes nothing when everything is at 100%, or when the report is the same as the last one this character sent that way.
+
+In a script, use `construction_scan`, `construction_scan publish=broadcast` to send the last report, or `construction_scan auto=broadcast` to scan and send it if there is something new. The kinds are `announcement`, `broadcast` and `system`.
 
 ### Daily chores
 
@@ -466,7 +525,6 @@ starts at 00:00 GMT). Each chore is done once a day: the bot writes down what it
 it again doesn't donate twice.
 
 - **Bank:** the deposit income and every Value Product card's daily income.
-- **Hunting bounties** from the nearest city officer who pays them.
 - **Pet rebirth:** the day's free rebirths of the pet you choose (the name from the character
   scan works, though the Pet Trainer may call the kind a little differently: "Eagle" there is
   "Wild Eagle"). Rebirths that cost diamonds are never used.
@@ -474,11 +532,12 @@ it again doesn't donate twice.
   below your arnebia reserve) and the day's construction: the game allows two builds a day,
   builds and repairs together ("you've already built twice today"). Building costs nothing: each
   one pays gang contribution, gang points and, from a colonel's rank up, arnebia (3,000/3,000/6,000
-  for a general). You choose where: the inner hall's East and West encampment reinforced
-  constructions, a short walk from the Gang Entrance, or your gang's highland, where it repairs the
-  Crystal Turret and the Wall barricade and comes back by the Teleportation circle. Every gang's
-  highland is a different one, so type its number: the Highland Entrance lists it under Occupied
-  Highlands ("the own Gang's Highland 38": 38).
+  for a general). Tick the places it may use; it goes through them in this order and stops
+  once the day's builds are made: your gang's highlands under 100% (every one listed under Occupied
+  Highlands: a damaged Crystal Turret or Wall barricade is repaired, back by the Teleportation
+  circle), the Magic Cannon or Supply Camp being built, the East and West posts that are open, then
+  highlands at 100% (the game rewards those repairs too). On the day a character joins a gang the
+  game allows neither donating nor building.
 - **Animal Shed:** feeds the gang's breed beast once a day (500 gang contribution, 500 gang
   points and 2,000 arnebia), apart from the two builds.
 - **Secret room, sharing arnebia:** sharing works once in each half hour of the clock (from :00
@@ -489,6 +548,9 @@ it again doesn't donate twice.
   an hour, until the 5 are made. It shares with the players you name first, or anyone in the room.
   Practising there (an assistant kills for you) is a separate setting, 0 minutes by default: time
   inside comes out of the day's public-area drop time.
+- **Contribution Chests:** at Guard Captain Suke on Tuneful Wetland, top-level contribution (not
+  gang contribution) for Contribution Chests, 5,000 each, two a day. Off until you tick it on the
+  City tab; a chest counts once it is in the bag.
 
 Check only walks to each NPC and reads the menus without collecting, spending or entering. Tick
 "at the start of the first farming run" and the first farming run of each game day does the chores
@@ -613,6 +675,29 @@ hunts on until the game moves it out. When the day's visit is already used, the 
 
 Check only says what is short and which cave it would go to. In a script: `dungeon` or
 `dungeon check` (put `end_at` first to choose where it ends).
+
+### Market searcher and buyer
+
+Tools, Market searcher and buyer (Ctrl+Shift+K) is a window for the player market, the Ansible
+Space-time Marketplace, with two tabs (Ctrl+Tab): Search and Results. After a search the character
+stays at the marketplace, so the next one starts at once.
+
+The Search tab lists what is for sale by category (My list, All items, or one of the game's 14):
+how many lots, how many in all, the cheapest and the usual price, and how many sellers. "Refresh
+the market list" walks to the nearest marketplace and reads every category (a minute or two);
+"Also count sellers" looks at every lot's details too (about ten minutes the first time, then only
+new lots). Each server has its own list.
+
+Enter on an item finds all its lots. "Search for" can also be cheapest first (with "Most a unit",
+it stops at the first page that costs more), by seller ID (it stops once all 10 lots a seller can
+have are found), or a whole category; "Pages at most" limits how far it reads. Lots appear in
+Results while the bot reads, each in its place by price; Stop keeps what was found.
+
+To buy, tick lots in Results with Space, set how many of each, and press "Buy the ticked lots":
+one question names the lots and the gold coins in all, and nothing is bought before you say Yes.
+Lots in their first hour on display are never bought, "Spending limit" stops the buying before
+more would be spent, and "Check only" says what it would buy. "Save as CSV" writes the results to
+a file. In a script: `market` (see the script guide).
 
 ## Walking
 

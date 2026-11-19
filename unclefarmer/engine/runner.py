@@ -357,6 +357,7 @@ class Run(threading.Thread):
         where: dict[str, Any] = snap.get("map", {})
         if where.get("id"):
             bot.start_place = (snap["map"]["id"], int(here.get("x", 0)), int(here.get("y", 0)))
+            bot.start_name = snap["map"].get("name")
         sheet: dict[str, Any] = here.get("sheet") or {}
         if profile.get("mp_use", True) and not sheet.get("maxmp"):
             # Max MP is only on the character sheet, and only farming reads it on its own:
@@ -448,14 +449,17 @@ class Run(threading.Thread):
         for node in main:
             if getattr(node, "kind", "") == "keep_level":
                 bot.level_keep = node.opts["xp"]
+            if getattr(node, "kind", "") == "keep_drop":
+                bot.drop_keep = node.opts["minutes"]
         bot.level_before_start()
+        bot.drop_before_start()          # nor with the day's drop time already used up
 
     @staticmethod
     def _on_the_farm(bot: Bot, script: Runner) -> bool:
         """With "Skip this list when the run starts on its first farming map" ticked: the run
         starts on the map it farms first (a Stop and a start again where it was farming), so the
         Before farming list - often a trip to town and back - is left out. True (and said) then."""
-        if not bot.p.get("skip_before_on_farm", False):
+        if not bot.p.get("skip_before_on_farm", True):
             return False
         first = triggers.first_farm_map(script.main, script.subs)
         here = bot.map_id()

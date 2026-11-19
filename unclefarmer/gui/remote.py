@@ -33,9 +33,9 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 UI_WAIT = 30.0                      # seconds a tool waits for the window's thread
-CONFIRMED = {"gem_maker", "enhance", "chores", "gather", "dungeon", "lose_xp", "restock", "sell_collection",
-             "sell_shards", "clean_bag"}        # jobs that spend, sell or throw away: confirm must be true
-CHECKABLE = {"gem_maker", "enhance", "chores", "gather", "dungeon", "lose_xp"}
+CONFIRMED = {"gem_maker", "gem_breaker", "enhance", "chores", "gather", "dungeon", "lose_xp", "restock",
+             "sell_collection", "sell_shards", "clean_bag"}   # jobs that spend, sell or throw away: confirm=true
+CHECKABLE = {"gem_maker", "gem_breaker", "enhance", "chores", "bounties", "gather", "dungeon", "lose_xp"}
 CHANNEL_NUMBERS = {"global": 0, "map": 1, "nearby": 2, "gang": 3, "team": 4, "international": 5,
                    "private_channel": 6}
 OFF_LIMITS = {"mcp_control", "mcp_raw_agent"}     # only the player changes who may control the bot
@@ -614,12 +614,88 @@ class RemoteControl:
         if tool in CONFIRMED and not check and args.get("confirm") is not True:
             raise ToolError("%s spends, sells or throws away: it needs confirm=true. Ask the player first." % tool)
         name = self.ui(self.w.character, pid)
+        publish = args.get("publish")
+        if publish is not None and (tool != "construction_scan" or publish not in control.PUBLISH_KINDS):
+            raise ToolError("publish is for construction_scan: announcement, broadcast or system.")
+        if publish and args.get("confirm") is not True:
+            raise ToolError("Publishing sends the report to the whole gang: it needs confirm=true. Ask the player first.")
         if tool == "dungeon" and not check:
             text = dungeon.script((settings.load_profile(name) if name else {}).get("dungeon") or {})
+        elif publish:
+            how = "publish" if args.get("publish_mode") == "publish" else "auto"
+            text = "construction_scan %s=%s\n" % (how, publish)
         else:
             text = tool + (" check" if check else "") + "\n"
         self.errand(pid, text, "%s%s" % (tool.replace("_", " "), " check" if check else ""), walk=False)
         return "Started %s on game %d." % (text.strip().splitlines()[-1], pid), {"pid": pid}
+
+    def t_market(self, args: dict[str, Any]) -> Result:
+        pid = self.pid(args)
+        action = str(args.get("action") or "")
+        if action not in control.MARKET_ACTIONS:
+            raise ToolError("action is scan, search, seller or buy.")
+        if action == "buy":
+            if not args.get("item") or not args.get("count"):
+                raise ToolError("buy needs item and count (and max, the most a unit may cost).")
+            if not args.get("check") and args.get("confirm") is not True:
+                raise ToolError("Buying spends gold coins: it needs confirm=true. Ask the player first.")
+        text = self.market_line(action, args)
+        self.errand(pid, text, "market %s" % action, walk=True)
+        return "Started %s on game %d. wait_for_run, then market_results." % (text.strip(), pid), {"pid": pid}
+
+    @staticmethod
+    def market_line(action: str, args: dict[str, Any]) -> str:
+        """The script's `market` line for the tool's arguments (script.py's _prep_market checks it)."""
+        from ..engine import market
+        words = ["market", action]
+        if action == "buy" and args.get("check"):
+            words.append("check")
+        if action == "scan" and args.get("count_sellers"):
+            words.append("sellers")
+        if action == "seller":
+            raw: object = args.get("sellers")
+            given: list[object] = list(raw) if jsonio.is_array(raw) else []
+            ids = [str(int(str(x))) for x in given if str(x).strip().isdigit()]
+            if not ids:
+                raise ToolError("seller needs seller IDs (sellers=[1234, 5678]).")
+            words.append(",".join(ids))
+        if action in ("search", "buy"):
+            if args.get("item"):
+                words.append('item="%s"' % str(args["item"]).replace('"', ""))
+            if action == "search" and args.get("cheapest"):
+                words.append("cheapest")
+            keys = ("max", "pages", "count", "cap") if action == "buy" else ("max", "pages")
+            words += ["%s=%d" % (k, int(args[k])) for k in keys if args.get(k) not in (None, "")]
+            if args.get("category"):
+                names = {market.category_name(c).lower(): market.category_name(c) for c, _n in market.CATEGORIES}
+                cat = names.get(str(args["category"]).strip().lower())
+                if cat is None:
+                    raise ToolError("category is one of: %s" % ", ".join(sorted(names.values())))
+                words.append('category="%s"' % cat)
+        return " ".join(words) + "\n"
+
+    def t_market_results(self, args: dict[str, Any]) -> Result:
+        from ..engine import market
+        pid = self.pid(args)
+        status = market.read_file(market.job_file(market.STATUS_FILE, pid))
+        limit = max(1, min(2000, int(args.get("limit") or 200)))
+        lots: list[Any] = list(status.get("lots") or [])[:limit]
+        data: dict[str, Any] = {"job": status.get("job"), "query": status.get("query"), "state": status.get("state"),
+                                "summary": status.get("summary"), "pages": status.get("pages"), "lots": lots,
+                                "categories": [market.category_name(c) for c, _n in market.CATEGORIES]}
+        if args.get("list"):
+            try:
+                with AgentLink(pid=pid, timeout=5) as a:
+                    server = server_name(a)
+            except (AgentError, OSError):
+                server = ""
+            rows, head = market.load_list(server)
+            data["list"] = {"made": head.get("made"), "shipped": head.get("shipped"),
+                            "rows": [r.to_json() for r in rows]}
+        if not status:
+            return "No market job has run on game %d yet." % pid, data
+        return "%s: %s (%d lots)." % (status.get("query") or status.get("job"), status.get("summary") or
+                                       status.get("state"), len(lots)), data
 
     def t_follow_player(self, args: dict[str, Any]) -> Result:
         pid = self.pid(args)

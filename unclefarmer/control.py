@@ -103,8 +103,11 @@ GAME = {"game": {"type": ["string", "integer"],
                  "description": "Which game: the character's name as list_games shows it, or the game's pid. "
                                 "May be left out when only one game is open."}}
 CONFIRM = {"confirm": _b("Must be true. Ask the player first: this can't be undone or affects the game.")}
-TOOL_NAMES = ("gem_maker", "enhance", "chores", "gather", "dungeon", "lose_xp", "restock", "sell_collection",
-              "sell_shards", "clean_bag", "store_items", "update_shard_prices", "survey")
+TOOL_NAMES = ("gem_maker", "gem_breaker", "enhance", "chores", "bounties", "construction_scan", "gather", "dungeon",
+              "lose_xp", "restock", "sell_collection", "sell_shards", "clean_bag", "store_items",
+              "update_shard_prices", "survey")
+PUBLISH_KINDS = ("announcement", "broadcast", "system")
+MARKET_ACTIONS = ("scan", "search", "seller", "buy")
 PERIODS = ("run", "today", "yesterday", "day", "week", "month", "all")
 MEM_PARTS = ("all", "state", "self", "bag", "slots", "skills", "equipment", "beasts", "pets", "modes", "ui",
              "entities")
@@ -194,13 +197,40 @@ TOOLS: tuple[Tool, ...] = (
          {**GAME, "text": _s("The script."), "title": _s("A name for it in the log."),
           "mode": _s("job or errand.", enum=["job", "errand"])}, ("text",), kind=RISKY),
     Tool("run_tool", "Run one of the bot's jobs on a game, as its Tools menu entry does, with the choices saved in "
-                     "the character's settings (change them with set_character_settings first): gem_maker, enhance, "
-                     "chores, gather, dungeon, lose_xp, restock, sell_collection, sell_shards, clean_bag, "
-                     "store_items, update_shard_prices, survey. check_only reads prices and chances and spends "
-                     "nothing (gem_maker, enhance, chores, gather, lose_xp). Spending, selling and throwing away "
-                     "are real: confirm must be true for those.",
+                     "the character's settings (change them with set_character_settings first): gem_maker, "
+                     "gem_breaker (breaks gems and crystals into shards: can't be undone), enhance, chores, bounties "
+                     "(hunting bounties from the officers chosen), construction_scan (reads how far the gang's "
+                     "constructions are; with publish it sends the report to the gang, as an elder), gather, "
+                     "dungeon, lose_xp, restock, sell_collection, sell_shards, clean_bag, store_items, "
+                     "update_shard_prices, survey. check_only only looks and spends nothing (gem_maker, "
+                     "gem_breaker, enhance, chores, bounties, gather, dungeon, lose_xp). Spending, selling, breaking, "
+                     "throwing away and publishing are real: confirm must be true for those.",
          {**GAME, "tool": _s("Which job.", enum=list(TOOL_NAMES)), "check_only": _b("Only look, spend nothing."),
+          "publish": _s("construction_scan only: send the last report as this kind (publish_mode=publish), or "
+                        "scan and send it when something changed (publish_mode=auto).", enum=list(PUBLISH_KINDS)),
+          "publish_mode": _s("publish or auto (default auto).", enum=["publish", "auto"]),
           **CONFIRM}, ("tool",), kind=RISKY),
+    Tool("market", "The player market (Ansible Space-time Marketplace), as Tools, Market searcher and buyer does. The "
+                   "character walks to the nearest marketplace and stays there. action=scan reads every category "
+                   "into the market list (sellers=true also counts sellers: slow the first time). action=search "
+                   "finds lots: item (names, several split by |), cheapest (price order, stop above max), category, "
+                   "pages. action=seller finds every lot of the seller IDs given. action=buy buys the cheapest lots "
+                   "of item: count units at most max a unit, cap gold coins in all (check=true only says what it "
+                   "would buy). A search runs as a job: follow it with wait_for_run, then market_results. Buying "
+                   "spends gold coins: confirm must be true.",
+         {**GAME, "action": _s("scan, search, seller or buy.", enum=list(MARKET_ACTIONS)),
+          "item": _s("Item name(s), several split by |."), "cheapest": _b("search: cheapest first."),
+          "max": _i("The most a unit may cost."), "category": _s("A market category name (market_results lists them)."),
+          "pages": _i("Read at most this many pages (0 = all)."),
+          "sellers": {"type": "array", "items": {"type": "integer"},
+                      "description": "seller: the seller IDs. scan: true/false is given by count_sellers."},
+          "count_sellers": _b("scan: also count each item's sellers."),
+          "count": _i("buy: how many units."), "cap": _i("buy: the most gold coins to spend in all (0 = no limit)."),
+          "check": _b("buy: only say what would be bought."), **CONFIRM}, ("action",), kind=RISKY),
+    Tool("market_results", "What the last market job on a game found (its state, summary and every lot: item, count, "
+                           "unit price, seller, listing, time left), and the market list for that game's server "
+                           "(items, lots, cheapest and usual price, sellers). The categories' names too.",
+         {**GAME, "list": _b("Also the market list (can be long)."), "limit": _i("At most this many lots (default 200).")}),
     Tool("follow_player", "The game's character follows a player, helps in their fights (and heals, as a Priest or "
                           "Sorceress) until unfollow_player. A run going is stopped first.",
          {**GAME, "player": _s("The player's name.")}, ("player",), kind=ACT),

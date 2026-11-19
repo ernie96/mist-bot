@@ -41,7 +41,8 @@ FORK_OWNED = ("unclefarmer/updater.py", "unclefarmer/gui/mainparts/updates.py", 
               "tests/test_updater.py", "tests/test_update_channels.py", "tests/test_ci_build.py")
 # Upstream's own updater (bootstrap.exe and its recovery), which the fork leaves out.
 FORK_DROPPED = re.compile(r"^(unclefarmer/update_recovery\.py|unclefarmer/native/bootstrap\.c|"
-                          r"docs/UPDATER_[A-Z_]+\.md|tests/test_update(r)?_(recovery|hardening|reliability)\.py)$")
+                          r"docs/UPDATER_[A-Z_]+\.md|tests/test_update(r)?_(recovery|hardening|reliability|compat)\.py|"
+                          r"update_compat\.py|tests/data/compat/.*)$")
 REGENERATED = re.compile(r"^(lang/.*\.(pot|po|mo)|requirements(-dev)?\.txt|uv\.lock)$")
 
 

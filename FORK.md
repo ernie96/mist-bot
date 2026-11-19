@@ -24,7 +24,7 @@ uv run python check.py                  everything else
   has none of the fork's texts: translate them in its .po file.
 - **The fork's updater** (`updater.py`, the update window, `release.py`, `build_exe.py` and their
   tests): the fork's, even where upstream's changes merged without a conflict. Upstream's own
-  updater (`bootstrap.exe`, `update_recovery.py`, its tests and docs) is left out. A call into
+  updater (`bootstrap.exe`, `update_recovery.py`, `update_compat.py`, their tests and docs) is left out. A call into
   upstream's updater elsewhere still has to be found by hand; pyright in `check.py` finds it.
 - **README.md and CONTRIBUTING.md**: the fork's. Upstream has rewritten both in a style the fork
   doesn't use. New facts in upstream's version are carried over by hand.
