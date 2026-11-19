@@ -1,6 +1,6 @@
 # What's new
 
-## Unreleased
+## 1.0.11
 
 This version comes with game agent 71. Uncle Farmer offers it when it starts: close your games
 first, then start them again.
