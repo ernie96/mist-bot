@@ -103,9 +103,9 @@ GAME = {"game": {"type": ["string", "integer"],
                  "description": "Which game: the character's name as list_games shows it, or the game's pid. "
                                 "May be left out when only one game is open."}}
 CONFIRM = {"confirm": _b("Must be true. Ask the player first: this can't be undone or affects the game.")}
-TOOL_NAMES = ("gem_maker", "gem_breaker", "enhance", "chores", "bounties", "construction_scan", "gather", "dungeon",
-              "lose_xp", "restock", "sell_collection", "sell_shards", "clean_bag", "store_items",
-              "update_shard_prices", "survey")
+TOOL_NAMES = ("gem_maker", "gem_breaker", "potion_maker", "enhance", "chores", "bounties", "construction_scan",
+              "gather", "dungeon", "lose_xp", "restock", "sell_collection", "sell_shards", "clean_bag",
+              "store_items", "update_shard_prices", "survey", "manage_team")
 PUBLISH_KINDS = ("announcement", "broadcast", "system")
 MARKET_ACTIONS = ("scan", "search", "seller", "buy")
 PERIODS = ("run", "today", "yesterday", "day", "week", "month", "all")
@@ -198,12 +198,14 @@ TOOLS: tuple[Tool, ...] = (
           "mode": _s("job or errand.", enum=["job", "errand"])}, ("text",), kind=RISKY),
     Tool("run_tool", "Run one of the bot's jobs on a game, as its Tools menu entry does, with the choices saved in "
                      "the character's settings (change them with set_character_settings first): gem_maker, "
-                     "gem_breaker (breaks gems and crystals into shards: can't be undone), enhance, chores, bounties "
+                     "gem_breaker (breaks gems and crystals into shards: can't be undone), potion_maker (makes and "
+                     "fuses potions at the gang Pharmacist), manage_team (sets the team up as the Team tab says and "
+                     "stays in town managing it until stopped), enhance, chores, bounties "
                      "(hunting bounties from the officers chosen), construction_scan (reads how far the gang's "
                      "constructions are; with publish it sends the report to the gang, as an elder), gather, "
                      "dungeon, lose_xp, restock, sell_collection, sell_shards, clean_bag, store_items, "
                      "update_shard_prices, survey. check_only only looks and spends nothing (gem_maker, "
-                     "gem_breaker, enhance, chores, bounties, gather, dungeon, lose_xp). Spending, selling, breaking, "
+                     "gem_breaker, potion_maker, enhance, chores, bounties, gather, dungeon, lose_xp). Spending, selling, breaking, "
                      "throwing away and publishing are real: confirm must be true for those.",
          {**GAME, "tool": _s("Which job.", enum=list(TOOL_NAMES)), "check_only": _b("Only look, spend nothing."),
           "publish": _s("construction_scan only: send the last report as this kind (publish_mode=publish), or "
@@ -231,6 +233,19 @@ TOOLS: tuple[Tool, ...] = (
                            "unit price, seller, listing, time left), and the market list for that game's server "
                            "(items, lots, cheapest and usual price, sellers). The categories' names too.",
          {**GAME, "list": _b("Also the market list (can be long)."), "limit": _i("At most this many lots (default 200).")}),
+    Tool("start_autopilot", "Start a character's day as Run, Autopilot's Start does: the Before farming list, "
+                            "farming (its chosen plan, or the best map for its level) and the After farming list, or "
+                            "the script of the day. The choices are character settings (autopilot_farm: plan or "
+                            "best, autopilot_how: lists or script, autopilot_plan: \"plan:<name>\", autopilot_start, "
+                            "autopilot_time) and the lists are trigger_sequences: change them with "
+                            "set_character_settings and set_triggers first.",
+         {"character": _s("Profile or display name."), **GAME}, kind=ACT),
+    Tool("keyboard_profiles", "A character's saved Keyboard Manager profiles (which skills, items and phrases go on "
+                              "which keys). Their contents are the character setting keyboard_profiles.",
+         {"character": _s("Profile or display name."), **GAME}),
+    Tool("apply_keyboard_profile", "Put a saved Keyboard Manager profile's skills, items and phrases on the game's keys "
+                                   "now (Tools, Keyboard Manager's Apply). Not while a bot runs on that game.",
+         {**GAME, "name": _s("The profile's name.")}, ("name",), kind=ACT),
     Tool("follow_player", "The game's character follows a player, helps in their fights (and heals, as a Priest or "
                           "Sorceress) until unfollow_player. A run going is stopped first.",
          {**GAME, "player": _s("The player's name.")}, ("player",), kind=ACT),

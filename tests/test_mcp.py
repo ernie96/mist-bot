@@ -303,7 +303,7 @@ class FullWindow(Window):
     def refresh_games(self) -> None:
         pass
 
-    def start(self, pid: int, item: Any = None, remote: bool = False) -> str:
+    def start(self, pid: int, item: Any = None, remote: bool = False, profile: str | None = None) -> str:
         self.started.append((pid, item))
         return "Starting %s." % (item[1] if item else "?")
 
@@ -456,3 +456,23 @@ def test_trigger_lists_chat_filters_and_tool_schedules(piped: Callable[[Window],
     assert trig["ok"] is True and trig["data"]["item"] == "trigger:after"
     assert b.call("start_plan", {"type": "tool", "name": "store_items"})["ok"] is False      # the stub never runs
     assert w.started[-1] == (os.getpid(), ("tool", "store_items"))
+
+
+def test_potion_maker_keyboard_profiles_and_autopilot(piped: Callable[[Window], mcpserver.Bridge],
+                                                      tmp_path: Path) -> None:
+    w = FullWindow(os.getpid(), "Simchar", str(tmp_path / "schedules.json"))
+    w.s["mcp_control"] = True
+    p = settings.load_profile("Simchar")
+    settings.save_profile("Simchar", dict(p, keyboard_profiles={"Night farm": {}}, autopilot_farm="plan",
+                                          autopilot_how="lists", autopilot_plan="plan:Wolves"))
+    b = piped(w)
+    assert b.call("run_tool", {"tool": "potion_maker"})["ok"] is False                  # it spends: confirm
+    assert b.call("run_tool", {"tool": "potion_maker", "check_only": True})["ok"] is True
+    assert w.errands[-1][1] == "potion_maker check\n"
+    assert b.call("run_tool", {"tool": "manage_team"})["ok"] is True
+    assert b.call("keyboard_profiles", {})["data"]["names"] == ["Night farm"]
+    assert b.call("apply_keyboard_profile", {"name": "Day"})["ok"] is False
+    assert b.call("apply_keyboard_profile", {"name": "Night farm"})["ok"] is True
+    assert w.errands[-1][1] == "keyboard_profile 'Night farm'\n"
+    b.call("start_autopilot", {"character": "Simchar"})          # the stub window never runs it
+    assert w.started[-1] == (os.getpid(), ("plan", "Wolves"))

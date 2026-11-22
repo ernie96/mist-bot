@@ -92,6 +92,10 @@ final class Memory {
      *  of "enemies"; monsters are -2; guards, other players' summons and war-zone towers 0; other
      *  players' traps and totems their owner's number (1000 and up). */
     static final String E_SIDE = "A";
+    /** game.ak.C: our own facing, a compass mask (1 = x-, 2 = y-, 4 = x+, 8 = y+; 3, 6, 9, 12 the
+     *  diagonals). A direction key sets it as a step starts (i.G() copies ak.D into it), and a skill
+     *  with no target sends it in its cast packet: Escape jumps the opposite way. */
+    static final String E_COMPASS = "C";
     /** game.B.f bit 2: the game's hostility check (game.i.a(ak,int,ak)) never counts it as an enemy. */
     static final int F_PROTECTED = 2;
     static final String BAG_COUNT = "m";
@@ -327,7 +331,12 @@ final class Memory {
 
     private static void self(Object world, StringBuilder sb) throws Unavailable {
         int id = intField(world, W_SELF_ID);
-        entity(selfEntity(world), id, sb);
+        Object me = selfEntity(world);
+        entity(me, id, sb);
+        if (has(me, E_COMPASS)) {             // (agent 77) which way a jump backward goes
+            sb.setLength(sb.length() - 1);
+            sb.append(",\"compass\":").append(intField(me, E_COMPASS)).append('}');
+        }
         // Level and MP aren't held by the client; they come from the last character sheet we saw.
         if (Sheet.seen != 0 && Sheet.id == id) {
             sb.setLength(sb.length() - 1);
@@ -556,7 +565,52 @@ final class Memory {
         return null;
     }
 
+    /** How long the game's connection must stay closed before our character counts as gone. */
+    static final long CLOSED_GRACE_MS = 5000L;
+    private static final long CONNECTION_LOOK_MS = 1000L;
+    private static volatile long connectionLookAt;
+    private static volatile long closedSince;
+    private static volatile boolean everConnected;
+
+    /**
+     * The game keeps its world and every entity in it after its connection drops (live 2026-11-20
+     * 06:04: the channel closed, the bot fought two left-behind monsters for 55 minutes, every cast
+     * refused). Once the connection has been closed for CLOSED_GRACE_MS, after having been up in
+     * this game, our character counts as gone ("noworld"), which is what starts the bot's
+     * reconnect. Looked at once a second; a game version whose connection can't be read never
+     * counts as closed.
+     */
+    static void requireConnection(long now, boolean alive) throws Unavailable {
+        if (alive) {
+            everConnected = true;
+            closedSince = 0L;
+        } else if (everConnected && closedSince == 0L) {
+            closedSince = now;
+        }
+        if (closedSince != 0L && now - closedSince >= CLOSED_GRACE_MS) {
+            throw new Unavailable("noworld: the game's connection is closed");
+        }
+    }
+
+    private static void requireConnection() throws Unavailable {
+        long now = System.currentTimeMillis();
+        if (now - connectionLookAt >= CONNECTION_LOOK_MS) {
+            connectionLookAt = now;
+            requireConnection(now, AutomaticLogin.connectionAlive());
+        } else if (closedSince != 0L && now - closedSince >= CLOSED_GRACE_MS) {
+            throw new Unavailable("noworld: the game's connection is closed");
+        }
+    }
+
+    /** For tests: forget what was seen of the connection. */
+    static void resetConnection() {
+        connectionLookAt = 0L;
+        closedSince = 0L;
+        everConnected = false;
+    }
+
     private static Object selfEntity(Object world) throws Unavailable {
+        requireConnection();
         int id = intField(world, W_SELF_ID);
         Object me = entityMap(world).get(Integer.valueOf(id));
         if (me == null) throw new Unavailable("noplayer: id " + id + " not in the entity map");

@@ -119,6 +119,13 @@ passes within 40 steps of nearly every spot, and the best choice in mazes such a
 any loop the bot goes after monsters within 40 walking steps and leaves the rest until the lap
 brings it near them.
 
+**Sharing the day's drop time between spots.** A spot's minutes count from when it began, so a
+restart starts them again. To split the day between maps (three hours on Underwater World, the rest
+on Margit Rainforest), tick "A share of the day's drop time (kept across restarts)" on the first
+spot's Farming tab and set "Minutes of drop time on this spot" to 180. The share counts on the
+game's 7-hour drop time: the first spot farms until 4 hours are left, the next gets the rest, and a
+restart after two hours farms only the first spot's last hour. Not tested in the game yet.
+
 ### When to stop
 
 A time limit, a clock time, a kill count, an item running low. The drop time, the next level
@@ -142,6 +149,36 @@ day's drop time, so every run stops at a set time of your computer's clock, what
 and whatever the bot is doing, and ends where its plan says. No run starts between that time and the
 reset. The time is in File, Settings, Farming day; by default it is the reset minus 10 minutes
 (04:50 in Pakistan), to leave time to get away from the monsters.
+
+### Autopilot: the whole day in one window
+
+**Run → Autopilot: the whole day** (Ctrl+Shift+A) shows the logged-in character's day together:
+
+1. the **Before farming** list (for example the day's chores, a cave, restocking), top to bottom;
+2. the farming, until the plan ends or the daily stopping time;
+3. the **After farming** list (for example selling shards, storing items, the Gem Maker), when the farming ended by itself.
+
+The two lists are the same ones as **Character settings → Triggers**: change them in either place. Three choices decide how the day goes:
+
+- **Farm with:** the character's plan (chosen under **Plan**), or the best map for the character's level. The best map is chosen when the day starts, from field maps whose monsters are 9 levels below to 5 above the character, so it follows the character as it levels up.
+- **Run the day as:** the Triggers lists around the farming, or one script of the day. The script is written from the lists and the farming the first time; after that it is yours to read, change or schedule from the Plans tab, and **Write the script of the day now** writes it again from the window. Steps that farm (a cave) are left out of its After part, since the day's farming may be over by then.
+- **Start:** only when you press **Start the day**, or every day at the time you write (HH:MM, this computer's clock). The daily start is an ordinary schedule in **Run → Schedules**; choosing "Only when I press Start" again takes it away.
+
+**Save** keeps the choices; **Start the day** saves them and starts the day on that character's game now.
+
+### A lost game, and runs that didn't finish
+
+While a plan or a script runs, Uncle Farmer keeps note of where it is, every 20 seconds: the line it is on, the turn of each loop, how many minutes and kills the current farm has done, the run's own minutes and kills, and the script's `set` values.
+
+**When the game is lost in the middle of a run** (it closed, crashed or froze, or the server logged the character out and logging back in failed), Uncle Farmer closes that game if it is still open, opens a new one, logs in to the same character and carries on where the run was. It says so each time. This happens at most 3 times a day of the game (00:00 GMT to 00:00 GMT) for each character; after that the run ends there. The character's account must be known: log in to it once by hand. To turn this off: **File → Settings → Farming day → When a game is lost during a run**.
+
+**When Uncle Farmer itself stopped under a run** (you closed it, an update restarted it, or the computer restarted), the next time it starts it shows the runs that didn't finish. They carry on where they were after 10 seconds; press **Carry on now** to start them at once, or **Don't carry on** (Escape) to forget them. A game is opened and logged in to when the character isn't in one, as a schedule does.
+
+A run is carried on only the same day of the game, and only with the same plan or script: one you edited since starts from its beginning. Lines such as `stop_when` and `keep_drop` count again on the way, so a time limit still counts the minutes already farmed. A run you stopped with **Stop**, one that finished, or one that ended on an error is never carried on.
+
+Each part of a run that was carried on is saved in the results as its own run; at the end, the results said and written in the log add all the parts up.
+
+A slow game is waited for while it starts (up to 4 minutes) instead of a second one being opened beside it; one that never shows the agent in that time is closed.
 
 ### After farming
 
@@ -244,6 +281,23 @@ after three tries the bot fights on and doesn't try again for a minute. Without 
 says so once and fights on. The third flee within 30 minutes ends the run in town: the map is too
 hard for now. Never in a dungeon, on a trip or in town.
 
+**Ride levels.** An airship out of a capital needs a level (26 for Giant Rock City to Sunset City,
+up to 86 for Holy Blood City to Dark Night City), and so do the cable cars from Giant Rock City to
+Tulip City (45) and to Holy Blood City (60). The bot plans those rides only from that level.
+
+**Bosses that keep coming back.** The patrol keeps clear of bosses seen in the last minute and of
+the boss zones in the map data. After three walk-offs from a boss in five minutes, or when there is
+nowhere further to go, the bot leaves the map by the nearest door far from it, waits on the other
+side (fighting back anything that attacks), and comes back; each time it has to leave again the
+wait doubles (1 minute, then 2, 4...). Not tested in the game yet.
+
+**When nothing is killed for a while.** After 10 minutes on the farm without a kill the bot walks
+to the part of the farm furthest from where it is; after another 10, again; after 30 minutes it ends
+the run the way a used-up drop time does. A farm that fights only some names never stops for this.
+A kill, a trip away or a long pause starts the count again, and it never applies in a dungeon.
+Advanced, Fighting, "When nothing is killed for a while, try elsewhere, then stop" sets the minutes
+or turns it off.
+
 ## The bag
 
 Character, Bag and supplies (Ctrl+B):
@@ -340,6 +394,10 @@ half in fights. The game answers with rage, marked targets or combos (then fusio
 pet's amiability), so Execute, Whirlwind Slash or Battle Cry are pressed only with the rage they
 need, and Marked Shot when two or more targets carry marks (three or more even for a single
 target).
+
+On a busy map, a monster another player stands nearer to is often gone before you get there, so
+when two monsters are about as far the bot takes the one nobody else is closer to: one another
+player is nearer to counts as 15 steps further away.
 
 ### Potions and deaths
 
@@ -442,6 +500,14 @@ HP hasn't fallen for 6 seconds. With the pet out of sight or no HP reading, noth
 
 ## Tools
 
+### Keyboard Manager
+
+Right-click a logged-in character and choose **Tools → Keyboard Manager**. Select **Capture current keys** to load the game's two combat skill pages, profession skills, number-row item slots, and quick phrases. Enter a name and choose **Save profile**. Use **New profile** to start with an empty draft, or enter a different name to save a copy.
+
+Use **Edit binding** on each tab to change a slot. **Toggle preparation** on a bound self-buff or shield to cast it on yourself when the profile is applied. A slot marked **Leave unchanged** keeps its current game binding. An item needs to be in the bag when the profile assigns it to a new slot.
+
+Choose **Apply profile** while out of combat and with game menus closed. For automation, add **Apply keyboard profile** under **Character settings → Triggers → Before farming** or **After farming**. The Before farming list can be skipped if you start on the farming map. Use that tab's checkbox to control when it runs. Schedules can run either trigger sequence or a saved script with a `keyboard_profile` command. Place that command at the point where your script needs a different layout.
+
 ### Sound Silencer
 
 Tools, Sound Silencer (in the game's menu) mutes game sounds by their number. Type a sound's number
@@ -494,6 +560,21 @@ A gem breaks into 3 gems of the level below, for free, and a Level 1 gem into 3 
 - **Sell shards by the bag manager's rules**: off at first. Does what **Sell shards now** does: gem and crystal shards marked to sell go to the Shard Market, and what you keep or store stays.
 
 What a break leaves can weigh more than what it took: when the game says "overweight", the Gem Breaker asks for fewer. If not even one fits, it sells when that box is ticked and carries on; otherwise, or when nothing sells, it stops with a message.
+
+### Potion Maker
+
+Open **Tools, Potion Maker** or press **Ctrl+Shift+O**. It uses the Pharmacist in a gang base's outer hall: **Make Medicine** turns Bloods and Pelts into a batch of 50 (or 45) potions for a fee in arnebia (lower in your own gang), and **Fuse Medicine** turns 5 potions of a size into 1 of the next for free (Small to Medium to Large, red and blue, for you and for pets), up to 100 at a time.
+
+- **Potions** and **Pet potions**: how many of each to have in the bag. 0 means it isn't made. The window shows how many you have now.
+- **Make them** (Medium and Large potions): from Small ones, fused up, or each from its own recipe. Fusing is usually cheaper: 25 Small Red Potions (one Lesser Blood and half a fee) make 1 Large one.
+- **Fuse spare potions up to**: after making, fuse what is over your numbers up to Medium or Large, keeping at least the Small and Medium ones you say.
+- **Pharmacist**: your own gang's, or another gang's by its name. Arnebia below your reserve is never spent, and each fee is read on the Pharmacist's page before anything is paid.
+- **Take them from**: missing Bloods and Pelts come from only the bag, the town storehouse, the market, or the storehouse and then the market.
+- **Most gold coins a piece**: for each material, the most the market may charge. The cheapest lots are always bought first; with 0 any price is fine, still cheapest first. **Most gold coins to spend on materials in one run** caps the whole buy.
+
+- **Put the potions made into the town storehouse**: then it works a bagful at a time: it fills the bag with Bloods and Pelts up to its full mark (Character settings, the bag's full mark), makes and fuses, puts the potions in the storehouse and goes again until your numbers are there. Your numbers then count what the storehouse holds too, and the potions you had in the bag before stay in the bag. Making and fusing still work when the bag is over its full mark: only the materials brought in are held to it.
+
+**Check only** walks to the Pharmacist, reads the real fees and says what it would make, fuse and buy, without spending anything.
 
 ### Equipment Enhancer
 
@@ -816,6 +897,10 @@ and misses, critical hits and defence breaks (with the best and the last of each
 hit, the last monster killed, and the monsters that hurt you most. Anything the game did not report
 is shown as `null`. These numbers need agent 28 or newer, like the crit-timed combos.
 
+When a run farmed two maps or more, its results add a Map by map part: for each map the time
+farmed there, kills and kills an hour, the arnebia and shards gained, the chests opened and the
+deaths. A day's or week's results add the maps up the same way.
+
 Shift+Pause speaks a one-line summary of the game in front, from anywhere, and Ctrl+Shift+R in
 Uncle Farmer speaks it for the game selected in the Games list. When a run ends one short line is
 spoken; Settings can add a line every few minutes, or turn it off. The summary starts with how long
@@ -860,6 +945,16 @@ Finding and reaching teammates: the bot presses the /6 phrase to learn where a t
 see is on the map (the game answers with their position), and Shift+P teleports it to the team
 leader: only on the same map, from further than 20 yards, once per about 50 seconds. `come` and
 `follow` use both when the player they go to leads the team.
+
+**Leading a team.** Character settings has a Team tab; nothing on it does anything until ticked,
+and each character keeps its own choices. "Accept requests to join my team" lets in only the
+players you allow (your trusted players, your friends in the game, or names and ids you type);
+anyone else is left waiting and named once in the log. "Remove members who go offline" checks each
+member with the game's info key (G) every few minutes, or only in towns, and asks twice before
+removing one. The run can also hand the team over to the first player of your list when it ends,
+create your team (with its name) when it starts, leave a team another player leads, or stay in
+town managing the team after the run; a script does that with `manage_team`. If another player
+disbands the team or becomes its leader, the bot stops managing it and says so.
 
 ## Chat
 

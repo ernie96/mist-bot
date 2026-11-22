@@ -424,6 +424,13 @@ def gangs(cfg: dict[str, Any]) -> list[str]:
     return out
 
 
+def _available_gangs(b: Bot, cfg: dict[str, Any]) -> list[str]:
+    planned = gangs(cfg) if cfg.get("gang", True) else []
+    if "" in planned and crafting.is_gangless(b):
+        return [gang for gang in planned if gang]
+    return planned
+
+
 def gang_name(gang: str) -> str:
     return gang or _("our own gang")
 
@@ -446,16 +453,17 @@ def _into_gang(b: Bot, gang: str) -> None:
         return
     b.close_dialogs()
     town.visit(b, "gang_entrance")
+    mid = b.map_id()        # before the pick: choosing another gang can take us straight into its base
     if not crafting.pick_at_entrance(b, gang):
         raise Stopped(_("the Gang Entrance lists no gang called {gang}", gang=gang))
-    mid = b.map_id()
-    d = b.wait_dialog(2.0)
+    d = None if b.map_id() != mid else b.wait_dialog(2.0)
     for hall in (r"(?i)inner\s+hall", r"(?i)outer\s+hall", r"(?i)^\s*enter\b"):
         if d and d.get("top") and b.find_entry(d["top"], hall) is not None:
             b.choose(hall)
             break
-    chores.confirm(b)
-    if not b.wait_map_change(mid, 15) or not crafting.in_gang(b):
+    if b.map_id() == mid:
+        chores.confirm(b)
+    if (b.map_id() == mid and not b.wait_map_change(mid, 15)) or not crafting.in_gang(b):
         b.close_dialogs()
         raise Stopped(_("couldn't get into the gang {gang}'s base", gang=gang))
 
@@ -491,6 +499,10 @@ def gang_area(b: Bot, cfg: dict[str, Any], skill: str, check_only: bool = False,
     cell = _entrance(b, cfg, name)
     if cell is None:
         return False, _("the gang has no {npc}", npc=name), True
+    if not check_only and b.approach(name, cell) is not None:
+        # off the fusion beast here, beside the entrance: inside, the seconds it takes would come out
+        # of the area's half hour, and gathering starts the moment we land
+        beasts.off(b)
     if not b.talk(name, cell):
         return False, _("couldn't talk to the {npc}", npc=name), False
     b.wait_dialog(3.0)
@@ -563,7 +575,7 @@ def check(b: Bot, cfg: dict[str, Any], skill: str, rank: int | None, level: int 
     """What a run would do, walking only to read the gang area's entrance."""
     notes = [_("{skill}, {rank}; character level {level}", skill=_(skill), rank=rank_name(rank),
                level=level or "?")]
-    for gang in gangs(cfg) if cfg.get("gang", True) else []:
+    for gang in _available_gangs(b, cfg):
         done = gang_done_today(b, gang)
         if done:
             notes.append(_("{gang}: already today ({note})", gang=gang_name(gang), note=done.get("note", "")))
@@ -575,6 +587,7 @@ def check(b: Bot, cfg: dict[str, Any], skill: str, rank: int | None, level: int 
             if b.stop_event.is_set() or getattr(e, "final", False):
                 raise
             notes.append(_("{gang}: {about}", gang=gang_name(gang), about=e))
+        b.close_dialogs()
     if cfg.get("outside", True):
         found = places(cfg, skill)
         p = choose(found, level, rank, cfg)
@@ -598,7 +611,6 @@ def run(b: Bot, cfg: dict[str, Any], check_only: bool = False) -> list[str]:
     level = chores.char_level(b) or None
     if check_only:
         notes = check(b, cfg, skill, rank, level)
-        b.close_dialogs()
         b.log(_("gathering check: {notes}", notes="; ".join(notes)), speak=True)
         return notes
     b.log(_("gathering with {skill} ({rank})", skill=_(skill), rank=rank_name(rank)), speak=True)
@@ -608,7 +620,7 @@ def run(b: Bot, cfg: dict[str, Any], check_only: bool = False) -> list[str]:
     end_at = b.clock.time() + 60 * minutes if minutes else None
     notes: list[str] = []
     why = ""
-    for gang in gangs(cfg) if cfg.get("gang", True) else []:
+    for gang in _available_gangs(b, cfg):
         if gang_done_today(b, gang):
             continue
         why = _gang_round(b, cfg, skill, end_at, notes, gang)
@@ -672,7 +684,7 @@ def _gang_round(b: Bot, cfg: dict[str, Any], skill: str, end_at: float | None, n
         b.log(about)
         notes.append(about)
         return ""
-    beasts.off(b)
+    beasts.off(b)                          # (off at the entrance already: only a beast put on since)
     why = ""
     for _round in range(LEFT_MOST):
         try:

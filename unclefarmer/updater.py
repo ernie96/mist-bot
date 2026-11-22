@@ -57,6 +57,11 @@ REPO = "ernie96/mist-bot"
 LATEST = "https://api.github.com/repos/%s/releases/latest"      # % REPO, when asked
 RELEASES = "https://api.github.com/repos/%s/releases?per_page=%d"   # % (REPO, DEV_PAGE)
 DEV_PAGE = 30               # the newest releases looked through for dev builds (CI keeps 10)
+CHANGELOG_URL = "https://raw.githubusercontent.com/%s/dev/CHANGELOG.md" % REPO   # Help, Changelog
+CHANGELOG_TTL = 300.0       # seconds a fetched changelog is reused
+CHANGELOG_LIMIT = 2 * 1024 * 1024
+_changelog_lock = threading.Lock()
+_changelog_cache: tuple[float, str] | None = None
 EXE = "UncleFarmer.exe"
 ASSET = EXE                 # the release's exe; its signature is ASSET + ".sig"
 SIGNATURE = ASSET + ".sig"
@@ -183,6 +188,41 @@ def _open(url: str, accept: str, timeout: float) -> http.client.HTTPResponse:
     if _token():
         req.add_header("Authorization", "Bearer " + _token())
     return urllib.request.build_opener(_NoAuthElsewhere).open(req, timeout=timeout)
+
+
+def read_changelog(timeout: float = 10) -> str:
+    """This project's CHANGELOG.md, for Help, Changelog (gui/changelog.py), read on a worker. A
+    recent good fetch is shared between windows. UpdateError when it can't be had or isn't one."""
+    global _changelog_cache
+    with _changelog_lock:
+        if _changelog_cache is not None and time.monotonic() < _changelog_cache[0]:
+            return _changelog_cache[1]
+        try:
+            with _open(CHANGELOG_URL, "text/plain, text/markdown", timeout) as response:
+                if response.headers.get_content_type() not in ("text/plain", "text/markdown"):
+                    raise UpdateError("unexpected changelog content type")
+                raw = response.read(CHANGELOG_LIMIT + 1)
+                length = response.headers.get("Content-Length")
+            if len(raw) > CHANGELOG_LIMIT:
+                raise UpdateError("changelog is too large")
+            if length is not None and len(raw) != int(length):
+                raise UpdateError("incomplete changelog response")
+            text = raw.decode("utf-8-sig").strip()
+        except (OSError, ValueError, http.client.HTTPException) as e:
+            raise UpdateError(str(getattr(e, "reason", e)) or type(e).__name__) from e
+        if "\0" in text or not re.match(r"^#{1,2}[ \t]+\S", text):
+            raise UpdateError("unreadable changelog")
+        _changelog_cache = time.monotonic() + CHANGELOG_TTL, text
+        return text
+
+
+def changelog_section(text: str, version: str) -> str | None:
+    """The section of one version (its level-two heading and everything under it), or None."""
+    heading = re.compile(r"^##[ \t]+(?:\[[vV]?%s\]|[vV]?%s)(?=\s|$)" % (re.escape(version), re.escape(version)))
+    for section in re.split(r"(?m)(?=^##[ \t]+)", text):
+        if heading.match(section):
+            return section.strip()
+    return None
 
 
 def _ask(url: str, timeout: float) -> Any:
@@ -347,6 +387,14 @@ def _alive(pid: int) -> bool:
         return bool(kernel.GetExitCodeProcess(h, ctypes.byref(code))) and code.value == 259   # STILL_ACTIVE
     finally:
         kernel.CloseHandle(h)
+
+
+def agent_games() -> list[int]:
+    """The processes that have this copy's agent loaded, whatever their exe is called: every live
+    agent/run/agent.<pid>.port (link.agents). An agent reinstall or an update closes them first
+    (gui/agentfix.running_pids), since they hold the agent jar open."""
+    from .link import agents
+    return sorted({pid for _port, pid, _secret in agents()} - {os.getpid()})
 
 
 def busy(staging: str | None = None) -> dict[str, Any] | None:

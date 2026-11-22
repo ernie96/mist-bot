@@ -202,6 +202,12 @@ class UpdatesMixin(FrameParts):
         else:
             self.offer_update(rel, False)
 
+    def show_changelog(self) -> None:
+        """Help, Changelog: what changed in each version (gui/changelog.py)."""
+        from ..changelog import ChangelogDialog
+        with ChangelogDialog(self) as dialog:
+            dialog.ShowModal()
+
     def offer_update(self, rel: updater.Release, at_start: bool) -> None:
         if self.destroyed:
             return

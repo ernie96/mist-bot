@@ -9,6 +9,7 @@ from typing import Any
 import wx
 
 from .. import __version__, applog, control, daily, gameinstall, i18n, paths, updater
+from ..engine import resume
 from ..i18n import _
 from . import agentfix
 from .common import (Dialog, ask, ask_ok, buttons, copy_text, enable_label, error, group, info, modal, ok_cancel, opens,
@@ -52,6 +53,9 @@ class SetupDialog(Dialog):
         self.status = f.readonly(_("Status:"), lines=2)
         self.install_btn, self.remove_btn = buttons(f.parent, f.box, (_("&Install"), self.on_install),
                                                     (_("&Remove"), self.on_remove))
+        # The game drops every key another program sends; the agent takes that check out (agent 72).
+        self.other_keys = f.check(_("Let other programs press &keys in the game (NVDA Remote, a controller mapper)"),
+                                  self.s.get("other_keys", True))
 
     def speech_page(self, nb: wx.Notebook) -> None:
         panel, box = page(nb, _("Speech and language"))
@@ -96,6 +100,10 @@ class SetupDialog(Dialog):
                               self.s.get("shutdown_delay", 60), 10, 600)
         self.after.Bind(wx.EVT_CHOICE, lambda e: self.sync_after())
         self.sync_after()
+        f = group(panel, box, _("When a game is lost during a run"))
+        self.restart_lost = f.check(
+            _("&Open the game again, log in and carry on where the run was (at most {n} times a day)",
+              n=resume.RESTARTS_MOST), self.s.get("restart_lost_games", True))
 
         def sync(_evt: wx.Event | None = None) -> None:
             self.day_at.Enable(self.day_on.GetValue())
@@ -280,10 +288,12 @@ class SetupDialog(Dialog):
             self.s["skip_version"] = ""
         self.s["game_speech"] = SPEECH_MODES[max(0, self.game_speech.GetSelection())]
         self.s["fix_voice"] = self.fix_voice.GetValue()
+        self.s["other_keys"] = self.other_keys.GetValue()
         self.s["results_speak"] = "end" if self.speak_end.GetValue() else "never"
         self.s["results_every"] = self.every.GetValue() if self.progress.GetValue() else 0
         self.s["daily_stop"] = self.day_on.GetValue()
         self.s["after_stop"] = AFTER[max(0, self.after.GetSelection())]
+        self.s["restart_lost_games"] = self.restart_lost.GetValue()
         self.s["shutdown_delay"] = self.delay.GetValue()
         self.s["log_level"] = applog.LEVELS[max(0, self.level.GetSelection())]
         self.s["log_max_mb"] = self.log_mb.GetValue()

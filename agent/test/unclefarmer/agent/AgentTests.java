@@ -40,6 +40,9 @@ public final class AgentTests {
         aSheetWeAskedForIsReadAndKeptFromTheGame(contract);
         theExperienceCardIsReadAndToggledOnlyFromAFreshSheet();
         everyCastSaysWhomItStruck(contract);
+        aTickToZeroIsADeath();
+        aClosedConnectionMeansOurCharacterIsGone();
+        theDungeonReportIsReadAsTheGameReadsIt();
         professionRanksAreKeptFromTheLoginList();
         corpseSkillsTakeOnlyAFreshCorpseInReach();
         aCorpseCastIsHeldLikeTheKeyAndAlwaysLetGo();
@@ -64,6 +67,7 @@ public final class AgentTests {
         theVoiceFixCanBeSwitchedOff();
         theVoicePlayerRateFixMatchesTheGamesCode();
         theSpeechSwitchStillSilences();
+        keysFromOtherProgramsCountUntilSwitchedOff();
         SoundTests.run();
         LinkTests.run();
 
@@ -307,6 +311,15 @@ public final class AgentTests {
         eq(Sheet.expPaused, true, "paused");
         eq(Sheet.expSeconds, 3720, "an hour and two minutes");
         eq(Sheet.morality, -1200L, "a black name");
+        // inside a dungeon: no pause, only the bonus and the time ("minutes56", as the game writes it)
+        String dungeon = head + "8\r22\r30% EXP bonus;29 minutes56 seconds remaining|||Morality 2000;white name";
+        World.inbound(concat(new byte[] {62}, dungeon.getBytes(Protocol.UTF8)));
+        eq(Sheet.expBonus, 30, "a dungeon's card entry is a card too");
+        eq(Sheet.expPaused, false, "running (it can't be paused there)");
+        eq(Sheet.expSeconds, 29 * 60 + 56, "its time, read with no space after minutes");
+        String rows = head + "8\r22\r30% EXP bonus\r1 hour2 minutes remaining|||Morality 2000;white name";
+        World.inbound(concat(new byte[] {62}, rows.getBytes(Protocol.UTF8)));
+        eq(Sheet.expSeconds, 3720, "an hour and two minutes, as separate rows");
         World.inbound(concat(new byte[] {62}, head.getBytes(Protocol.UTF8)));
         eq(Sheet.expBonus, 0, "no entry: no card");
         eq(Sheet.expSeconds, -1, "and no time left");
@@ -393,6 +406,8 @@ public final class AgentTests {
         }
         eq(StateServer.handle("ping", armed, mine, guarded), "pong", "ping");
         eq(StateServer.handle("voicefix off", armed, mine, guarded), "unknown", "no voice player loaded: nothing to switch");
+        eq(StateServer.handle("injected", armed, mine, guarded), "unknown", "no game class loaded: no switch for the keys other programs send");
+        eq(StateServer.handle("injected off", armed, mine, guarded), "unknown", "... and nothing to switch");
         eq(StateServer.handle("frobnicate", armed, mine, guarded), "unknown command: frobnicate", "unknown");
         eq(StateServer.handle("ask vitals", armed, mine, guarded), "refused: send 'arm' first", "ask needs arm");
         eq(StateServer.handle("key j", armed, mine, guarded), "refused: send 'arm' first", "keys need arm");
@@ -886,6 +901,89 @@ public final class AgentTests {
         eq(World.targets(new String[] {"4152,8,Buff\n4152,64200"}), null, "a cast with no target line has none");
     }
 
+    /** After the game's connection drops, the game keeps showing its world: our character counts
+     *  as gone once the connection has stayed closed CLOSED_GRACE_MS, so the bot reconnects. */
+    private static void aClosedConnectionMeansOurCharacterIsGone() throws Exception {
+        Memory.resetConnection();
+        Memory.requireConnection(1000L, false);           // never up in this game: no verdict
+        Memory.requireConnection(99000L, false);
+        Memory.requireConnection(100000L, true);
+        Memory.requireConnection(101000L, false);         // closed: still inside the grace
+        Memory.requireConnection(105999L, false);
+        boolean gone = false;
+        try {
+            Memory.requireConnection(106000L, false);
+        } catch (Memory.Unavailable e) {
+            gone = e.getMessage().startsWith("noworld:");
+        }
+        check(gone, "a connection closed for 5 s means our character is gone (noworld)");
+        Memory.requireConnection(107000L, true);          // reconnected
+        Memory.requireConnection(108000L, false);
+        Memory.resetConnection();
+    }
+
+    /** IN op=42 sets an entity's HP outside a cast (damage over time): id, HP now, the change, a
+     *  sound, one more short. A monster a tick takes to 0 has no "id,0" line in op=41, so this is
+     *  the only word of its death (a packet of a live night: 2a ffffffde 00000000 fffffc8e 30e3 36c8). */
+    private static void aTickToZeroIsADeath() {
+        long before = System.currentTimeMillis() - 1;
+        World.inbound(op42(-934, 882, -500, 12515, 14024));
+        check(!World.casts(before).contains("[-934,"), "a tick that leaves it HP is no death");
+        World.inbound(op42(-934, 0, -882, 12515, 14024));
+        String got = World.casts(before);
+        check(got.contains("[-934,"), "a tick that takes a monster to 0 HP is a death: " + got);
+        World.inbound(op42(4934, 0, -100, 0, 0));
+        check(!World.casts(before).contains("[4934,"), "a player at 0 HP is no kill");
+        World.inbound(new byte[] {42, -1, -1, -4, 89, 0, 0, 0, 0});          // id -935, HP 0, nothing after
+        check(World.casts(before).contains("[-935,"), "the short form with only the HP counts too");
+        World.inbound(new byte[] {42, -1, -1, -4, 88, 0, 0});                // id -936 and a short: not HP
+        World.inbound(new byte[] {42, -1, -1, -4, 87});                      // cut off
+        got = World.casts(before);
+        check(!got.contains("[-936,") && !got.contains("[-937,"), "the id-and-short message is no HP report: " + got);
+    }
+
+    private static void theDungeonReportIsReadAsTheGameReadsIt() {
+        // Laid out as a recorded five-player Demon Cave report (2026-11-17), two players here.
+        java.nio.ByteBuffer b = java.nio.ByteBuffer.allocate(256);
+        b.put((byte) 66).put((byte) 7).putShort((short) 0x0402)
+         .putShort((short) 0).putShort((short) 0).putShort((short) 0).putShort((short) 58);
+        reportRow(b, 2001, 3 * 2 + 1, 79, 34, 12286925, 0, 188265);
+        reportRow(b, 2002, 7 * 2 + 2, 79, 24, 7965187, 2207812, 843962);
+        b.putInt(0).put("Demon  Cave,Demon  Cave floor 13,First,Second".getBytes(java.nio.charset.Charset.forName("GBK")));
+        byte[] m = java.util.Arrays.copyOf(b.array(), b.position());
+        Report.forget();
+        check(Report.since(0L).equals("{}"), "no report yet: " + Report.since(0L));
+        long before = System.currentTimeMillis() - 1;
+        World.inbound(m);
+        String got = Report.since(before);
+        check(got.contains("\"total_kills\":58") && got.contains("\"place\":\"Demon  Cave\"")
+              && got.contains("\"part\":\"Demon  Cave floor 13\""), "the head and the place: " + got);
+        check(got.contains("{\"id\":2001,\"class\":3,\"female\":false,\"level\":79,\"kills\":34,\"damage\":12286925"),
+              "the first row: " + got);
+        check(got.contains("\"highest_area_hit\":188265,\"highest_heal\":0,\"highest_area_heal\":0,\"name\":\"First\"}"),
+              "the first row's highest hits and its name: " + got);
+        check(got.contains("\"id\":2002,\"class\":7,\"female\":true") && got.contains("\"healing\":2207812")
+              && got.contains("\"name\":\"Second\""), "the second row: " + got);
+        check(Report.since(System.currentTimeMillis() + 1000).equals("{}"), "nothing newer than asked");
+        World.inbound(java.util.Arrays.copyOf(m, 40));                  // cut off inside a row
+        check(Report.since(before).equals(got), "a cut-off report changes nothing");
+        Report.forget();
+    }
+
+    private static void reportRow(java.nio.ByteBuffer b, int id, int cs, int level, int kills, int damage,
+                                  int healing, int areaHit) {
+        b.putInt(id).putShort((short) cs).put((byte) level).putShort((short) 0).putShort((short) 0)
+         .putShort((short) 0).putShort((short) kills).putInt(damage).putInt(healing)
+         .putShort((short) 0).putShort((short) 0).putShort((short) 0).putShort((short) 0).putShort((short) 0)
+         .putInt(areaHit / 2).putInt(areaHit).putInt(0).putInt(0);
+    }
+
+    private static byte[] op42(int id, int hp, int change, int sound, int extra) {
+        java.nio.ByteBuffer b = java.nio.ByteBuffer.allocate(17);
+        b.put((byte) 42).putInt(id).putInt(hp).putInt(change).putShort((short) sound).putShort((short) extra);
+        return b.array();
+    }
+
     private static byte[] op41(String text) {
         byte[] body = text.getBytes(Protocol.UTF8);
         byte[] m = new byte[body.length + 1];
@@ -1189,6 +1287,74 @@ public final class AgentTests {
                 default: spoken += 3;
             }
         }
+    }
+
+    /** The game's key method as far as its check of the injected mark goes: javac writes the same
+     *  `bipush 16; iand; bipush 16; if_icmpeq` for it as the game has (javap of game.Win, pc 480). */
+    public static final class KeyStandIn {
+        public static int taken;
+
+        public static int a(int flags, int scan, int vk) {
+            if ((flags & 16) != 16) {
+                taken++;
+                return 0;
+            }
+            return 1;
+        }
+
+        /** Another method of the same shape without the check: left alone. */
+        public static int b(int x, int y, int z) {
+            return x + y + z;
+        }
+    }
+
+    /** Two checks in one class: not the class we know, so nothing is changed. */
+    public static final class TwoChecksStandIn {
+        public static int a(int flags, int scan, int vk) {
+            return (flags & 16) != 16 ? 0 : 1;
+        }
+
+        public static int c(int flags, int scan, int vk) {
+            return (flags & 16) != 16 ? 2 : 3;
+        }
+    }
+
+    private static void keysFromOtherProgramsCountUntilSwitchedOff() throws Exception {
+        final String name = KeyStandIn.class.getName();
+        byte[] plain = classBytes("AgentTests$KeyStandIn.class");
+        final byte[] switched = InjectedKeys.patch(plain);
+        check(switched != null && switched != plain, "the check of the injected mark is found in the key method");
+        check(InjectedKeys.patch(switched) == switched, "a class that already has the switch is left as it is");
+        check(InjectedKeys.patch(classBytes("AgentTests$TwoChecksStandIn.class")) == null, "two checks: not the class we know");
+        check(InjectedKeys.patch(classBytes("AgentTests$SpeechStandIn.class")) == null, "no such method: not the class");
+        ClassLoader loader = new ClassLoader(AgentTests.class.getClassLoader()) {
+            @Override
+            protected Class<?> loadClass(String n, boolean resolve) throws ClassNotFoundException {
+                if (n.equals(name)) {
+                    Class<?> c = findLoadedClass(n);
+                    return c != null ? c : defineClass(n, switched, 0, switched.length);
+                }
+                return super.loadClass(n, resolve);
+            }
+        };
+        Class<?> c = loader.loadClass(name);       // verified as it is first used: a bad rewrite fails here
+        java.lang.reflect.Method key = c.getMethod("a", int.class, int.class, int.class);
+        java.lang.reflect.Field mask = c.getField(InjectedKeys.FIELD);
+        java.lang.reflect.Field taken = c.getField("taken");
+        eq(mask.getInt(null), 0, "the switch starts at: the keys other programs send count");
+        eq(key.invoke(null, 0, 0x1E, 65), 0, "a key of the keyboard is taken");
+        eq(key.invoke(null, 0x10, 0x1E, 65), 0, "a key another program sent is taken too");
+        eq(key.invoke(null, 0x10 | 0x80, 0x1E, 65), 0, "... and its release");
+        eq(taken.getInt(null), 3, "all three went into the method's own work");
+        mask.setInt(null, InjectedKeys.INJECTED);
+        eq(key.invoke(null, 0x10, 0x1E, 65), 1, "switched off: the injected key is dropped, as the game does");
+        eq(key.invoke(null, 0x10 | 0x80, 0x1E, 65), 1, "... and its release");
+        eq(key.invoke(null, 0, 0x1E, 65), 0, "a key of the keyboard still counts");
+        eq(key.invoke(null, 0x80 | 0x01, 0x4B, 37), 0, "... with its other marks");
+        eq(taken.getInt(null), 5, "only the keyboard's keys went on");
+        mask.setInt(null, 0);
+        eq(key.invoke(null, 0x10, 0x1E, 65), 0, "switched on again while it runs");
+        eq(c.getMethod("b", int.class, int.class, int.class).invoke(null, 1, 2, 3), 6, "the other method is as it was");
     }
 
     private static void theSpeechSwitchStillSilences() throws Exception {

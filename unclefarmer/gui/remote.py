@@ -33,9 +33,10 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 UI_WAIT = 30.0                      # seconds a tool waits for the window's thread
-CONFIRMED = {"gem_maker", "gem_breaker", "enhance", "chores", "gather", "dungeon", "lose_xp", "restock",
-             "sell_collection", "sell_shards", "clean_bag"}   # jobs that spend, sell or throw away: confirm=true
-CHECKABLE = {"gem_maker", "gem_breaker", "enhance", "chores", "bounties", "gather", "dungeon", "lose_xp"}
+CONFIRMED = {"gem_maker", "gem_breaker", "potion_maker", "enhance", "chores", "gather", "dungeon", "lose_xp",
+             "restock", "sell_collection", "sell_shards", "clean_bag"}   # jobs that spend, sell or throw away
+CHECKABLE = {"gem_maker", "gem_breaker", "potion_maker", "enhance", "chores", "bounties", "gather", "dungeon",
+             "lose_xp"}
 CHANNEL_NUMBERS = {"global": 0, "map": 1, "nearby": 2, "gang": 3, "team": 4, "international": 5,
                    "private_channel": 6}
 OFF_LIMITS = {"mcp_control", "mcp_raw_agent"}     # only the player changes who may control the bot
@@ -696,6 +697,56 @@ class RemoteControl:
             return "No market job has run on game %d yet." % pid, data
         return "%s: %s (%d lots)." % (status.get("query") or status.get("job"), status.get("summary") or
                                        status.get("state"), len(lots)), data
+
+    def t_start_autopilot(self, args: dict[str, Any]) -> Result:
+        from ..engine import autopilot
+        key = self.character(args)
+        pid = self.pid(args) if args.get("game") not in (None, "") else None
+        if pid is None:
+            pid = next((g[0] for g in self.games() if g[1] and settings.same_character(g[1], key)), None) \
+                or next((g[0] for g in self.games() if g[1] == key), None)
+        if pid is None:
+            raise ToolError("%s isn't logged in to a game (start_plan with character logs it in)." %
+                            settings.profile_display(key))
+        p = settings.load_profile(key)
+        chosen = autopilot.choices(p)["plan"]
+        kind, _sep, name = chosen.partition(":")
+        text: str | None = None
+        if kind == "plan" and name:
+            try:
+                text = plans.to_script(plans.load(name))
+            except (OSError, ValueError):
+                text = None
+        try:
+            item = autopilot.item_for(p, settings.profile_display(key), text)
+        except OSError as e:
+            raise ToolError("Couldn't write the day's script: %s" % e) from e
+        if item is None:
+            raise ToolError("The day farms with a plan and none is chosen: set autopilot_plan, or autopilot_farm=best.")
+        found = pid
+        answer = self.ui(lambda: self.w.start(found, item, remote=True, profile=key))
+        if self.run_on(found) is None:
+            raise ToolError(answer or "It didn't start.")
+        return answer or "Started the day.", {"pid": found, "running": item}
+
+    def t_keyboard_profiles(self, args: dict[str, Any]) -> Result:
+        from ..engine import keyboard
+        key = self.character(args)
+        p = settings.load_profile(key)
+        names = keyboard.names(p)
+        return ", ".join(names) or "No Keyboard Manager profiles yet.", {
+            "names": names, "profiles": p.get("keyboard_profiles", {})}
+
+    def t_apply_keyboard_profile(self, args: dict[str, Any]) -> Result:
+        from ..engine import keyboard
+        pid = self.pid(args)
+        name = str(args.get("name") or "")
+        key = self.ui(self.w.character, pid)
+        known = keyboard.names(settings.load_profile(key)) if key else []
+        if keyboard.profile_name(name) not in known:
+            raise ToolError("No Keyboard Manager profile called %s. Known: %s." % (name, ", ".join(known) or "none"))
+        self.errand(pid, keyboard.command(name) + "\n", "keyboard profile %s" % name, walk=True)
+        return "Applying %s on game %d." % (name, pid), {"pid": pid}
 
     def t_follow_player(self, args: dict[str, Any]) -> Result:
         pid = self.pid(args)
