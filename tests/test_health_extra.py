@@ -161,7 +161,7 @@ class H(HealthMixin):
                     return r, c
         return None
 
-    def choose(self, pattern: str) -> dict[str, Any] | None:
+    def choose(self, pattern: str, row: str | None = None, keys: bool = False) -> dict[str, Any] | None:
         self.chosen.append(pattern)
         return {}
 
@@ -371,6 +371,44 @@ def test_handle_death_menu_never_opens_stops(clock: Clock) -> None:
     assert "respawn menu never opened" in str(e.value)
 
 
+def test_the_respawn_menu_is_waited_for_a_minute_and_more(clock: Clock) -> None:
+    # after a game opened again, the menu came 50 s after the death
+    h = H()
+    h._dlg = {"open": 0, "top": None}
+    with pytest.raises(Stopped):
+        h.handle_death()
+    assert sum(h.sleeps) >= health.RESPAWN_MENU_WAIT - 0.5 and health.RESPAWN_MENU_WAIT >= 60
+
+
+def test_one_death_is_counted_once_however_often_it_is_found(clock: Clock) -> None:
+    # the menu didn't open; the run's ending finds the same death twice more
+    h = H()
+    h._dlg = {"open": 0, "top": None}
+    for _i in range(3):
+        with pytest.raises(Stopped):
+            h.handle_death()
+    assert h.deaths == 1 and sum("died on" in line for line in h.lines) == 1
+
+
+def test_alive_again_the_next_death_is_a_new_one(clock: Clock) -> None:
+    h = H({"respawn": "map"})
+    h._dlg = {"open": 1, "top": {"rows": [[{"text": "Map Respawn"}]]}}
+    h._me = {"hp": 100}
+    with pytest.raises(Respawned):
+        h.handle_death()
+    with pytest.raises(Respawned):
+        h.handle_death()
+    assert h.deaths == 2
+
+
+def test_a_death_answered_by_hand_is_forgotten_once_alive(clock: Clock) -> None:
+    h = H()
+    h.dead_noted = True                  # the menu never opened; the player respawned by hand
+    h._me = {"hp": 100, "maxhp": 100}
+    h.look_after(h._me)
+    assert not h.dead_noted
+
+
 def test_handle_death_could_not_respawn_stops(clock: Clock) -> None:
     h = H({"respawn": "map"})
     h._dlg = {"open": 1, "top": {"rows": [[{"text": "Please select your respawn method"}]]}}
@@ -394,7 +432,7 @@ def test_handle_death_uses_the_resurrection_crystal_first(clock: Clock, monkeypa
 def test_handle_death_choice_that_fails_is_skipped(clock: Clock) -> None:
     h = H({"respawn": "map"})
     h._dlg = {"open": 1, "top": {"rows": [[{"text": "Map Respawn"}]]}}
-    h.choose = lambda pattern: None
+    h.choose = lambda pattern, row=None, keys=False: None
     with pytest.raises(Stopped) as e:
         h.handle_death()
     assert "couldn't respawn" in str(e.value)

@@ -1,5 +1,161 @@
 # What's new
 
+## 1.0.13
+
+This version comes with game agent 79. Uncle Farmer offers it when it starts: close your games
+first, then start them again. The equipment throwing and the separate chat rooms need it.
+
+**Control by an AI assistant**
+
+- The assistant can log the character out for a while in the middle of a run and back in, as a
+  trusted player's private message wait does (log_out_for, which asks you first), and end such a
+  wait early (log_back_in_now). list_games says how many minutes of a wait are left.
+- It can list the international rooms and private channels the character is in (chat_rooms), read
+  one room's lines and send a line into one room, whichever room the game has up.
+- The new settings (equipment thrown away by rarity, the wait, the menu box on the Keys page) are
+  read and changed with the character, app and private-message settings tools, as before.
+
+**A run never goes on as another character** (seen in game)
+
+- One account holds several characters, switched between in the same game (Switch account). A run
+  read its character once, at its start: paused, then switched to another character by hand, a run
+  went on as its own on that one, with its own restock (it took potions out of the Storehouse). The
+  run now checks the game's character by its id at every reading and when a pause ends: another
+  one stops it at once, with nothing more done in the game, as the community script does ("rather
+  than farming as the wrong character"). Not carried on later.
+- A run paused when its game closes (the player had the game) is no longer opened again and carried
+  on, which logged its character back in over the one the player wanted.
+
+**Equipment picked up while farming, thrown away by rarity** (untested in game; agent 79)
+
+- The bag manager's Full bag page has one box per rarity, the game's own: Crude, Common,
+  Sophisticated, Perfect, Rare, Legendary, none ticked. The ticked ones are thrown away every so
+  many minutes of farming (30 by default) and whenever the bag is full, where the character stands.
+- Only pieces picked up during the run: one already in the bag when it began is never thrown, and
+  every piece thrown is written in the log with its rarity.
+- **Keep pieces with a bonus** (ticked by default): before a piece goes, its details are asked for
+  as the G key does, and one whose details have a "plus:" bonus is kept, as is one whose details
+  don't come back.
+- Read live: the bag's equipment is apart from its other items, a piece's rarity is a number in the
+  game's order, and the game throws a piece away and gives its details with requests of their own;
+  agent 79 has `discardgear` and `gearinfo` for them.
+
+**A farming spot's own patrol points and no-go circles** (untested in game)
+
+- A plan's spot can go round the player's own points, in order (**My own points, in order, round and
+  round**, up to 10, with **Add where I stand**), fighting what comes near on the way, as on the
+  game's patrol loops.
+- **No-go circles** on the spot: no monster inside one is looked for and the patrol never heads into
+  one; one that attacks from inside is still fought. **Add a circle around me** puts one where the
+  character stands.
+- Scripts: `farm ... points=120,80;150,90` (alone, it means `patrol=points`) and
+  `nogo=26,219,45;300,40,10`.
+
+**Private message `wait`: out for a while, then back to farming** (untested in game)
+
+- A trusted player sends `wait 45`: the character logs out (the setting menu's Switch account), waits 45 minutes at the login screen, logs back in with the game's saved account and the run goes on, the wait counted as a pause. `wait` alone takes the minutes set in Private messages. Off unless **They may log me out for a while and back in (wait)** is ticked. Stop during the wait leaves the character out; five failed logins, a minute apart, end the run.
+- No private message reaches a character that is logged out: during a wait the Games list says **Logged out for a while (N min left)** and the Pause button (F6) reads **Log back in now**, which ends the wait early.
+- Logging back in after Switch account (seen in game): the automatic login took the client a logout
+  leaves behind for a connection under way and never started ("timed out waiting for character
+  picker"); then, logged in, the character took no key at all, the player's included: the game
+  still read the sign-in screen's cursor, left on the account box, for every key. The agent now
+  counts only a live connection, and puts that cursor on Log in first, as the player's own login
+  has it.
+- One action at a time: while a wait, a walk home or a `come` is under way, another action is answered "Busy, one command at a time. Still on: wait (12 min left)." Questions and stop, pause, resume and quit game always work.
+
+**Chat: each international room and private channel apart** (untested in game)
+
+- A player in two international rooms (French and English) or two private channels had both
+  rooms' messages mixed in one Chat buffer, with nothing to tell them apart, and a line typed there
+  went to whichever room the game had up. The game keeps every room's lines apart; the agent threw
+  the room away. Agent 79 keeps each international and private-channel line's room, lists the
+  joined rooms with their names (once the game has shown them), and sends into one room with
+  `sayin`.
+- The Chat window lists each room where International and Private channel were ("International:
+  French"), with its own lines and unread count, and no buffer mixing the rooms; a line typed there
+  goes into that room, and a reply into the room of the line it answers. Restart the game once for
+  the new agent (with an older one the list is as before).
+
+**The menu box on the Keys page: a moment before each choice, and shops too** (untested in game)
+
+- On one player's computer, menus that work by hand did nothing for the bot: every shop's
+  "Purchase" (6 of 6), most chests even with the second try by the keys, and a cable car once.
+  By hand a menu is read for a second or more before the choice; the bot chose the moment it
+  opened. With the box ticked (now **When menus do nothing (chests, rides, dungeons, shops): wait
+  a moment before choosing, and try once more with the arrow keys and Enter**), every choice gives
+  the menu a second first, and a shop's buying section that leaves the menu as it was is tried
+  once more with the keys. Off by default: nothing changes for anyone else.
+- The agent's "enter false" in these notes is what the game's Enter always answers (every menu,
+  on every computer, including the ones that worked): it says nothing about a refusal. A menu left
+  open is what tells.
+
+**The run ends off the beast after the after-farming list too** (untested in game)
+
+- The run's end gets off the fusion beast, then the after-farming list (a shard sale, storing)
+  rode to town on it again, and the characters were left riding when the run was over. The beast
+  is now got off once more after the list (and the pet put away, when the profile says so).
+
+**Storing items: no more "the storehouse may be full" with room in it** (untested in game)
+
+- A player's characters said "not stored (the storehouse may be full)" though it had room, or a
+  stack of the item already. The game takes a stored item out of the bag a moment after the menu
+  closes, and the bag was counted at once: the deposit read "put 0". The bag is now given that
+  moment, as it already was for taking items out. A storehouse that really is full still says
+  so ("item storage is full").
+
+**A dropped connection, and a death after it** (untested in game)
+
+- Three games lost their connection at the same second (the player's internet), and logging back
+  in was given up after about two minutes: all three were closed and opened again just as the
+  connection came back. Logging back in inside the same game is now tried for up to 5 minutes
+  (`RECONNECT_FOR`); a character the server only took away for a while still waits one minute.
+- One of them had logged back in by itself as its run was ending, and was closed anyway: a game
+  lost through its connection that shows its character again is now carried on in, not closed.
+  A frozen or closed game is opened again as before.
+- Before each try at logging back in, the log says what the game shows - the window over the
+  lost world and its last spoken lines, the game's own voice being off ("the game shows: ...");
+  the window also goes to logs\dialogs.log. A failed try says why ("logging back in didn't
+  work: ...").
+- The character opened again died at once among the monsters, and the respawn menu came about 50
+  seconds later. The death now waits 90 seconds for that menu (it waited 15); one death is counted
+  once, however often the run's ending finds it; the after-farming list is left out while the
+  character is still dead; and the window closer leaves the respawn menu alone (it pressed
+  Escape on it, which the game ignores, and said it had closed it).
+
+**Teleport skills on the way to a dungeon** (untested in game)
+
+- The walking assistant - the way to a dungeon's entrance and Walk to - left the teleport skills
+  out, so an Elf walked about 4 minutes from Tulip City to White Bone Cave by the cable car and the
+  mine, when Elven Teleportation to West Sealing Tower lands about 40 cells from its entrance. It
+  now plans with them like any trip: a Mage's or an Elf's teleport is cast when it is the shorter
+  way, off the Swift beast for the cast and back on after. **Use the class's teleport skill** still
+  turns them off.
+- Short of the 30% MP a teleport costs, a Mage or an Elf now drinks a blue potion (up to two,
+  each after its cooldown) and casts, instead of giving that place up for the trip at once.
+
+**The daily stop no longer cuts the way back short**
+
+- Back from a dungeon, the daily stop time came on the way to where the run started, one map
+  before it: the way back was dropped, and the run ended in a cave nearby ("couldn't get there").
+  The daily stop is there to end the farming before the drop time resets; once the farming is
+  over, the way to the end place is walked out.
+- When the way to the end place does fail, the log now says why before going to the nearest map
+  without monsters.
+
+**Menu choices the game didn't act on** (agent 78; untested in game)
+
+- On one player's computer, choosing in a menu did nothing, again and again: chests stayed shut (24
+  of 25), the airship never left (18 of 18) and a dungeon didn't let them in, while the same menus
+  worked on another computer. The agent had made the choice each time, and nothing said why.
+- A new box on the Keys page of Advanced settings, **When a chest, airship, cable car or dungeon
+  menu does nothing, try once more with the arrow keys and Enter**, off by default: a chest still
+  there after "Open the chest", a transport that didn't take us and a dungeon that didn't let us
+  in are then tried once more with the keys - the cursor goes down to the entry and Enter chooses
+  it, as a player does. Nothing changes where the first choice works, nor with the box unticked.
+- So the cause can be found: the agent says what the game's Enter answered and what was selected
+  (agent 78), the log says when the game left the menu open after a choice (with that answer, also
+  in logs\dialogs.log), and what the game said is logged when a chest or a ride still didn't work.
+
 ## 1.0.12
 
 This version comes with game agent 77. Uncle Farmer offers it when it starts: close your games
@@ -27,6 +183,17 @@ first, then start them again.
 
 - After a chest is opened, the log says what it gave ("the chest gave: +9,190 arnebia, +24 Level 1
   Obsidian Shard"), so what chests are worth can be weighed against the time a chest hunt takes.
+
+## 1.2.3
+
+**Restock and sell shards in Dark Night City**
+
+- Farming runs can use the local potion merchant, grocer, storehouse, and shard broker
+  when starting from Dark Night City instead of travelling to Holy Blood City for them.
+
+**Elf XP Loser picks a village with guards**
+
+- XP Loser excludes the Elf teleport destinations when choosing a village for XP loss.
 
 **A lost game is opened again, and runs carry on where they were** (tested in game: a game killed
 mid-run and Uncle Farmer closed mid-run, twice each, carried on; not seen yet: a game that never

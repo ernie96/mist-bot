@@ -161,9 +161,12 @@ TOOLS: tuple[Tool, ...] = (
     Tool("result_days", "The days a character has results for, newest first.",
          {"character": _s("Profile or display name."), **GAME}),
     Tool("read_chat", "Chat lines a game has seen since it opened (kept in memory only). channel: global, map, "
-                      "nearby, gang, team, international, private_channel, private (private messages), notice, or "
-                      "all.",
+                      "nearby, gang, team, international, private_channel, private (private messages), notice, "
+                      "all, or one room's key from chat_rooms (\"5@10\": international room 10).",
          {**GAME, "channel": _s("Which channel (default all)."), "limit": _i("At most this many (default 100).")}),
+    Tool("chat_rooms", "The international rooms and private channels the game's character is in or has heard "
+                       "from (agent 79 or newer): each room's key (for read_chat and send_chat), name, and whether "
+                       "the game has it up.", GAME),
     Tool("read_conversations", "A game's private conversations: who, their id, the last line, how many lines.",
          GAME),
     Tool("get_messages_settings", "The private-message settings: trusted players, the reply and goodbye lines for "
@@ -190,6 +193,14 @@ TOOLS: tuple[Tool, ...] = (
     Tool("pause", "Pause a game's run where it is (keys let go, the run not ended), so the player can play by hand.",
          GAME, kind=ACT),
     Tool("resume", "Let a paused run go on.", GAME, kind=ACT),
+    Tool("log_out_for", "While a run goes on: log the character out (the setting menu's Switch account), wait the "
+                        "minutes at the login screen, log back in with the game's saved account and go on with the "
+                        "run, as a trusted player's private message wait does. The character must have been logged "
+                        "in once with Uncle Farmer open. No private message reaches it meanwhile. Ask the player "
+                        "first.",
+         {**GAME, "minutes": _i("1 to 999."), **CONFIRM}, ("minutes", "confirm"), kind=RISKY),
+    Tool("log_back_in_now", "End a wait early: the character logged out for a while logs back in at once, as the "
+                            "Log back in now button does.", GAME, kind=ACT),
     Tool("run_script", "Run script text on a game now, without saving it. mode=job (default) runs it as the Tools "
                        "menu's jobs do: results kept, the end place and daily stop apply. mode=errand runs it as the "
                        "walking assistant does: it stays where it ends. Read script_reference first. Commands in it "
@@ -311,10 +322,12 @@ TOOLS: tuple[Tool, ...] = (
     Tool("delete_schedule", "Delete a schedule and its history.", {"id": _s("Its id."), **CONFIRM},
          ("id", "confirm"), kind=RISKY),
     Tool("send_chat", "Send a line on a chat channel of the game, as the player. reply_to puts that player's "
-                      "@name in front, as the Chat window's Reply does. Ask the player first.",
+                      "@name in front, as the Chat window's Reply does. room sends into one international room or "
+                      "private channel (its key from chat_rooms) whichever the game has up. Ask the player first.",
          {**GAME, "channel": _s("global, map, nearby, gang, team, international or private_channel."),
+          "room": _s("A room's key from chat_rooms, such as 5@10 (then channel can be left out)."),
           "text": _s("The line."), "reply_to": _s("A player's name to reply to."), **CONFIRM},
-         ("channel", "text", "confirm"), kind=RISKY),
+         ("text", "confirm"), kind=RISKY),
     Tool("get_chat_filters", "The chat filter rules: each hides chat lines whose text matches (mode exact, "
                              "contains or wildcard with * and ?; case_sensitive). Filters only hide lines in the Chat "
                              "window."),

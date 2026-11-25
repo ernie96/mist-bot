@@ -58,17 +58,16 @@ def item_pattern(item: str) -> str:
 Npc = tuple[int, str, float, float]      # (map, name, x, y)
 
 
-Place = tuple[int, tuple[float, float]]     # (map, cell)
+Place = tuple[int, tuple[float, float] | None]     # (map, optional cell)
 
 
 def nearest(b: Bot, role: str | None, candidates: Sequence[Npc] | None = None,
             back_to: Place | None = None) -> Npc | None:
     """The NPC (of that role, or from candidates) cheapest to reach from here: (map, name, x, y).
 
-    back_to: where the trip goes on to afterwards (a farming run's share trip goes back to its
-    farm). The way there AND back is counted then: on the way there alone, the hearthstone's square
-    looked cheapest from almost anywhere (one teleport), so a farm next to Tulip City sent the trip
-    back to the city the run started in - and then walked the whole way out to the farm again.
+    back_to: where the trip goes on to afterwards (a farming errand goes back to its farm).
+    With no cell, count to the point of entry on that map. Counting the return matters when the
+    hearthstone makes a distant city easy to reach but leaves a long walk back to the farm.
 
     From inside a map we can't plan our way out of (a gang base, a dungeon) every other map costs
     the same unknown "leave", so the first NPC in the data's order used to win: a Gem Maker in the
@@ -83,7 +82,8 @@ def nearest(b: Bot, role: str | None, candidates: Sequence[Npc] | None = None,
     rides, off = travel.ride_rules(b.p, int(me.get("level") or 0))
     spells = teleskill.options(b)        # a Mage or an Elf teleports: a far city may be near
 
-    def cost_of(from_map: int, from_cell: tuple[float, float], to_map: int, to_cell: tuple[float, float]) -> float | None:
+    def cost_of(from_map: int, from_cell: tuple[float, float], to_map: int,
+                to_cell: tuple[float, float] | None) -> float | None:
         legs, cost = travel.plan(from_map, from_cell, to_map, to_cell, with_cost=True,
                                  transport=rides, vip=rides_free(b), avoid=off,
                                  bag=rows if b.p.get("use_travel_items", False) else [],
@@ -242,13 +242,14 @@ def pick(b: Bot, pattern: str, quantity: int | None = None) -> bool:
     return type_number(b, quantity)
 
 
-def open_section(b: Bot, pattern: str) -> bool:
-    """Choose a section and wait for its menu, rather than accepting the still-open parent."""
+def open_section(b: Bot, pattern: str, keys: bool = False) -> bool:
+    """Choose a section and wait for its menu, rather than accepting the still-open parent.
+    keys: choose it with the keys (bot.choose keys), for a second try."""
     d = b.dialog()
     if d["open"] and d.get("top") and b.find_entry(d["top"], pattern) is not None:
         before: dict[str, Any] = d["top"]
         depth = max(1, int(d["open"]))
-        if b.choose(pattern) is None:
+        if (b.choose(pattern, keys=True) if keys else b.choose(pattern)) is None:
             return False
         after = b.wait_menu_change(before, seconds=3.0, depth=depth)
         top: dict[str, Any] = after.get("top") or {}
@@ -355,7 +356,12 @@ def deposit(b: Bot, item: str, n: int | None=None):
             return 0
     finally:
         b.close_dialogs()
-    put = have - counts(b).get(item.lower(), 0)
+    # The game takes the item out of the bag a moment after the menu closes: counted at once, a
+    # deposit that worked read "put 0" and "the storehouse may be full" with room to spare, or a
+    # stack of it already there. The bag is given that moment (as a withdrawal is).
+    transaction = InventoryTransaction({item.lower(): have})
+    transaction.expect(item, -n)
+    put = have - transaction.settle(b).get(item.lower(), 0)
     if put <= 0 and _heard_full(b, since):
         refused(b).add(item.strip().lower())
         b.log(_("the storehouse is full: {item} has no place in it", item=item))
@@ -472,14 +478,35 @@ def _buy_menu(b: Bot, item: str) -> bool:
     d = b.dialog()
     if not d.get("open") or not d.get("top") or b.find_entry(d["top"], item_pattern(item)) is None:
         # a top menu first ("buy goods", "buy", "shop")
-        for section in (r"^\s*buy\b", r"\bbuy goods", r"\bshop\b", r"\bpurchase"):
-            if open_section(b, section):
-                break
+        _buy_section(b)
         d = b.dialog()
     if not d.get("open") or not d.get("top") or b.find_entry(d["top"], item_pattern(item)) is None:
         b.note_dialog(d, "looking for %s to buy" % item)
         return False
     return True
+
+
+BUY_SECTIONS = (r"^\s*buy\b", r"\bbuy goods", r"\bshop\b", r"\bpurchase")
+
+
+def _buy_section(b: Bot) -> bool:
+    """Open the shop's buying list from its top menu. A choice the game left open is tried once
+    more with the keys when the character's menu_keys_retry is ticked: on one player's computer
+    "Purchase" left the menu as it was at every shop, though it works by hand."""
+    if any(open_section(b, section) for section in BUY_SECTIONS):
+        return True
+    if not b.p.get("menu_keys_retry", False):
+        return False
+    d = b.dialog()
+    top: dict[str, Any] | None = d.get("top") if d.get("open") else None
+    found = next(((s, w) for s in BUY_SECTIONS if top for w in [b.find_entry(top, s)] if w is not None), None)
+    if top is None or found is None:
+        return False                   # the menu has no buying section at all
+    section, (r, c) = found
+    entry: dict[str, Any] = top["rows"][r][c] or {}
+    name = (entry.get("options") or [None])[0] or entry.get("text") or entry.get("raw") or section
+    b.log(_("the shop's \"{entry}\" did nothing - once more with the keys", entry=name))
+    return open_section(b, section, keys=True)
 
 
 def _not_on_menu(b: Bot, shop: Npc, item: str) -> None:
@@ -654,6 +681,22 @@ def collection_left(p: dict[str, Any], rows: list[tuple[int, str, int]]) -> list
     return out
 
 
+def _collection_items(bag: dict[str, int]) -> dict[str, set[str]]:
+    """Known gathering items in the bag, grouped by buyer role."""
+    known_buyers: dict[str, str] = {npc["name"]: npc["role"] for npc in knowledge.data().get("npcs", [])
+                                     if npc.get("role") in COLLECTION_BUYERS.values()}
+    groups: dict[str, set[str]] = {}
+    for item, count in bag.items():
+        if count <= 0 or not item:
+            continue
+        role = knowledge.buyer_role(item)
+        roles = {role} if role and role in COLLECTION_BUYERS.values() else {
+            known_buyers[name] for _, name, *_ in knowledge.traders(item, "buy") if name in known_buyers}
+        for buyer in roles:
+            groups.setdefault(buyer, set()).add(item)
+    return groups
+
+
 def _collection_kinds(b: Bot) -> tuple[str, ...]:
     """Route an automatic sale by profession, or by known goods when no profession is learned."""
     from . import gathering
@@ -661,25 +704,18 @@ def _collection_kinds(b: Bot) -> tuple[str, ...]:
     skill, _rank = gathering.read_skill(b)
     if skill:
         return (gathering.kind_of(skill),)
-    known_buyers = {npc["name"]: npc["role"] for npc in knowledge.data().get("npcs", [])
-                    if npc.get("role") in COLLECTION_BUYERS.values()}
-    roles: set[str] = set()
-    for item, count in counts(b).items():
-        if count <= 0 or not item:
-            continue
-        role = knowledge.buyer_role(item)
-        if role and role in COLLECTION_BUYERS.values():
-            roles.add(role)
-        else:
-            roles.update(known_buyers[name] for _, name, *_ in knowledge.traders(item, "buy") if name in known_buyers)
+    roles = _collection_items(counts(b))
     return tuple(kind for kind, role in COLLECTION_BUYERS.items() if role in roles)
 
 
-def _sell_to_collection_buyer(b: Bot, role: str, candidates: Sequence[Npc]) -> InventoryTransaction:
+def _sell_to_collection_buyer(b: Bot, role: str, candidates: Sequence[Npc],
+                              required: set[str] | None = None) -> InventoryTransaction:
     transaction = InventoryTransaction.begin(b)
     attempted: set[str] = set()
     npc = visit(b, role, candidates=candidates)
     if not b.wait_dialog(3.0):
+        if required is not None:
+            raise Stopped(_("couldn't open the collection buyer's list"))
         return transaction
     for _round in range(60):
         rows = buyer_rows(b)
@@ -689,7 +725,10 @@ def _sell_to_collection_buyer(b: Bot, role: str, candidates: Sequence[Npc]) -> I
             if not b.talk(npc) or not b.wait_dialog(3.0):
                 break
             rows = buyer_rows(b)
-        todo = [(item, n) for item, n in collection_left(b.p, rows) if item.lower() not in attempted]
+        saleable = collection_left(b.p, rows)
+        if required is not None:
+            required.update(item.lower() for item, _n in saleable)
+        todo = [(item, n) for item, n in saleable if item.lower() not in attempted]
         if not todo:
             break
         item, n = todo[0]
@@ -701,35 +740,69 @@ def _sell_to_collection_buyer(b: Bot, role: str, candidates: Sequence[Npc]) -> I
     return transaction
 
 
-def sell_collection(b: Bot, kinds: tuple[str, ...] | None = None) -> int:
+def _collection_remaining(b: Bot, bag: dict[str, int], items: set[str]) -> list[tuple[str, int]]:
+    return collection_left(b.p, [(bag.get(item, 0), item, 0) for item in sorted(items)])
+
+
+def _collection_sale(b: Bot, kind: str, candidates: Sequence[Npc],
+                     required: set[str] | None) -> tuple[int, list[tuple[str, int]]]:
+    try:
+        transaction = _sell_to_collection_buyer(b, COLLECTION_BUYERS[kind], candidates, required)
+    finally:
+        b.close_dialogs()
+    after = transaction.settle(b) if transaction.expected else transaction.before
+    moved = transaction.removed(after)
+    if moved:
+        after = transaction.paid(b, after)      # the money comes in after the items go
+    got = max(0, after.get("arnebia", 0) - transaction.before.get("arnebia", 0)) if moved else 0
+    for item, n in moved:
+        b.log(_("sold {n} {item}", n=n, item=item))
+        stats.moved(b, "sold", item, n)
+    if moved:
+        b.log(_("sold the {kind} for {n} arnebia", kind=_collection_word(kind), n=got), speak=True)
+    if required is None:
+        return got, []
+    remaining = _collection_remaining(b, counts(b), required)
+    if remaining and not moved:
+        raise Stopped(_("gathering items remain unsold: {items}", items=", ".join(f"{n} {item}" for item, n in remaining)))
+    return got, remaining
+
+
+def sell_collection(b: Bot, kinds: tuple[str, ...] | None = None, *, require_empty: bool = False) -> int:
     """Sell the specified collection, or choose its buyer from the character's activity.
 
     The buyer lists the qualifying bag rows. Apply the bag manager's keep rules and count the
-    arnebia received for verified sales.
+    arnebia received for verified sales. When a gathering trip requires a clear bag, check all
+    collection buyers so items missing from the catalog are also seen and verified.
     """
+    selected = _collection_kinds(b) if kinds is None else kinds
+    groups: dict[str, set[str]] = {}
+    if require_empty:
+        bag = counts(b)
+        if not _collection_remaining(b, bag, set(bag) - {"arnebia"}):
+            return 0
+        groups = _collection_items(bag)
+        selected = tuple(dict.fromkeys((*selected, *COLLECTION_BUYERS)))
     earned = 0
-    for kind in _collection_kinds(b) if kinds is None else kinds:
+    for kind in selected:
         role = COLLECTION_BUYERS[kind]
         candidates = knowledge.service_npcs(role)
         if not candidates:
-            b.log(_("I don't know where a {role} is", role=role.replace("_", " ")))
+            message = _("I don't know where a {role} is", role=role.replace("_", " "))
+            if require_empty:
+                raise Stopped(message)
+            b.log(message)
             continue
-        try:
-            transaction = _sell_to_collection_buyer(b, role, candidates)
-        finally:
-            b.close_dialogs()
-        before = transaction.before.get("arnebia", 0)
-        after = transaction.settle(b) if transaction.expected else transaction.before
-        moved = transaction.removed(after)
-        if moved:
-            after = transaction.paid(b, after)      # the money comes in after the items go
-        got = after.get("arnebia", 0) - before
-        for item, n in moved:
-            b.log(_("sold {n} {item}", n=n, item=item))
-            stats.moved(b, "sold", item, n)
-        if moved:
-            earned += max(0, got)
-            b.log(_("sold the {kind} for {n} arnebia", kind=_collection_word(kind), n=max(0, got)), speak=True)
+        required = groups.get(role, set()) if require_empty else None
+        for _attempt in range(60):
+            if require_empty:
+                b.check()
+            got, remaining = _collection_sale(b, kind, candidates, required)
+            earned += got
+            if not remaining:
+                break
+        else:
+            raise Stopped(_("some gathering items are still unsold"))
     return earned
 
 
@@ -807,11 +880,11 @@ def possible(b: Bot, r: dict[str, Any], why: list[str], *, retry: bool = False) 
     return False
 
 
-def restock_town(b: Bot, todo: Sequence[Need]) -> int | None:
+def restock_town(b: Bot, todo: Sequence[Need], *, back_to: Place | None = None) -> int | None:
     """The one town (a map) a restock trip goes to: the nearest that has what the trip needs - a
     storehouse for the rules that take from it, a shop of the right kind for those that buy -
-    preferring one with all of it. The town we are in first, whatever else is near. None when no
-    town has any of it."""
+    preferring one with all of it. Count the way back as well when a return map is given. The town
+    we are in first, whatever else is near. None when no town has any of it."""
     want_store = any(_sources(r)[0] for r, _h, _w in todo)
     shop_items = [r["item"] for r, _h, _w in todo if _sources(r)[1]]
     towns: dict[int, list[Npc]] = {}
@@ -834,7 +907,7 @@ def restock_town(b: Bot, todo: Sequence[Need]) -> int | None:
     here = b.map_id()
     if here in full:
         return here
-    near = nearest(b, None, [npc for m in full for npc in towns[m]])
+    near = nearest(b, None, [npc for m in full for npc in towns[m]], back_to=back_to)
     return near[0] if near else None
 
 
@@ -876,7 +949,9 @@ def restock(b: Bot, rules: list[dict[str, Any]], start: bool = False) -> bool:
         return False
     # once we're going anyway, top up everything that's short (and can be had)
     todo = [t for t in needs(b, rules, True) if bagrules.supply_rule(t[0]) != "tell" and possible(b, t[0], [], retry=start)]
-    where = restock_town(b, todo)
+    farm = getattr(b, "farming_on", None)
+    back_to = (farm, None) if not start and farm is not None else None
+    where = restock_town(b, todo, back_to=back_to)
     what = ", ".join("%s %d/%d" % (r["item"], h, w) for r, h, w in todo)
     if where is None:
         # no town found from here by the data: the errands look for their NPCs themselves

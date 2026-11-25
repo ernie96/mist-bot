@@ -23,7 +23,7 @@ from pydantic import ValidationError
 
 from .. import (__version__, applog, chat, control, gameinstall, jsonio, messages, nearby, paths, schedule, settings,
                 silencer, speech, stats, updater)
-from ..engine import dungeon, plan as plans, script
+from ..engine import dungeon, logout, plan as plans, script
 from ..errors import carry_on
 from ..link import AgentError, AgentLink, server_name
 from . import agentfix
@@ -245,6 +245,11 @@ class RemoteControl:
                                                  g["activity"]))
         return "\n".join(lines), data
 
+    def wait_left(self, pid: int) -> int | None:
+        """Minutes left of a wait with the character logged out, or None (UI thread)."""
+        until = logout.waiting(self.w.waiting_bot(pid))
+        return None if until is None else max(1, int((until - self.w.clock.time()) / 60 + 0.99))
+
     def t_list_games(self, args: dict[str, Any]) -> Result:
         def read() -> list[dict[str, Any]]:
             if args.get("refresh"):
@@ -255,7 +260,8 @@ class RemoteControl:
                 out.append({"pid": pid, "profile": name, "character": settings.profile_display(name) if name else None,
                             "server": settings.profile_server(name) if name else None, "map": where,
                             "running": run.title if run else None, "kind": getattr(run, "kind", None) if run else None,
-                            "paused": self.w.is_paused(pid), "activity": self.w.last_line.get(pid, "")})
+                            "paused": self.w.is_paused(pid), "activity": self.w.last_line.get(pid, ""),
+                            "logged_out_minutes_left": self.wait_left(pid)})
             return out
         games = self.ui(read)
         return self.games_text([(g["pid"], g["profile"], g["map"]) for g in games]), games
@@ -476,11 +482,22 @@ class RemoteControl:
             rows = list(f.buffer(chat.PRIVATE if channel == "private" else chat.NOTICE))
         elif channel in CHANNEL_NUMBERS:
             rows = list(f.buffer(str(CHANNEL_NUMBERS[channel])))
+        elif chat.is_room(channel):
+            rows = list(f.buffer(channel))
         else:
-            raise ToolError("channel is all, private, notice or one of: %s" % ", ".join(CHANNEL_NUMBERS))
+            raise ToolError("channel is all, private, notice, a room's key from chat_rooms, or one of: %s"
+                            % ", ".join(CHANNEL_NUMBERS))
         rows = rows[-limit:]
-        return "\n".join("%s %s: %s" % (chat.channel_name(str(r.get("channel"))), r.get("name"), r.get("text"))
+        return "\n".join("%s %s: %s" % (chat.place_of(r), r.get("name"), r.get("text"))
                          for r in rows) or "No chat lines.", rows
+
+    def t_chat_rooms(self, args: dict[str, Any]) -> Result:
+        f = self.feed(self.pid(args))
+        up = set(f.current_rooms.values())
+        rows = [{"key": k, "name": f.room_label(k), "up_in_game": k in up} for k in f.rooms()]
+        if not rows:
+            return "No rooms seen yet (they need agent 79 or newer, and the game to show them).", rows
+        return ", ".join("%s (%s)%s" % (r["name"], r["key"], ", up" if r["up_in_game"] else "") for r in rows), rows
 
     def t_read_conversations(self, args: dict[str, Any]) -> Result:
         rows = self.feed(self.pid(args)).conversations()
@@ -585,6 +602,33 @@ class RemoteControl:
 
     def t_resume(self, args: dict[str, Any]) -> Result:
         return self.pause_to(args, False)
+
+    def t_log_out_for(self, args: dict[str, Any]) -> Result:
+        pid = self.pid(args)
+        raw = args.get("minutes")
+        minutes = raw if isinstance(raw, int) and not isinstance(raw, bool) else 0
+        if not 1 <= minutes <= logout.MOST_MINUTES:
+            raise ToolError("minutes is 1 to %d." % logout.MOST_MINUTES)
+        run = self.run_on(pid)
+        if run is None or run.bot is None:
+            raise ToolError("No bot is running on game %d: log_out_for waits in the middle of a run." % pid)
+        if logout.waiting(run.bot) is not None:
+            raise ToolError("Game %d is already logged out for a while." % pid)
+        bot = run.bot
+
+        def job(b: Any) -> None:
+            logout.wait_out(b, minutes, "the AI assistant", b.log)
+        bot.requests.put(job)
+        return ("Game %d logs out at the run's next safe moment, for %d minutes, then back in. "
+                "log_back_in_now ends it early." % (pid, minutes)), {"pid": pid, "minutes": minutes}
+
+    def t_log_back_in_now(self, args: dict[str, Any]) -> Result:
+        pid = self.pid(args)
+        bot = self.ui(lambda: self.w.waiting_bot(pid))
+        if bot is None or not logout.cut_short(bot):
+            raise ToolError("Game %d isn't logged out for a while." % pid)
+        self.ui(self.w.sync_pause)
+        return "Logging back in now.", None
 
     def errand(self, pid: int, text: str, title: str, walk: bool) -> None:
         problem = script.check(text)
@@ -1043,13 +1087,20 @@ class RemoteControl:
 
     def t_send_chat(self, args: dict[str, Any]) -> Result:
         channel = str(args.get("channel") or "").lower()
-        if channel not in CHANNEL_NUMBERS:
-            raise ToolError("channel is one of: %s" % ", ".join(CHANNEL_NUMBERS))
+        room = str(args.get("room") or "").strip()
+        if room:
+            if not chat.is_room(room) or chat.room_of(room)[0] not in chat.ROOM_CHANNELS or not chat.room_of(room)[1]:
+                raise ToolError("room is a key from chat_rooms, such as 5@10.")
+            key = room
+        elif channel in CHANNEL_NUMBERS:
+            key = str(CHANNEL_NUMBERS[channel])
+        else:
+            raise ToolError("channel is one of: %s (or give a room)" % ", ".join(CHANNEL_NUMBERS))
         text = str(args["text"])
         if args.get("reply_to"):
             from .. import chat_filters
             text = chat_filters.reply_text(str(args["reply_to"]), text)
-        why = self.feed(self.pid(args)).say(CHANNEL_NUMBERS[channel], text)
+        why = self.feed(self.pid(args)).say_to(key, text)
         if why:
             raise ToolError(why)
         return "Sent.", None

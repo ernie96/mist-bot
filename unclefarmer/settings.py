@@ -81,6 +81,9 @@ PROFILE_DEFAULTS: dict[str, Any] = {
     "mp_cooldown": "auto",
     "sheet_key": "",          # key that opens the character sheet (MP, bag load, fusion power); the scan fills it in
     "bag_full_at": 100,       # percent of the bag's load limit that counts as full (100: really full)
+    "gear_throw": [],         # rarities of the equipment picked up while farming to throw away (engine/gearthrow.py)
+    "gear_throw_minutes": 30,  # ... every this many minutes of farming, and whenever the bag is full
+    "gear_keep_bonus": True,  # ... but never a piece with a bonus ("plus:" in its details)
     "when_bag_full": "stop",  # after throwing what the rules say: "stop" go somewhere safe and stop; "unload" sell/store and come back; "nothing"
     "stop_on_drop_time": True,  # end the run when the day's drop time is down to drop_keep_minutes
     "drop_keep_minutes": 0,   # drop time to leave unused (minutes)
@@ -159,6 +162,7 @@ PROFILE_DEFAULTS: dict[str, Any] = {
                               # None: not carried over from xp_card_name yet) (engine/xpcard.py)
     "xp_card_pause": False,   # ... and pause it while a farming run is away from the monsters
     "skills_by_slot": True,   # press attack skills through the game's own key method (agent 45), not the keyboard
+    "menu_keys_retry": False,  # menus the game ignores: a moment before each choice, and once more with the keys
     "set_modes": True,        # before farming, set the game's modes below
     "pk_key": "b",            # cycles the PK mode
     "pk_mode": 1,             # PK_MODES index: pacifist mode with counterattack
@@ -304,6 +308,9 @@ class Profile(BaseModel):
     sheet_key: str = PROFILE_DEFAULTS["sheet_key"]
     bag_full_at: int | None = PROFILE_DEFAULTS["bag_full_at"]
     when_bag_full: str = PROFILE_DEFAULTS["when_bag_full"]
+    gear_throw: list[str] = PROFILE_DEFAULTS["gear_throw"]
+    gear_throw_minutes: int = PROFILE_DEFAULTS["gear_throw_minutes"]
+    gear_keep_bonus: bool = PROFILE_DEFAULTS["gear_keep_bonus"]
     stop_on_drop_time: bool = PROFILE_DEFAULTS["stop_on_drop_time"]
     drop_keep_minutes: int = PROFILE_DEFAULTS["drop_keep_minutes"]
     drop_tail_seconds: int = PROFILE_DEFAULTS["drop_tail_seconds"]
@@ -377,6 +384,7 @@ class Profile(BaseModel):
     open_chests: bool = PROFILE_DEFAULTS["open_chests"]
     skip_demonized_elites: bool = PROFILE_DEFAULTS["skip_demonized_elites"]
     skills_by_slot: bool = PROFILE_DEFAULTS["skills_by_slot"]
+    menu_keys_retry: bool = PROFILE_DEFAULTS["menu_keys_retry"]
     set_modes: bool = PROFILE_DEFAULTS["set_modes"]
     pk_key: str = PROFILE_DEFAULTS["pk_key"]
     pk_mode: int = PROFILE_DEFAULTS["pk_mode"]

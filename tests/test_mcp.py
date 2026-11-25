@@ -16,7 +16,9 @@ from typing import Any
 
 import pytest
 
-from unclefarmer import control, mcpserver, settings
+from unclefarmer import chat, control, mcpserver, settings
+from unclefarmer.clock import CLOCK
+from unclefarmer.engine import logout
 
 pytest.importorskip("wx")
 from unclefarmer.gui import remote  # noqa: E402
@@ -37,8 +39,17 @@ class Window:
         self.errands: list[tuple[int, str, str, bool]] = []
         self.listed: list[Any] = []
 
+    clock = CLOCK
+    waiting: Any = None                  # the bot logged out for a while, if any
+
     def is_paused(self, pid: int) -> bool:
         return False
+
+    def waiting_bot(self, pid: int | None) -> Any:
+        return self.waiting
+
+    def sync_pause(self) -> None:
+        pass
 
     def character(self, pid: int) -> str | None:
         return next((g[1] for g in self.games if g[0] == pid), None)
@@ -476,3 +487,80 @@ def test_potion_maker_keyboard_profiles_and_autopilot(piped: Callable[[Window], 
     assert w.errands[-1][1] == "keyboard_profile 'Night farm'\n"
     b.call("start_autopilot", {"character": "Simchar"})          # the stub window never runs it
     assert w.started[-1] == (os.getpid(), ("plan", "Wolves"))
+
+
+class RoomSender:
+    lines: list[str] = []
+
+    def __init__(self, **_kw: object) -> None:
+        pass
+
+    def send(self, line: str) -> str:
+        if line != "arm":
+            RoomSender.lines.append(line)
+        return "armed" if line == "arm" else "sent"
+
+    def close(self) -> None:
+        pass
+
+
+def test_chat_rooms_are_listed_read_and_written_to(piped: Callable[[Window], mcpserver.Bridge],
+                                                   tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(chat, "AgentLink", RoomSender)
+    RoomSender.lines = []
+    w = FullWindow(os.getpid(), "Simchar", str(tmp_path / "schedules.json"))
+    w.s["mcp_control"] = True
+    feed = chat.Feed(os.getpid())
+    feed.note_rooms([{"channel": 5, "id": 30, "name": "French", "current": False},
+                     {"channel": 5, "id": 10, "name": None, "current": True}])
+    feed.add("5", "Ali", "salut", room=30)
+    feed.add("5", "Bob", "hello", room=10)
+    w.chats[os.getpid()] = feed
+    b = piped(w)
+    rooms = b.call("chat_rooms", {})
+    assert [(r["key"], r["name"], r["up_in_game"]) for r in rooms["data"]] == [
+        ("5@30", "International: French", False), ("5@10", "International: room 10", True)]
+    french = b.call("read_chat", {"channel": "5@30"})
+    assert [r["text"] for r in french["data"]] == ["salut"] and "International: French Ali: salut" in french["text"]
+    assert len(b.call("read_chat", {"channel": "international"})["data"]) == 2
+    assert b.call("send_chat", {"room": "5@30", "text": "bonjour", "confirm": True})["ok"] is True
+    assert b.call("send_chat", {"channel": "global", "text": "hi", "confirm": True})["ok"] is True
+    assert b.call("send_chat", {"room": "2@4", "text": "hi", "confirm": True})["ok"] is False
+    assert RoomSender.lines == ["sayin 5 30 bonjour", "say 0 hi"]
+
+
+class WaitingBot:
+    def __init__(self) -> None:
+        import queue
+        self.requests: queue.Queue[Any] = queue.Queue()
+        self.waiting_until: float | None = None
+        self.wait_cut = threading.Event()
+
+    def log(self, line: str, speak: bool = False) -> None:
+        pass
+
+
+def test_log_out_for_waits_inside_a_run_and_log_back_in_now_ends_it(
+        piped: Callable[[Window], mcpserver.Bridge], tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    w = FullWindow(os.getpid(), "Simchar", str(tmp_path / "schedules.json"))
+    w.s["mcp_control"] = True
+    b = piped(w)
+    assert b.call("log_out_for", {"minutes": 5, "confirm": True})["ok"] is False        # no run
+    bot = WaitingBot()
+    w.runs[os.getpid()] = type("Run", (), {"bot": bot, "title": "Wolves", "kind": "plan"})()
+    assert b.call("log_out_for", {"minutes": 5})["ok"] is False                         # confirm
+    assert b.call("log_out_for", {"minutes": 0, "confirm": True})["ok"] is False
+    assert b.call("log_out_for", {"minutes": 1000, "confirm": True})["ok"] is False
+    done: list[tuple[int, str]] = []
+    def wait_out(_bot: Any, minutes: int, who: str, _tell: Any) -> None:
+        done.append((minutes, who))
+    monkeypatch.setattr(logout, "wait_out", wait_out)
+    assert b.call("log_out_for", {"minutes": 45, "confirm": True})["ok"] is True
+    bot.requests.get_nowait()(bot)                    # the run does it at its next safe moment
+    assert done == [(45, "the AI assistant")]
+    assert b.call("log_back_in_now", {})["ok"] is False                                 # not waiting
+    bot.waiting_until = CLOCK.time() + 12 * 60
+    w.waiting = bot
+    assert b.call("list_games", {})["data"][0]["logged_out_minutes_left"] == 12
+    assert b.call("log_out_for", {"minutes": 5, "confirm": True})["ok"] is False        # already out
+    assert b.call("log_back_in_now", {})["ok"] is True and bot.wait_cut.is_set()

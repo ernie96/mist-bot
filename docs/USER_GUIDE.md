@@ -119,6 +119,15 @@ passes within 40 steps of nearly every spot, and the best choice in mazes such a
 any loop the bot goes after monsters within 40 walking steps and leaves the rest until the lap
 brings it near them.
 
+"My own points, in order, round and round" goes round up to 10 points you choose. Stand where a
+point should be and press "Add where I stand", or type them in the Patrol points box as `x,y`,
+separated by semicolons. The bot goes to each in turn, fighting what comes near, then starts again.
+
+**No-go circles** (same tab) keep the bot out of parts of the map: no monster inside one is looked
+for, and the patrol never heads into one. A monster that attacks from inside is still fought. Stand
+in the middle, set "Radius of a new circle" and press "Add a circle around me", or type them as
+`x,y,radius`, separated by semicolons.
+
 **Sharing the day's drop time between spots.** A spot's minutes count from when it began, so a
 restart starts them again. To split the day between maps (three hours on Underwater World, the rest
 on Margit Rainforest), tick "A share of the day's drop time (kept across restarts)" on the first
@@ -171,6 +180,12 @@ The two lists are the same ones as **Character settings → Triggers**: change t
 While a plan or a script runs, Uncle Farmer keeps note of where it is, every 20 seconds: the line it is on, the turn of each loop, how many minutes and kills the current farm has done, the run's own minutes and kills, and the script's `set` values.
 
 **When the game is lost in the middle of a run** (it closed, crashed or froze, or the server logged the character out and logging back in failed), Uncle Farmer closes that game if it is still open, opens a new one, logs in to the same character and carries on where the run was. It says so each time. This happens at most 3 times a day of the game (00:00 GMT to 00:00 GMT) for each character; after that the run ends there. The character's account must be known: log in to it once by hand. To turn this off: **File → Settings → Farming day → When a game is lost during a run**.
+
+When only the connection dropped (your internet for a few minutes), the game isn't closed at once:
+Uncle Farmer logs back in inside the same game, again and again, for up to 5 minutes. Before each
+try the log says what the game shows, and after a failed one why it failed. A game that came back
+by itself while the run was ending is carried on in, not closed. A run never carries on as another
+character: if a different character is logged in, it stops.
 
 **When Uncle Farmer itself stopped under a run** (you closed it, an update restarted it, or the computer restarted), the next time it starts it shows the runs that didn't finish. They carry on where they were after 10 seconds; press **Carry on now** to start them at once, or **Don't carry on** (Escape) to forget them. A game is opened and logged in to when the character isn't in one, as a schedule does.
 
@@ -312,6 +327,13 @@ Character, Bag and supplies (Ctrl+B):
   in Character, Settings, Fighting, with the next level.)
   Full means full: the bot farms until the load reaches its limit (or stops rising just under it
   while monsters keep dying), unless you set a lower mark there.
+- **Equipment picked up while farming:** one box per rarity (Crude, Common, Sophisticated,
+  Perfect, Rare, Legendary), none ticked to start with. Pieces of a ticked rarity are thrown away
+  where the character stands, every so many minutes of farming (30 to start with) and when the bag
+  is full. Only pieces picked up during the run are thrown, never one that was in the bag before,
+  and the log names each one with its rarity. With "Keep pieces with a bonus" ticked (the default)
+  the bot first asks for each piece's details, as the G key does, and keeps one with a "plus:"
+  bonus. Needs the agent that comes with this version: restart the game once after updating.
 
 ### Storing items now
 
@@ -672,6 +694,10 @@ window says which skill the last scan found and its rank, from Newbie to Grand M
   sells, and comes back (or stops, if you choose). Everything the buyer lists is sold, except what
   you keep in Bag and supplies (an item set to Keep, or the number you keep of it). It sells once
   more at the end.
+- **Selling before going out:** with "Always Sell Gathering Before Going Outside" ticked
+  (Selling tab), the bot sells the gang collection and checks the bag before it travels to an
+  outside spot, even with ordinary selling off. If a sale leaves items behind it tries again while
+  it can sell more; if the sale can't be finished, outside gathering stops.
 - **When it stops:** when Vitality runs out for the day (more costs diamonds, which the bot never
   spends), or after the minutes you set. Outside you can also keep some Vitality for later: "stop
   when Vitality is down to" (When to stop tab) reads the Vitality on the character sheet while it
@@ -792,6 +818,12 @@ Run, Walk to a dungeon or map (Ctrl+W):
 Show the route says the way before you go. The whole way it rides your fastest Swift fusion beast,
 in towns and through monster ground alike, and it doesn't stop to fight; potions still keep your HP
 up. Pause stops it.
+
+A Mage or an Elf also casts its teleport skill when that is the shorter way (an Elf's Elven
+Teleportation to West Sealing Tower lands near White Bone Cave, for example): it gets off the beast,
+casts, and gets back on. Short of MP, it drinks a blue potion first. A monster attacking right then
+is fought first, since a hit breaks the cast. To walk instead, untick "Use the class's teleport
+skill (Mage, Elf)" on the Travel page of Advanced settings.
 
 ### Polson Wetland and its poison
 
@@ -970,6 +1002,14 @@ never get in each other's way. Two tabs, as in the game (Ctrl+Tab moves between 
 - **Message:** Enter sends it to the channel; the label says where it goes. In All it goes to the
   channel of the selected message, so you can answer whatever you are reading.
 
+The game lets you be in several international rooms and several private channels at once. Each
+gets its own line in the channel list, in place of International and Private channel, such as
+"International: French" or "Private channel: room 136"; no line mixes the rooms. A room shows up once
+the game has shown it, and by its name once you have switched to it in the game (until then by its
+number). A message typed in a room's line goes into that room, whichever room the game has up, and
+a reply goes back into the room of the message you answer. A room you switch away from stays
+joined. Needs the agent that comes with this version: restart the game once after updating.
+
 **Private chats** (private messages, one player to another)
 - **People:** only the people you have talked with, the latest first, with how many new messages.
 - **Messages:** your conversation with the person picked, both sides ("you: ..." for yours, also
@@ -1049,9 +1089,28 @@ Trusted players can send a command as the whole message: help, status, where, pl
 near, nearest first; also "who"), pet (its HP and MP), results, today, bag,
 drop, pause, resume, stop, start [plan], home, come, follow, unfollow, buff, add (take their team
 application), leader (make them team leader), leave (also "quit" or "quit team"), mute, unmute,
-quit game (closes the game). "help" answers with the list; "help" and a command's name ("help
+quit game (closes the game). wait [minutes] (log out for a while, then back in; off
+unless ticked, see below). "help" answers with the list; "help" and a command's name ("help
 follow") answers with what that command does. Their team invites are accepted; anyone else's are
 declined with Escape while a bot runs.
+
+One action at a time: while one is under way (a wait, a walk home, come), another action is answered
+"Busy, one command at a time. Still on: ...". Questions (status, where, results and so on) and stop,
+pause, resume and quit game are always answered.
+
+### wait
+
+"wait 45" logs the character out for 45 minutes, then logs the same character back in, and the run
+goes on where it was (the minutes logged out don't count in its results). "wait" alone waits the
+minutes set in Private messages. It works only with "They may log me out for a while and back in
+(wait)" ticked there; otherwise it answers that the command is turned off on this character.
+
+The bot logs out as you would (the setting menu, F1, then Switch account) and back in with the
+game's saved account, so the character must have been logged in once with Uncle Farmer open. While
+logged out no private message reaches it. The Games list says "Logged out for a while" with the
+minutes left, and the Pause button (F6) reads "Log back in now": press it to end the wait early.
+Stop during the wait leaves the character logged out. If logging back in fails five times, a minute
+apart, the run stops.
 
 ### come
 
@@ -1084,7 +1143,9 @@ Stop following.
 An AI assistant that supports MCP (the Model Context Protocol), such as Claude, can run Uncle Farmer
 for you: start and stop plans, pause, run the Tools jobs, read the log, the game's state and the
 results, write plans and scripts, change settings, schedules and the private-message lists, read
-and send chat. It acts as if you had done it, through the same code as the window.
+and send chat (in one international room or private channel too), and log the character out for a
+while in the middle of a run and back in, as the private message wait does. It acts as if you had
+done it, through the same code as the window.
 
 It is off until you turn it on. In File, Settings, **Control**:
 
@@ -1101,7 +1162,7 @@ The assistant starts `UncleFarmer.exe --mcp`, which has no window: it passes eac
 open Uncle Farmer, and starts Uncle Farmer if it isn't open. While the setting is off, every request
 is refused with a message saying where to turn it on.
 
-Requests that spend arnebia, sell or throw away items, send chat or private messages, delete a plan
+Requests that spend arnebia, sell or throw away items, send chat or private messages, log the character out for a while, delete a plan
 or schedule, close games, reinstall the agent, install an update or close Uncle Farmer only work when
 the assistant says it asked you first (confirm). The control switches themselves can only be
 changed by you. Every request is written to the day's log as "control by another program".

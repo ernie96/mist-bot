@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any
 from ... import gamemem, jsonio
 from ...errors import carry_on
 from ...i18n import _
-from .base import (STOPPING, GameBroken, GameLost, Stopped)
+from .base import (STOPPING, GameBroken, GameLost, Stopped, WrongCharacter)
 from ...clock import Flag, StopFlag
 from ...link import GameLink
 from .parts import as_bot, Parts
@@ -123,6 +123,8 @@ class ReadingMixin(Parts):
                 if talking and self._game.send("speech") == "on":
                     self._game.send("speech off")      # muted again, as it was (unless the player muted it)
                 self._speech_at = 0.0              # the points key's speech check reads it afresh
+            # the player may have switched to another character meanwhile: never go on as this one there
+            self.same_character(self._game.json("mem self"))
             self._count_pause(False)
             self._snap_at = 0.0                    # nothing read before the pause holds now
             moved = self._moved_since(before)
@@ -286,6 +288,8 @@ class ReadingMixin(Parts):
                 # the character away for a while), so a refused try is tried again a little later.
                 reconnect = getattr(self, "reconnect", None)
                 next_reconnect = self.clock.time() + self.RECONNECT_RETRY
+                if reconnect is not None:
+                    self.note_lost_screen()
                 if reconnect is not None and reconnect():
                     began = self.clock.time()
                     next_reconnect = began + self.RECONNECT_GRACE
@@ -293,7 +297,8 @@ class ReadingMixin(Parts):
             if not why.startswith(self.TRANSIENT) or self.clock.time() > began + self._patience(why):
                 if why.startswith(self.CONNECTION_GONE):
                     # our character is out of the game and logging back in didn't bring it back
-                    raise GameLost(_("the game can't be read: {why}", why=why))
+                    raise GameLost(_("the game can't be read: {why}", why=why),
+                                   connection=why.startswith(self.CONNECTION_CLOSED))
                 raise Stopped(_("the game can't be read: {why}", why=why), final=True)
             self.sleep(0.25)
 
@@ -302,6 +307,10 @@ class ReadingMixin(Parts):
     # its character readable again within 15 s. Id 0 is no character at all (logged out, kicked),
     # which no wait brings back.
     SELF_GONE_WAIT = 60.0
+    # A dropped connection (often the player's own internet, for a few minutes): logging back in
+    # is tried again for this long before the game is given up and opened again. 60 s gave up a
+    # game that came back on line a few seconds later.
+    RECONNECT_FOR = 300.0
     # A game whose world stopped (its world timer died, a thread hung) while the agent still
     # answers: the character stands still whatever we press, and so does everything around it.
     FROZEN_LOOKS = 4          # readings of the world...
@@ -330,13 +339,51 @@ class ReadingMixin(Parts):
 
     def _patience(self, why: str) -> float:
         """How long a transient error may last before the run is given up."""
-        if (why.startswith("noplayer:") and not why.startswith("noplayer: id 0 "))                 or why.startswith(self.CONNECTION_CLOSED):
+        if why.startswith(self.CONNECTION_CLOSED):
+            return self.RECONNECT_FOR
+        if why.startswith("noplayer:") and not why.startswith("noplayer: id 0 "):
             return self.SELF_GONE_WAIT
         return 5.0
+
+    def note_lost_screen(self) -> None:
+        """Before each try at logging back in: what the game shows (the window over the lost world,
+        its entries, and its last spoken lines), into the log and logs/dialogs.log - the game's own
+        voice is off while the bot runs, so this is the only way to know what it said."""
+        try:
+            d = self._game.json("dialog")
+            top: dict[str, Any] = (d.get("top") or {}) if jsonio.is_object(d) and d.get("ok") else {}
+            texts = [t for row in top.get("rows", []) for e in row if e
+                     for t in (e.get("options") or [e.get("text") or e.get("raw")]) if t]
+            now_ms = int(self._game.json("said 0").get("now", 0) or 0)     # the agent's clock
+            heard = self._game.json("said %d" % max(0, now_ms - 60000))     # the last minute
+            said: list[dict[str, Any]] = (heard.get("said") or []) if jsonio.is_object(heard) else []
+            lines = [str(x.get("text") or "") for x in said]
+            lines = [x for x in lines if x]
+            if texts:
+                note = getattr(self, "note_dialog", None)
+                if note is not None:
+                    note(d, "shown while the game's connection is lost")
+            if texts or lines:
+                self.log(_("the game shows: {shown}", shown=" / ".join((texts + lines[-3:])[:8])))
+        except Exception as e:          # a note is a convenience; never stop a reconnect for it
+            carry_on(e, "noting what the game shows")
+
+    char_id: int | None = None      # the run's character, by the game's id (runner): another one ends the run
+
+    def same_character(self, me: dict[str, Any] | None) -> None:
+        """WrongCharacter when the game has another character in than the run's (by the game's id;
+        a reading with no id, or id 0 mid-login, says nothing)."""
+        want = self.char_id
+        got = (me or {}).get("id")
+        if want and isinstance(got, int) and got and got != want:
+            raise WrongCharacter(_("{other} is logged in now, not {name}: the run stops rather than farming as the "
+                                   "wrong character", other=(me or {}).get("name") or got,
+                                   name=getattr(self, "character", None) or want))
 
     def snap(self) -> dict[str, Any]:
         s = self._read("mem state" if getattr(self, "agent_state", False) else "mem",
                        lambda s: s.get("ok"))
+        self.same_character(s.get("self"))
         self._snap_at = self.clock.time()
         self._snap_self = s.get("self")
         map_info = s.get("map")

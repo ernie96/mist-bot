@@ -320,7 +320,11 @@ class TravelMixin(Parts):
             self._take_exit(leg, avoid, failed)
         elif leg["do"] == "npc":
             free = rides_free(self)
-            if not self.ride(leg):
+            # a second try at the NPC chooses with the keys (choose keys): on one player's
+            # computer the direct choice closed the menu and the airship never left. Only with
+            # the character's menu_keys_retry ticked (off by default).
+            keys = failed.get(leg["id"], 0) > 0 and bool(self.p.get("menu_keys_retry", False))
+            if not self.ride(leg, keys=keys):
                 if free and not rides_free(self):
                     # the free entry was refused (_vip_refused): no fault of this NPC's, so it is
                     # neither counted against it nor left out - the next plan pays its fare
@@ -505,7 +509,8 @@ class TravelMixin(Parts):
             if atlas.in_safe_zone(mid, me["x"], me["y"]):
                 return None
         mp = self.mp_now(me, self.clock.time())
-        if mp is not None and mp[0] < teleskill.MANA * mp[1]:
+        if mp is not None and mp[0] < teleskill.MANA * mp[1] and not self.mp_up_to(teleskill.MANA):
+            # short of the cast's MP, and the blue potions didn't bring it up
             self.log(_("not enough MP for {skill} ({mp} of {top}) - going another way",
                        skill=skill, mp=int(mp[0]), top=int(mp[1])))
             return False
@@ -759,8 +764,9 @@ class TravelMixin(Parts):
                 circles.add(name)
         return found
 
-    def ride(self, leg: dict[str, Any]) -> bool:
-        """Talk to a transport NPC, choose the destination, confirm, and wait to be moved."""
+    def ride(self, leg: dict[str, Any], keys: bool = False) -> bool:
+        """Talk to a transport NPC, choose the destination, confirm, and wait to be moved. keys:
+        choose with the keys (choose keys), for a second try."""
         mid = leg["map"]
         self.log(_("{map}: taking the {npc} to {dest}", map=atlas.label(mid), npc=leg["npc"],
                    dest=atlas.label(leg["dest"])))
@@ -773,9 +779,12 @@ class TravelMixin(Parts):
         from .. import chores          # chores uses the town errands, which use the whole Bot
         since = chores.said_mark(as_bot(self))
         try:
-            if self._ride(leg, mid):
+            if self._ride(leg, mid, keys):
                 return True
-            self._level_refusal(leg, chores.said_since(as_bot(self), since))
+            said = chores.said_since(as_bot(self), since)
+            self._level_refusal(leg, said)
+            if said:
+                self.log(_("the game said: {lines}", lines=" / ".join(said[-3:])))
             return False
         finally:
             if self.map_id() == mid:
@@ -802,7 +811,7 @@ class TravelMixin(Parts):
             return other[i]
         return pick
 
-    def _ride(self, leg: dict[str, Any], mid: int) -> bool:
+    def _ride(self, leg: dict[str, Any], mid: int, keys: bool = False) -> bool:
         if not self.talk(leg["npc"], leg.get("at"), leg.get("stand")):
             return False
         choose = leg["choose"]
@@ -811,7 +820,8 @@ class TravelMixin(Parts):
             if i and not self.wait_dialog(3.0):
                 self.log(_("the {npc}'s next menu didn't open", npc=leg["npc"]), speak=True)
                 return False
-            if self.choose(self._ride_row(leg, i, pick)) is None:
+            row = self._ride_row(leg, i, pick)
+            if (self.choose(row, keys=True) if keys else self.choose(row)) is None:
                 return False
         # Some menus ask again (pay? sure?): accept that, never anything else.
         for _i in range(3):

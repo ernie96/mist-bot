@@ -88,6 +88,7 @@ class Bot(ReadingMixin, KeysMixin, HealthMixin, WalkingMixin, BagMixin, TravelMi
         self.following: str | None = None   # the player a follow run stays with
         self.team_ask_at = 0.0            # when follow next asks the team phrase where its player is
         self.deaths = 0
+        self.dead_noted = False
         self.skillbook = None         # combat.SkillBook, read from the game at the first fight
         self.last_vitals_key = 0.0    # the own-HP key (R): HP and MP from the server, no window
         self.last_points_key = 0.0    # the accumulation-points key (T): rage, marks, combos
@@ -139,6 +140,7 @@ class Bot(ReadingMixin, KeysMixin, HealthMixin, WalkingMixin, BagMixin, TravelMi
         self.potion_slots = None          # (when, keys...) the potion hotkeys were last read
         self._dists = None                # (map, cell, model, steps from that cell): walk_dist's search
         self.farm_filter = None           # (area, only, skip, avoid) while farming: what counts as a target
+        self.spot_no_go: list[tuple[float, float, float]] = []   # the farming spot's no-go circles (farm)
         self.gang_base = None             # (map id, gang name) of the named gang entered this run
         self.vip_refused = False          # a ride's free VIP entry took us nowhere: fares from now on
         self.in_instance = False          # farming a dungeon: no trips out, no resting, leaving ends it
