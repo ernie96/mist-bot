@@ -81,6 +81,16 @@ def test_control_by_other_programs_is_wired_and_off_by_default() -> None:
         assert callable(getattr(remote.RemoteControl, "t_" + t.name, None)), t.name
 
 
+def test_the_recover_gap_is_wired() -> None:
+    """A Priest's Recover waits the player's gap (engine/healgap.py): the setting, its field on the
+    Low HP page, and SkillBook._cooldown asking healgap."""
+    assert settings.PROFILE_DEFAULTS["recover_every"] == 0
+    assert "recover_every" in settings.Profile.model_fields
+    assert "healgap.cooldown(" in source("unclefarmer/engine/combat.py")
+    profile = source("unclefarmer/gui/profile.py")
+    assert "self.recover_every = f.number(" in profile and 'p["recover_every"] = self.recover_every' in profile
+
+
 def test_the_one_exe_build_stays() -> None:
     build = source("build_exe.py")
     assert "--onefile" in build or "onefile" in build

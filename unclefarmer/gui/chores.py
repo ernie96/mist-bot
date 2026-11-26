@@ -13,7 +13,7 @@ import wx
 from .. import settings
 from ..engine import chores, constructionscan
 from ..i18n import _
-from .common import Dialog, copy_text, with_code, Form, group, page, save_file, tabs
+from .common import Dialog, copy_text, enable_label, with_code, Form, group, page, save_file, tabs
 from .crafting import CHECK, START
 
 DONATIONS = ("off", "10000", "20000", "diamonds")
@@ -188,9 +188,10 @@ class BountiesDialog(Dialog):
 
 class ConstructionScanDialog(Dialog):
     """Tools, Construction scanner: the last reading of the gang's constructions, to read, copy or publish.
-    Publishing takes a gang elder's rights, and always asks first."""
+    Publishing takes a gang elder's rights, and always asks first. can_act: a character is logged in on
+    the selected game and no bot runs there; without it the last report can still be read and copied."""
 
-    def __init__(self, parent: wx.Window) -> None:
+    def __init__(self, parent: wx.Window, can_act: bool = True) -> None:
         super().__init__(parent, title=_("Construction scanner"), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.report = constructionscan.load()
         self.kind = PUBLISH_KINDS[0]
@@ -206,13 +207,24 @@ class ConstructionScanDialog(Dialog):
         form = Form(self)
         self.where = form.choice(_("Publish &as:"), [_("Gang announcement"), _("Broadcast (with a sound)"),
                                                      _("System message")], 0)
+        self.where.Enable(can_act)
+        enable_label(self.where, can_act)
+        self.per_line = form.check(_("Put each highland on its own &line (gang announcement only)"),
+                                   settings.load_app().get("construction_lines", False))
+        self.per_line.Bind(wx.EVT_CHECKBOX, self.on_per_line)
         root.Add(form.grid, 0, wx.LEFT | wx.RIGHT, 12)
+        if not can_act:
+            root.Add(wx.StaticText(self, label=_("To scan or publish, log in to the character in the game and stop "
+                                                 "its bot first.")), 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        for label, handler in ((_("&Scan the constructions"), self.on_scan), (_("C&opy"), self.on_copy),
-                               (_("&Publish"), self.on_publish)):
+        self.buttons: dict[str, wx.Button] = {}
+        for key, label, handler in (("scan", _("&Scan the constructions"), self.on_scan),
+                                    ("copy", _("C&opy"), self.on_copy), ("publish", _("&Publish"), self.on_publish)):
             btn = wx.Button(self, label=label)
             btn.Bind(wx.EVT_BUTTON, handler)
-            btn.Enable(self.report is not None or handler == self.on_scan)
+            has_report = self.report is not None or key == "scan"
+            btn.Enable(has_report and (can_act or key == "copy"))
+            self.buttons[key] = btn
             buttons.Add(btn, 0, wx.RIGHT, 8)
         buttons.Add(wx.Button(self, wx.ID_CANCEL, _("Close")), 0)
         root.Add(buttons, 0, wx.ALL | wx.ALIGN_RIGHT, 12)
@@ -221,8 +233,19 @@ class ConstructionScanDialog(Dialog):
     def on_scan(self, _event: wx.CommandEvent) -> None:
         self.EndModal(SCAN_CONSTRUCTIONS)
 
+    def on_per_line(self, _event: wx.CommandEvent) -> None:
+        save_file(self, settings.update_app, {"construction_lines": self.per_line.GetValue()})
+
+    def report_text(self, announcement: bool = True) -> str:
+        """The report as it would go out: a line to a place when ticked (and it is an announcement)."""
+        if self.report is None:
+            return ""
+        if announcement and self.per_line.GetValue():
+            return "\n".join(constructionscan.message_lines(self.report))
+        return constructionscan.message(self.report)
+
     def on_copy(self, _event: wx.CommandEvent) -> None:
-        if self.report is not None and not copy_text(constructionscan.message(self.report)):
+        if self.report is not None and not copy_text(self.report_text()):
             wx.MessageBox(_("The clipboard couldn't be opened."), _("Construction scanner"), wx.OK | wx.ICON_ERROR, self)
 
     def on_publish(self, _event: wx.CommandEvent) -> None:
@@ -230,6 +253,6 @@ class ConstructionScanDialog(Dialog):
             return
         self.kind = PUBLISH_KINDS[self.where.GetSelection()]
         ask = _("Send this to the whole gang as: {where}?\n\n{report}", where=self.where.GetStringSelection(),
-                report=constructionscan.message(self.report))
+                report=self.report_text(self.kind == "announcement"))
         if wx.MessageBox(ask, _("Construction scanner"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION, self) == wx.YES:
             self.EndModal(PUBLISH_REPORT)

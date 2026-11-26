@@ -53,6 +53,7 @@ Each is held by a test in `tests/test_fork.py`.
 | A message from Ernesto, shown once (`message.txt` beside the web page; `message_seen` in settings.json) | new file `unclefarmer/message.py`; `check_message` in `unclefarmer/gui/mainparts/updates.py` |
 | Control by other programs (MCP) | new files `unclefarmer/control.py`, `unclefarmer/mcpserver.py`, `unclefarmer/gui/remote.py`; hooks listed below |
 | Web page | `site/mistbot/index.html` (www.kurnal.tech/mistbot/) |
+| A gap between two casts of a Priest's Recover (`recover_every`) | new file `unclefarmer/engine/healgap.py`; hooks listed below |
 
 The MCP feature touches upstream's files only at these points, each a few lines:
 
@@ -65,6 +66,15 @@ The MCP feature touches upstream's files only at these points, each a few lines:
 - `unclefarmer/gui/mainparts/editing.py`: `first_run` starts `self.remote`.
 - `unclefarmer/gui/mainparts/base.py`: the declarations of the above.
 - `unclefarmer/gui/setup.py`: the Control tab.
+
+`copy_character_settings` keeps its logic in the fork's own `unclefarmer/copysettings.py`, built on
+upstream's `engine/profilecopy.py` and `engine/bagcopy.py`.
+
+The Recover gap touches upstream's files at these points:
+
+- `unclefarmer/settings.py`: `recover_every` in `PROFILE_DEFAULTS` and `Profile`.
+- `unclefarmer/engine/combat.py`: `SkillBook._cooldown` returns `healgap.cooldown(...)`.
+- `unclefarmer/gui/profile.py`: the field on Advanced's Low HP page, and its save.
 
 A new tool goes in `control.TOOLS` with a `t_<name>` method in `gui/remote.py`. It calls the
 window's or the engine's own functions, so upstream's changes to those reach it without a merge.

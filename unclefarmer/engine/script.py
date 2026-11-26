@@ -28,7 +28,9 @@ One command per line; `#` starts a comment. Blocks end with `end`.
     bounties [check]                 ask the officers ticked in Tools, Hunting bounties for what they pay
     construction_scan [publish=<kind>]  read how far the gang's constructions are; or send the last report
                                      (announcement, broadcast or system: it takes a gang elder);
-                                     auto=<kind> scans and publishes if there is something new
+                                     auto=<kind> scans and publishes if there is something new;
+                                     add lines=yes or lines=no for an announcement: a line to each highland
+                                     or one line (without it, Tools, Construction scanner decides)
     gather [check]                   fish, mine or collect herbs as set in Tools, Gathering: the
                                      gang's area once a day, then outside; sells the collection
     lose_xp [check]                  die to guards until the next level needs the experience set
@@ -221,6 +223,12 @@ def compile_expr(text: str, line: int) -> ast.expr:
         if isinstance(node, ast.Call) and not (isinstance(node.func, ast.Name) and node.func.id in FUNCTIONS):
             raise ScriptError(line, _("unknown function in: {expr}", expr=text))
     return tree.body
+
+
+def _clock_rule(expr: ast.expr | None) -> bool:
+    """`clock == "HH:MM"`: a plan's stop time."""
+    return (isinstance(expr, ast.Compare) and len(expr.ops) == 1 and isinstance(expr.ops[0], ast.Eq)
+            and isinstance(expr.left, ast.Name) and expr.left.id == "clock")
 
 
 def end_time(expr: ast.expr | None, started: float, now: float) -> float | None:
@@ -683,10 +691,16 @@ def _prep_construction_scan(node: Node, rest: str, n: int):
     if not words:
         return
     how, _sep, kind = words[0].lower().partition("=")
-    if len(words) > 1 or how not in ("publish", "auto") or kind not in kinds:
+    extra = words[1].lower().partition("=") if len(words) == 2 else None
+    if (len(words) > 2 or how not in ("publish", "auto") or kind not in kinds
+            or (extra is not None and (extra[0] != "lines" or extra[2] not in ("yes", "no")))):
         raise ScriptError(n, _("write it as: construction_scan, construction_scan publish=broadcast or "
-                               "construction_scan auto=broadcast (announcement, broadcast or system)"))
+                               "construction_scan auto=broadcast (announcement, broadcast or system), "
+                               "and for an announcement add lines=yes or lines=no to choose a line to each "
+                               "highland or one line"))
     node.opts[how] = kind
+    if extra is not None:
+        node.opts["lines"] = extra[2] == "yes"
 
 
 def _prep_sell_collection(node: Node, rest: str, n: int):
@@ -1211,11 +1225,24 @@ class Runner:
         expr, line = node.expr, node.line
         if node not in self.watched:      # a stop_when in a loop must not pile up watchers
             self.watched.add(node)
-            b.watches.append((lambda: bool(self.value(expr, line)), o["message"]))
-            if b.tally is not None:       # the results' Time remaining counts down to the rule's end
-                at = end_time(expr, b.started - self.minutes_before * 60.0, clock_for(b).time())
-                if at is not None:
-                    b.tally.deadline(at)
+            began: float | None = getattr(b, "started", None)
+            start = began - self.minutes_before * 60.0 if began is not None else None   # carried on: the first part's
+            # the stop time's next minute from when the line is reached - from the first part's
+            # start for a run carried on (it was reached then; a hand-written script's line reached
+            # later in a run waits for its own next minute)
+            at: float | None = None
+            if start is not None:
+                at = end_time(expr, start, start if self.minutes_before else clock_for(b).time())
+            if at is not None and _clock_rule(expr):
+                # `clock == "04:30"` is true for one minute only: a run busy all through it (a wait,
+                # logging back in, a game opened again, a pause) farmed on until the daily stop.
+                # Past the first such time since the run began, it is over all the same
+                clock = clock_for(b)
+                b.watches.append((lambda: bool(self.value(expr, line)) or clock.time() >= at, o["message"]))
+            else:
+                b.watches.append((lambda: bool(self.value(expr, line)), o["message"]))
+            if b.tally is not None and at is not None:   # the results' Time remaining counts down to it
+                b.tally.deadline(at)
 
     def _do_stop(self, node: Node, b: Bot, o: dict[str, Any]):
         raise _End(node.args)

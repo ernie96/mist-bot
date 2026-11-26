@@ -109,6 +109,7 @@ TOOL_NAMES = ("gem_maker", "gem_breaker", "potion_maker", "enhance", "chores", "
 PUBLISH_KINDS = ("announcement", "broadcast", "system")
 MARKET_ACTIONS = ("scan", "search", "seller", "buy")
 PERIODS = ("run", "today", "yesterday", "day", "week", "month", "all")
+COPY_PARTS = ("before", "after", "fighting", "team", "throw", "sell", "store", "keep", "supplies", "full")
 MEM_PARTS = ("all", "state", "self", "bag", "slots", "skills", "equipment", "beasts", "pets", "modes", "ui",
              "entities")
 
@@ -305,6 +306,16 @@ TOOLS: tuple[Tool, ...] = (
     Tool("import_character_settings", "Load a character-settings file into a character, replacing its choices.",
          {"character": _s("Profile or display name."), **GAME, "path": _s("The file."), **CONFIRM},
          ("path", "confirm"), kind=RISKY),
+    Tool("copy_character_settings", "Copy parts of another character's settings to this one, as the character "
+                                    "window's and bag window's Copy from another character do. parts: before, "
+                                    "after (farming lists), fighting (never keys; each skill's use only for the "
+                                    "same class), team, throw, sell, store, keep (bag lists), supplies, full (Full "
+                                    "bag page). replace=false adds their entries to this character's lists.",
+         {"from": _s("The character to copy from: profile or display name."),
+          "character": _s("The character to copy to; left out: the given or only game's character."), **GAME,
+          "parts": {"type": "array", "items": {"type": "string", "enum": list(COPY_PARTS)}},
+          "replace": _b("Replace this character's lists with theirs instead of adding (default false).")},
+         ("from", "parts"), kind=ACT),
     Tool("add_schedule", "Add a schedule. repeat: once (date YYYY-MM-DD and time HH:MM), daily (time), weekly "
                          "(time and days, 0=Monday..6=Sunday). It runs a plan or script, one Tools job "
                          "(type=tool) or the character's Before or After farming list (type=trigger).",

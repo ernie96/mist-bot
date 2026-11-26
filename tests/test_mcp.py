@@ -37,6 +37,7 @@ class Window:
         self.event_seq = 0
         self.last_line: dict[int, str] = {}
         self.errands: list[tuple[int, str, str, bool]] = []
+        self.expected = []
         self.listed: list[Any] = []
 
     clock = CLOCK
@@ -60,9 +61,13 @@ class Window:
     def fill_runs(self, select: Any = None) -> None:
         self.listed.append(select)
 
-    def errand_on(self, pid: int, text: str, title: str, walk: bool = False) -> str | None:
+    def errand_on(self, pid: int, text: str, title: str, walk: bool = False,
+                  expect: str | None = None) -> str | None:
         self.errands.append((pid, text, title, walk))
+        self.expected.append(expect)
         return None
+
+    expected: list[str | None]
 
     def add_line(self, line: str, speak: bool = False, pid: int | None = None) -> None:
         with self.event_lock:
@@ -397,6 +402,55 @@ def test_every_tool_answers_without_crashing(piped: Callable[[Window], mcpserver
     assert w.started and w.stopped
     assert settings.load_app()["pm_trusted"] == ["Kim"]
     assert b.call("list_schedules", {})["data"] == []
+
+
+def test_run_tool_starts_only_for_the_character_whose_settings_it_read(
+        piped: Callable[[Window], mcpserver.Bridge]) -> None:
+    w = Window(pid=os.getpid(), character="Simchar")
+    w.s["mcp_control"] = True
+    b = piped(w)
+    assert b.call("run_tool", {"tool": "survey"})["ok"] is True
+    assert w.expected[-1] == "Simchar"
+
+
+def test_results_are_read_by_the_characters_settings_key(piped: Callable[[Window], mcpserver.Bridge],
+                                                        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Upstream keeps results per settings key (Bob--S2--99.jsonl), so two Bobs never share a file."""
+    from unclefarmer import stats
+    key = settings.character_profile("Bob", 99, "S2")
+    w = FullWindow(12, key, str(tmp_path / "schedules.json"))
+    w.s["mcp_control"] = True
+    asked: list[str] = []
+    def runs(who: str, *_a: Any, **_k: Any) -> list[dict[str, Any]]:
+        asked.append(who)
+        return []
+    monkeypatch.setattr(stats, "runs", runs)
+    b = piped(w)
+    got = b.call("results", {"period": "all"})
+    assert got["ok"] is True and asked == [key]
+    assert settings.profile_display(key) in got["text"]
+    b.call("result_days", {})
+    assert asked[-1] == key
+
+
+def test_copy_character_settings_copies_the_parts_asked_for(piped: Callable[[Window], mcpserver.Bridge]) -> None:
+    w = Window(pid=os.getpid(), character="Simchar")
+    w.s["mcp_control"] = True
+    mine = settings.load_profile("Simchar")
+    settings.save_profile("Simchar", dict(mine, attack_gap=0.4, bag_rules={"Wolf Fang": {"action": "sell", "keep": 0}}))
+    theirs = settings.load_profile("Other")
+    settings.save_profile("Other", dict(theirs, attack_gap=0.9, team_heal=True,
+                                        bag_rules={"Bear Claw": {"action": "throw", "keep": 0}}))
+    b = piped(w)
+    assert b.call("copy_character_settings", {"from": "Simchar", "parts": ["fighting"]})["ok"] is False  # itself
+    assert b.call("copy_character_settings", {"from": "Other", "parts": ["nonsense"]})["ok"] is False
+    assert settings.load_profile("Simchar")["attack_gap"] == 0.4                    # nothing saved
+    got = b.call("copy_character_settings", {"from": "Other", "parts": ["fighting", "team", "throw"]})
+    assert got["ok"] is True, got["text"]
+    p = settings.load_profile("Simchar")
+    assert p["attack_gap"] == 0.9 and p["team_heal"] is True
+    assert p["bag_rules"]["Bear Claw"]["action"] == "throw"
+    assert p["bag_rules"]["Wolf Fang"]["action"] == "sell"                          # added, not replaced
 
 
 def test_run_tool_knows_every_job_the_triggers_know() -> None:

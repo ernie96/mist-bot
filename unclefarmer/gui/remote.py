@@ -419,19 +419,21 @@ class RemoteControl:
             or "No schedules.", rows
 
     def t_results(self, args: dict[str, Any]) -> Result:
-        name = settings.profile_name(self.character(args)) or self.character(args)
+        # results are kept per settings key (stats.file_of), so read by the key, show the display name
+        key = self.character(args)
+        name = settings.profile_display(key) or key
         period = str(args.get("period") or "run")
         kind = stats.FARMING if (args.get("kind") or "farming") == "farming" else stats.TOOL
         if period not in control.PERIODS:
             raise ToolError("period is one of: %s" % ", ".join(control.PERIODS))
-        tally = self.ui(self.w.live_tally, name)
+        tally = self.ui(self.w.live_tally, key)
         live: list[dict[str, Any]] = [r for r in tally.results() if r["kind"] == kind] if tally else []
         now = time.time()
         until: float | None = None
         if period == "run":
             if live:
                 return self.report(kind, live[-1:], "%s, this run (running)" % name)
-            past = stats.runs(name, kind=kind)
+            past = stats.runs(key, kind=kind)
             if not past:
                 return "%s: no runs yet." % name, []
             return self.report(kind, [r for r in past if r["start"] == past[-1]["start"]], "%s, last run" % name)
@@ -449,7 +451,7 @@ class RemoteControl:
         else:
             since = {"week": now - 7 * 86400, "month": now - 30 * 86400, "all": None}[period]
             label = period
-        results = stats.runs(name, since, kind=kind, until=until) + live
+        results = stats.runs(key, since, kind=kind, until=until) + live
         if not results:
             return "%s, %s: no runs." % (name, label), []
         return self.report(kind, results, "%s, %s" % (name, label))
@@ -462,8 +464,7 @@ class RemoteControl:
         return stats.report_tools(results, title), results
 
     def t_result_days(self, args: dict[str, Any]) -> Result:
-        name = settings.profile_name(self.character(args)) or self.character(args)
-        days = stats.days(name, kind=None)
+        days = stats.days(self.character(args), kind=None)
         return ", ".join(days) or "No results yet.", days
 
     def feed(self, pid: int) -> chat.Feed:
@@ -630,12 +631,14 @@ class RemoteControl:
         self.ui(self.w.sync_pause)
         return "Logging back in now.", None
 
-    def errand(self, pid: int, text: str, title: str, walk: bool) -> None:
+    def errand(self, pid: int, text: str, title: str, walk: bool, expect: str | None = None) -> None:
+        """expect: the character the job was prepared for (its settings were read); it starts only
+        while that one is logged in on the game (as upstream's run_errand)."""
         problem = script.check(text)
         if problem:
             raise ToolError(problem)
         self.need_idle(pid)
-        answer = self.ui(lambda: self.w.errand_on(pid, text, title, walk=walk))
+        answer = self.ui(lambda: self.w.errand_on(pid, text, title, walk=walk, expect=expect))
         if answer:
             raise ToolError(answer)
 
@@ -671,7 +674,8 @@ class RemoteControl:
             text = "construction_scan %s=%s\n" % (how, publish)
         else:
             text = tool + (" check" if check else "") + "\n"
-        self.errand(pid, text, "%s%s" % (tool.replace("_", " "), " check" if check else ""), walk=False)
+        self.errand(pid, text, "%s%s" % (tool.replace("_", " "), " check" if check else ""), walk=False,
+                    expect=name or None)
         return "Started %s on game %d." % (text.strip().splitlines()[-1], pid), {"pid": pid}
 
     def t_market(self, args: dict[str, Any]) -> Result:
@@ -1022,6 +1026,26 @@ class RemoteControl:
         except (OSError, ValueError) as e:
             raise ToolError("Couldn't export them: %s" % e) from e
         return "Exported %s's settings to %s." % (settings.profile_display(key), args["path"]), None
+
+    def t_copy_character_settings(self, args: dict[str, Any]) -> Result:
+        from .. import copysettings
+        key = self.character(args)
+        source = self.character({"character": args.get("from")}) if args.get("from") else ""
+        if not source or source == key:
+            raise ToolError("from names another character with settings (list_characters).")
+        parts = args.get("parts")
+        if not jsonio.is_array(parts) or not parts:
+            raise ToolError("parts lists what to copy: %s." % ", ".join(control.COPY_PARTS))
+        try:
+            merged, lines = copysettings.copy_parts(settings.load_profile(key), settings.load_profile(source),
+                                                    [str(p) for p in parts], bool(args.get("replace")))
+            settings.Profile.model_validate(merged)
+        except (ValueError, ValidationError) as e:
+            raise ToolError("Not saved: %s" % e) from e
+        settings.save_profile(key, merged)
+        text = "Copied from %s to %s. %s. A run going reads them when it next starts." % (
+            settings.profile_display(source), settings.profile_display(key), "; ".join(lines))
+        return text, lines
 
     def t_import_character_settings(self, args: dict[str, Any]) -> Result:
         key = self.character(args)

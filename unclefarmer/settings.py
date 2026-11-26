@@ -32,6 +32,7 @@ APP_DEFAULTS: dict[str, Any] = {
     "after_stop": "nothing",  # when farming stops by itself (never after Stop): nothing | close_game | shutdown
     "restart_lost_games": True,  # a game lost mid-run (closed, frozen) is opened again and the run carries on
     "shutdown_delay": 60,     # seconds of warning before the computer shuts down (shutdown /s /f /t N)
+    "construction_lines": False,  # Construction scanner: a gang announcement puts each highland on its own line
     "check_updates": True,    # look for a new release on GitHub when the app starts
     "skip_version": "",       # a release the player said no to: not offered again at start
     "update_channel": "master",  # where updates come from: "master" (stable releases) or "dev" (development builds)
@@ -191,6 +192,11 @@ PROFILE_DEFAULTS: dict[str, Any] = {
     "team_heal": True,        # while following, a class with a quick heal heals teammates with it
     "team_heal_below": 70,    # a teammate's HP (%) under which they are healed
     # Leading a team (Team tab; engine/teamlead.py). Everything off until the player ticks it.
+    "team_hunt": False,
+    "team_hunt_subscribe": False,
+    "team_hunt_threshold": 0,
+    "team_hunt_message": "",
+    "team_hunt_return": False,
     "team_accept": False,     # take requests to join our team by ourselves
     "team_accept_who": "trusted",  # who may join: "trusted" (Private messages), "friends" (the game's), "list"
     "team_accept_list": [],   # names or ids for "list"
@@ -216,6 +222,7 @@ PROFILE_DEFAULTS: dict[str, Any] = {
     "heal_with_skill": True,  # a class with its own quick heal (Healing Wave, Heal) heals with it
     "heal_below": 85,         # HP % under which that heal is cast, in fights and between them
     "heal_potion_below": 50,  # with that heal, red potions only under this HP %
+    "recover_every": 0,       # a Priest's Recover at most once in this many seconds (0: whenever HP needs it)
     "fill_empty_keys": True,  # put the heals, shields, buffs, dispels and items the bot uses on EMPTY keys
     "fill_empty_phrases": True,  # put useful quick phrase codes (/6 /5 /4, /7 for healers) on EMPTY phrase slots
     "teleport_key": "shift+p",   # the game's "teleport to the team leader" key (W_AMOVE): same map, 50 s cooldown
@@ -267,6 +274,7 @@ class AppSettings(BaseModel):
     after_stop: str = APP_DEFAULTS["after_stop"]
     restart_lost_games: bool = APP_DEFAULTS["restart_lost_games"]
     shutdown_delay: int = APP_DEFAULTS["shutdown_delay"]
+    construction_lines: bool = APP_DEFAULTS["construction_lines"]
     check_updates: bool = APP_DEFAULTS["check_updates"]
     skip_version: str = APP_DEFAULTS["skip_version"]
     update_channel: Literal["master", "dev"] = APP_DEFAULTS["update_channel"]
@@ -425,6 +433,7 @@ class Profile(BaseModel):
     heal_with_skill: bool = PROFILE_DEFAULTS["heal_with_skill"]
     heal_below: int = PROFILE_DEFAULTS["heal_below"]
     heal_potion_below: int = PROFILE_DEFAULTS["heal_potion_below"]
+    recover_every: int = PROFILE_DEFAULTS["recover_every"]
     fill_empty_keys: bool = PROFILE_DEFAULTS["fill_empty_keys"]
     fill_empty_phrases: bool = PROFILE_DEFAULTS["fill_empty_phrases"]
     teleport_key: str = PROFILE_DEFAULTS["teleport_key"]
@@ -930,6 +939,18 @@ def _upgrade_dropped(p: dict[str, Any]) -> None:
         p.pop(k, None)
 
 
+def _upgrade_low_hp(p: dict[str, Any]) -> None:
+    """2026-11-18: "When HP stays low" acts at 30% for 3 s (it was 25% for 10 s, and with fleeing
+    added, 10 s under a quarter of the HP was often a death). A profile keeps every value it was
+    saved with, so the old default stayed in it for good: changed once, both together, and only
+    when neither number was the player's own."""
+    if p.get("low_hp_defaults"):
+        return
+    if p.get("panic_below") in (25, None) and p.get("panic_after") in (10, 10.0, None):
+        p["panic_below"], p["panic_after"] = 30, 3.0
+    p["low_hp_defaults"] = True
+
+
 def _upgrade_class_reach(p: dict[str, Any]) -> None:
     """Every class fights from its own base attack's distance (Bot.reach, "auto"): a range typed in
     by hand before that became the rule goes back to auto, once. One set after this is kept."""
@@ -957,6 +978,7 @@ UPGRADES: list[Callable[[dict[str, Any]], None]] = [
     # trip to town and back unless the player ticked the skip; it is ticked now, once, for everyone:
     # a supply or a bag that needs a town is seen to by the farm loop itself anyway.
     _upgrade_once("skip_before_ticked", "skip_before_on_farm", (False, None), True),
+    _upgrade_low_hp,
 ]
 
 

@@ -304,6 +304,9 @@ msgstr ""
 msgid "&How many:"
 msgstr ""
 
+msgid "&How:"
+msgstr ""
+
 msgid "&Import"
 msgstr ""
 
@@ -410,7 +413,7 @@ msgstr ""
 msgid "&Muted Sounds:"
 msgstr ""
 
-msgid "&Names or ids (separated by commas):"
+msgid "&Names or ids, separated by commas (Kim@S1: trusted on S1 only):"
 msgstr ""
 
 msgid "&Never fight:"
@@ -691,6 +694,9 @@ msgstr ""
 msgid "&Walk whenever the maps connect on foot"
 msgstr ""
 
+msgid "&What to copy:"
+msgstr ""
+
 msgid "&What to do:"
 msgstr ""
 
@@ -846,6 +852,10 @@ msgid ""
 "A file that reaches the size above is kept as name.1, the older ones move to name.2 and so on, and the oldest is dropped. The day's run log is rotated the same way inside its day."
 msgstr ""
 
+msgid ""
+"A name can belong to another player on another server: the names you add get the selected character's server (Kim@S1). A name or id without a server is trusted on every server."
+msgstr ""
+
 msgid "A name for this place:"
 msgstr ""
 
@@ -957,6 +967,9 @@ msgstr ""
 msgid "Add to &filter list"
 msgstr ""
 
+msgid "Add to this character's lists (what is only here stays)"
+msgstr ""
+
 msgid "Add where I &stand"
 msgstr ""
 
@@ -977,6 +990,9 @@ msgid "After a &time limit"
 msgstr ""
 
 msgid "After farming"
+msgstr ""
+
+msgid "After farming list"
 msgstr ""
 
 msgid "After the run, &stay in town and manage the team until I stop it"
@@ -1131,6 +1147,9 @@ msgstr ""
 msgid "Before farming"
 msgstr ""
 
+msgid "Before farming list"
+msgstr ""
+
 msgid "Before moving on to the next spot (only with more than one spot)"
 msgstr ""
 
@@ -1213,6 +1232,10 @@ msgstr ""
 msgid "Buy {lots} lots, {items} items, {gold} gold coins in all?"
 msgstr ""
 
+msgid ""
+"Buy {n} {shard} at the Shard Market, a bagful at a time, and put each bagful in the storehouse{cost}."
+msgstr ""
+
 msgid "By item"
 msgstr ""
 
@@ -1234,6 +1257,9 @@ msgstr ""
 msgid "C&opy"
 msgstr ""
 
+msgid "Call the team when there are more monsters than:"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
@@ -1244,6 +1270,9 @@ msgid "Capture current &keys"
 msgstr ""
 
 msgid "Carry on the interrupted runs"
+msgstr ""
+
+msgid "Cast Re&cover (Priest) at most every this many seconds, 0 for no limit:"
 msgstr ""
 
 msgid "Category"
@@ -1513,7 +1542,19 @@ msgid ""
 "Copied. Paste it into your AI assistant. Press Save here so the setting is kept."
 msgstr ""
 
+msgid "Copy"
+msgstr ""
+
+msgid "Copy &from another character"
+msgstr ""
+
+msgid "Copy &from:"
+msgstr ""
+
 msgid "Copy &selection"
+msgstr ""
+
+msgid "Copy from another character"
 msgstr ""
 
 msgid "Corpses"
@@ -1821,6 +1862,9 @@ msgstr ""
 msgid "Elite"
 msgstr ""
 
+msgid "Enable Team Monster Hunting"
+msgstr ""
+
 msgid "Enable/&disable"
 msgstr ""
 
@@ -2011,6 +2055,15 @@ msgstr ""
 msgid "Fighting"
 msgstr ""
 
+msgid "Fighting settings (not the keys)"
+msgstr ""
+
+msgid "Fighting settings: set as theirs"
+msgstr ""
+
+msgid "Fighting settings: set as theirs, but not each skill's use"
+msgstr ""
+
 msgid "Fighting:"
 msgstr ""
 
@@ -2068,7 +2121,20 @@ msgstr ""
 msgid "From trusted players"
 msgstr ""
 
+msgid ""
+"From {name}:\n"
+"{lines}\n"
+"\n"
+"Nothing is kept until you save."
+msgstr ""
+
 msgid "Full bag"
+msgstr ""
+
+msgid "Full bag and equipment by rarity"
+msgstr ""
+
+msgid "Full bag and equipment by rarity: set as theirs"
 msgstr ""
 
 msgid "Full loop (every lane, a longer lap)"
@@ -2518,6 +2584,10 @@ msgstr ""
 msgid "It also stops by itself:"
 msgstr ""
 
+msgid ""
+"It stops at the number, the price limit, your arnebia reserve, or a full storehouse."
+msgstr ""
+
 msgid "Item"
 msgstr ""
 
@@ -2561,6 +2631,9 @@ msgid "Keep away from bosses"
 msgstr ""
 
 msgid "Keep farming, just tell me"
+msgstr ""
+
+msgid "Keep list"
 msgstr ""
 
 msgid "Keep the class's b&uffs up"
@@ -2916,6 +2989,9 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
+msgid "Monster encounter message:"
+msgstr ""
+
 msgid ""
 "Monster hits: {hits} hits ({crits} critical, {breaks} defence breaks, {normals} normal), {misses} misses"
 msgstr ""
@@ -3117,6 +3193,9 @@ msgid ""
 "No most price is set for any material, so the market's cheapest lots are bought at any price. Go on?"
 msgstr ""
 
+msgid "No other character has settings yet."
+msgstr ""
+
 msgid "No pet"
 msgstr ""
 
@@ -3244,6 +3323,9 @@ msgid "Nowhere to get them from: it makes what the bag allows."
 msgstr ""
 
 msgid "Nowhere, use what's in the bag"
+msgstr ""
+
+msgid "Number of &shards to stock:"
 msgstr ""
 
 msgid ""
@@ -3576,10 +3658,20 @@ msgstr ""
 msgid "Publish &as:"
 msgstr ""
 
+msgid "Put each highland on its own &line (gang announcement only)"
+msgstr ""
+
+msgid "Put finished gems in the s&torehouse, so the bag keeps its room"
+msgstr ""
+
 msgid "Put into the storehouse:"
 msgstr ""
 
 msgid "Put needed skills and items on &empty keys (never on keys in use)"
+msgstr ""
+
+msgid ""
+"Put the fighting settings back to their defaults? The pause between attack keys, the times and casts to give up a fight, the skill pressing, the attack range, the chase, the target keys, each skill's use, the fight readings, and the fighting boxes of the character window. Keys, bag, supplies and everything else stay as they are. Nothing is kept until you save."
 msgstr ""
 
 msgid "Put the pet &away when the run ends"
@@ -3716,10 +3808,19 @@ msgstr ""
 msgid "Replace the saved plan {name}? Nothing changes until you choose Yes."
 msgstr ""
 
+msgid "Replace this character's lists with theirs"
+msgstr ""
+
 msgid "Reply lines"
 msgstr ""
 
 msgid "Replying to {name}: {message}"
+msgstr ""
+
+msgid "Reset the &fighting settings to their defaults"
+msgstr ""
+
+msgid "Reset the fighting settings"
 msgstr ""
 
 msgid "Respawning in the city."
@@ -3776,6 +3877,9 @@ msgstr ""
 
 msgid ""
 "Results of {what}, its {n} parts added up (it was interrupted and carried on)"
+msgstr ""
+
+msgid "Return Leadership to Original Leader Between Encounters"
 msgstr ""
 
 msgid "Revive on the spot with &Resurrection Crystals"
@@ -3954,6 +4058,9 @@ msgid "Sell and store by these lists, then come back"
 msgstr ""
 
 msgid "Sell it and come back"
+msgstr ""
+
+msgid "Sell list"
 msgstr ""
 
 msgid "Sell s&hards now"
@@ -4266,6 +4373,12 @@ msgstr ""
 msgid "Still short &after that:"
 msgstr ""
 
+msgid "Stock shards (the gem and the price limit above)"
+msgstr ""
+
+msgid "Stock shards: buy Level 1 shards and keep them in the storehouse"
+msgstr ""
+
 msgid "Stop"
 msgstr ""
 
@@ -4361,6 +4474,9 @@ msgid ""
 "Stored or sold on a bag trip: on the Full bag page, choose to sell and store when the bag is full"
 msgstr ""
 
+msgid "Storehouse list"
+msgstr ""
+
 msgid "Storehouse only"
 msgstr ""
 
@@ -4373,6 +4489,9 @@ msgstr ""
 msgid "Strangers"
 msgstr ""
 
+msgid "Subscribe to Team Hunting"
+msgstr ""
+
 msgid "Summary:"
 msgstr ""
 
@@ -4380,6 +4499,9 @@ msgid "Sunday"
 msgstr ""
 
 msgid "Supplies"
+msgstr ""
+
+msgid "Supplies: {added} put in, {same} already there"
 msgstr ""
 
 msgid "System message"
@@ -4409,7 +4531,20 @@ msgstr ""
 msgid "Team &name (letters and numbers):"
 msgstr ""
 
+msgid "Team Monster Hunting"
+msgstr ""
+
 msgid "Team mode"
+msgstr ""
+
+msgid "Team settings"
+msgstr ""
+
+msgid "Team settings: set as theirs"
+msgstr ""
+
+msgid ""
+"Team tab: enter a one-line monster encounter message to enable Team Monster Hunting."
 msgstr ""
 
 msgid ""
@@ -4547,6 +4682,9 @@ msgstr ""
 msgid "The character hasn't learned {skill}."
 msgstr ""
 
+msgid "The character is on {here}, not on {map}: go to this spot's map first."
+msgstr ""
+
 msgid "The character's plan"
 msgstr ""
 
@@ -4587,6 +4725,9 @@ msgid "The fastest one"
 msgstr ""
 
 msgid "The fees are read off the Pharmacist's pages (Check only shows them)."
+msgstr ""
+
+msgid "The fighting settings are back to their defaults. Save to keep them."
 msgstr ""
 
 msgid "The game didn't confirm {skill}."
@@ -4866,6 +5007,12 @@ msgid ""
 "Nothing else is touched. Thrown items are gone for good."
 msgstr ""
 
+msgid "Throw-away list"
+msgstr ""
+
+msgid "Throw-away list (shards and items)"
+msgstr ""
+
 msgid "Thrown away:"
 msgstr ""
 
@@ -4876,6 +5023,9 @@ msgid "Tick at least one day."
 msgstr ""
 
 msgid "Tick at least one gem, or a kind of crystal."
+msgstr ""
+
+msgid "Tick at least one thing to copy."
 msgstr ""
 
 msgid "Tick the lots to buy in Results first (Space)."
@@ -4913,6 +5063,10 @@ msgid "Times"
 msgstr ""
 
 msgid "To (seconds):"
+msgstr ""
+
+msgid ""
+"To scan or publish, log in to the character in the game and stop its bot first."
 msgstr ""
 
 msgid "Today"
@@ -5807,6 +5961,9 @@ msgstr ""
 msgid "cheapest {what}"
 msgstr ""
 
+msgid "check only: nothing was bought or stored"
+msgstr ""
+
 msgid ""
 "check: the next level needs {xp} experience, goal {goal}; {n} guards in sight here, {k} remembered spots; PK mode {pk}{locked}"
 msgstr ""
@@ -5885,6 +6042,14 @@ msgstr ""
 
 msgid ""
 "construction scanner: nothing changed since the last report, nothing published"
+msgstr ""
+
+msgid ""
+"construction scanner: only a gang announcement keeps line breaks, so this goes out as one line"
+msgstr ""
+
+msgid ""
+"construction scanner: the game's agent is too old for line breaks, so this goes out as one line; restart Mist World so it loads the new one"
 msgstr ""
 
 msgid ""
@@ -6019,6 +6184,14 @@ msgid "couldn't reach {item} in the bag"
 msgstr ""
 
 msgid "couldn't reach {skill} in the skills panel"
+msgstr ""
+
+msgid ""
+"couldn't read the bag before farming: only the items you chose a rule for are sold, stored or thrown away this run"
+msgstr ""
+
+msgid ""
+"couldn't read the equipment in the bag before farming: none of it is thrown away for now"
 msgstr ""
 
 msgid "couldn't read the storehouse's list: only the bag counts"
@@ -6500,6 +6673,9 @@ msgstr ""
 msgid "in a no-go circle of this farming spot"
 msgstr ""
 
+msgid "in a no-go circle of this spot"
+msgstr ""
+
 msgid "in an elite or boss zone we keep out of"
 msgstr ""
 
@@ -6923,11 +7099,17 @@ msgstr ""
 msgid "no menu entry like \"{want}\""
 msgstr ""
 
+msgid "no more {shard} came - stocking stops here"
+msgstr ""
+
 msgid "no more {shard} came into the bag - the Gem Maker stops here"
 msgstr ""
 
 msgid ""
 "no outside place to gather at for this character - stand on one and add it in Tools, Gathering"
+msgstr ""
+
+msgid "no patrol point of this spot can be walked to: patrolling at random"
 msgstr ""
 
 msgid "no pet called {pet} (pets: {pets})"
@@ -7349,6 +7531,9 @@ msgstr ""
 msgid "patrol is random, full, quick, short or points"
 msgstr ""
 
+msgid "patrol point {x},{y} can't be walked to on {map} - left out"
+msgstr ""
+
 msgid "patrol=points needs points=x,y;x,y;..."
 msgstr ""
 
@@ -7715,6 +7900,12 @@ msgid "still short after restocking: {what}"
 msgstr ""
 
 msgid "still short of: {what}"
+msgstr ""
+
+msgid "stocked {n} of the {want} {shard} in the storehouse"
+msgstr ""
+
+msgid "stocking stopped after {n} rounds"
 msgstr ""
 
 msgid "stop rule: {cond}"
@@ -8505,6 +8696,13 @@ msgstr ""
 msgid "the storehouse menu has no item storage"
 msgstr ""
 
+msgid "the storehouse took {put} of the {got} {shard}: stocking stops here"
+msgstr ""
+
+msgid ""
+"the storehouse took {put} of the {n} {gem}: storing gems is off for the rest of this job"
+msgstr ""
+
 msgid "the storehouse, then the Shard Market"
 msgstr ""
 
@@ -8550,6 +8748,9 @@ msgid "the {kind} {name} doesn't exist any more"
 msgstr ""
 
 msgid "the {npc} didn't take me anywhere"
+msgstr ""
+
+msgid "the {npc} didn't take me for free"
 msgstr ""
 
 msgid ""
@@ -8854,7 +9055,7 @@ msgid "write it as: chores [check] [only=bank,donation]"
 msgstr ""
 
 msgid ""
-"write it as: construction_scan, construction_scan publish=broadcast or construction_scan auto=broadcast (announcement, broadcast or system)"
+"write it as: construction_scan, construction_scan publish=broadcast or construction_scan auto=broadcast (announcement, broadcast or system), and for an announcement add lines=yes or lines=no to choose a line to each highland or one line"
 msgstr ""
 
 msgid "write it as: hold key seconds"
@@ -9128,6 +9329,9 @@ msgstr ""
 msgid "{left} left"
 msgstr ""
 
+msgid "{list}: {added} put in, {same} already there"
+msgstr ""
+
 msgid "{map} at {x}, {y}"
 msgstr ""
 
@@ -9237,6 +9441,10 @@ msgid ""
 "{name} in a line becomes the player's name; a line without it starts with their name while this is ticked."
 msgstr ""
 
+msgid ""
+"{name} is a {theirs}, this character a {mine}: each skill's use isn't copied (the skills differ), only the other fighting settings. Go on?"
+msgstr ""
+
 msgid "{name} is about to be killed by someone else - next one"
 msgstr ""
 
@@ -9249,6 +9457,9 @@ msgstr ""
 msgid "{name} is in the way - fighting it"
 msgstr ""
 
+msgid "{name} is logged out for a while and logs back in by itself"
+msgstr ""
+
 msgid "{name} is on this map at {x}, {y} - going there"
 msgstr ""
 
@@ -9256,6 +9467,9 @@ msgid "{name} is read from the game and can't be set"
 msgstr ""
 
 msgid "{name} isn't in my team"
+msgstr ""
+
+msgid "{name} isn't logged in on that game any more - nothing was started."
 msgstr ""
 
 msgid "{name} isn't logged in to a game that has the agent."
@@ -9315,7 +9529,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"{name}'s game was lost: opening it again and carrying on where the run was ({n} of {most} today)."
+"{name}'s game was lost: opening it again and carrying on where the run was ({n} of {most} today). Stop every bot (Ctrl+Shift+S) keeps it closed."
+msgstr ""
+
+msgid "{name}'s game won't be opened again."
+msgstr ""
+
+msgid "{name}'s settings couldn't be copied: {err}"
 msgstr ""
 
 msgid "{name}, last run ({what}, started {when})"
@@ -9371,6 +9591,9 @@ msgid "{npc} offers no exchange"
 msgstr ""
 
 msgid "{npc} offers no hunting bounty"
+msgstr ""
+
+msgid "{npc}'s menu didn't open its list - trying the next nearest shop"
 msgstr ""
 
 msgid ""
@@ -9492,6 +9715,9 @@ msgid "{n} times, {first} to {last}: {why}"
 msgstr ""
 
 msgid "{n} used up"
+msgstr ""
+
+msgid "{n} {gem} went into the storehouse"
 msgstr ""
 
 msgid "{n} {item} still missing"
@@ -9692,6 +9918,9 @@ msgid ""
 msgstr ""
 
 msgid "{what} for {name}"
+msgstr ""
+
+msgid "{what} for {name} won't carry on."
 msgstr ""
 
 msgid "{what} for {who} is waiting: {why}"

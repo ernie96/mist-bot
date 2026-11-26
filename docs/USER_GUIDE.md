@@ -283,6 +283,21 @@ A run that ends this way ended by itself, so the After farming list runs next: p
 (the XP loser) there to win some experience back. A plan's When to stop page can set either one for
 that plan only; in a script, `keep_drop` and `keep_level`.
 
+**Resetting the fighting settings.** Advanced, Fighting, "Reset the fighting settings to their
+defaults" puts back what a new character has: the pause between attack keys, the times and casts
+to give up a fight, skill pressing, attack range, the chase, target keys, each skill's use, the
+fight readings and the fighting boxes of the character window. Keys, bag, supplies and the rest
+stay as they are. A profile keeps the values older versions saved in it, so this helps when fights
+have become slow, without deleting the profile. Nothing is kept until you save.
+
+**Copying settings from another character.** "Copy from another character", at the bottom of the
+character window, takes one part of another character's settings: its Before farming or After
+farming list, its fighting settings (never its keys), or its team settings. For the lists, choose
+whether the other character's steps are added (the ones only here stay) or replace this list. Each
+skill's use is copied only between characters of the same class; for another class the bot asks
+first and copies the rest. Nothing is kept until you save. Bag lists are copied from Bag and
+supplies.
+
 **Demonized elites.** Some maps have demonized elites (demonized Boar, demonized black bear,
 demonized Water Elf...), much stronger than the monsters around them. They are fought like any
 other monster unless you tick "Leave demonized elites alone" (Advanced, Fighting); then the bot
@@ -334,6 +349,11 @@ Character, Bag and supplies (Ctrl+B):
   and the log names each one with its rarity. With "Keep pieces with a bonus" ticked (the default)
   the bot first asks for each piece's details, as the G key does, and keeps one with a "plus:"
   bonus. Needs the agent that comes with this version: restart the game once after updating.
+- **Copy from another character** (at the bottom of the window) takes another character's
+  throw-away, sell, storehouse or keep list (each with what it leaves in the bag), its supplies, or
+  its Full bag page. Either add to this character's lists (the items only here stay) or replace
+  them (an item only here goes back to the bot's default). The window then says what changed, for
+  example "Throw-away list: 23 put in, 4 already there". Nothing is kept until you choose Save.
 
 ### Storing items now
 
@@ -436,7 +456,10 @@ The bot reads which skills you put on which keys (both pages, any keys you chose
 does from the game's own skill texts, then looks after you with them:
 
 - **Heal:** a Sorceress or Priest heals itself with its quick heal (Healing Wave, Heal) below 85%
-  HP, in fights and between them; red potions are then only a backup under half HP.
+  HP, in fights and between them; red potions are then only a backup under half HP. A Priest's
+  Recover has no cooldown, so it can go at every chance while HP stays under that mark. Advanced,
+  Low HP, "Cast Recover (Priest) at most every this many seconds" sets a gap (16, say); 0, the
+  default, means no gap. The gap also holds when Recover heals the pet or a teammate.
 - **Buffs:** long ones (Strong-Arm Aura, Battle Cry, Requiem... lasting a minute or more) are kept
   up all the time, cast again when they run out or when the game says one was taken off you; short
   ones (Bull's Eye, Scorch, Winter Horn...) open hard fights and fights against packs.
@@ -548,7 +571,7 @@ chances, says what it would do, and spends nothing.
 
 ### Gem Maker
 
-Tools, Gem Maker (Ctrl+G) has two jobs:
+Tools, Gem Maker (Ctrl+G) has three jobs:
 
 - **Make a gem:** you choose which gem, its level and how many (or as many as it can). It makes them
   from the bag's gems and shards, and fetches more Level 1 shards itself from the storehouse or the
@@ -556,8 +579,16 @@ Tools, Gem Maker (Ctrl+G) has two jobs:
   Shard Broker sells at most 2000 at a time, so it buys in batches of up to 2000, working out each
   batch again from the bag's room and the spare arnebia; the storehouse hands out a bagful at once.
 - **Make the most of my bag:** every shard into gems, then every colour up as far as it goes.
+- **Stock shards:** buys Level 1 shards of the chosen gem from the Shard Broker and puts them in the
+  storehouse, so a later Make a gem takes them from there instead of shopping. Set "Number of
+  shards to stock"; the price limit works as in Make a gem. It buys a bagful at a time (at most
+  2000 per purchase), stores it, and repeats. Level 1 shards of that gem already in the bag are
+  stored first and count toward the number. It keeps no arnebia back for craftsman fees, since
+  nothing is made. It stops at the number, at your arnebia reserve, at a price over your limit,
+  when the broker has no more, or when the storehouse is full. Check only reads the price and buys
+  nothing.
 
-Either job goes on until it is done or something stands in the way, and says what: the arnebia at
+Make a gem and Make the most of my bag go goes on until it is done or something stands in the way, and says what: the arnebia at
 your reserve, no protection rune left, nothing left to make from, no more shards to be had, or the
 Gem Craftsman making nothing for three rounds in a row although there is still something to combine
 (a round that made nothing because of a slow answer or a menu that didn't open is tried again).
@@ -567,6 +598,12 @@ gems already there count, so starting again after an interruption doesn't make t
 level 2 the shards a failed combine leaves are kept for the +20% on the next combines, and become
 gems only at the level asked for. Nothing is spent until the craftsman's page names the gem being
 made; if the game makes nothing of a batch, the Gem Maker asks for half as many before giving up.
+
+"Put finished gems in the storehouse" (off by default) keeps the bag from filling with finished
+gems: gems of the level asked for go to the storehouse just before more shards are fetched and when
+the job ends, however it ends. Gems of that level already in the bag go too, and stored gems still
+count toward your number. If the storehouse is full they stay in the bag, storing is switched off
+for the rest of that job, and the job goes on.
 
 ### Gem Breaker
 
@@ -616,6 +653,8 @@ This is not a daily chore, so you can run it whenever you have something to coll
 **Tools, Construction scanner** shows how far your gang's constructions are: the Magic Cannon and Supply Camp being built, and the Crystal Turret and Wall barricade of every highland. **Scan the constructions** visits each one without repairing or building anything. Open the window again afterwards to read the result, the least complete first.
 
 **Copy** puts the short report on the clipboard. A gang elder can also **Publish** it as a gang announcement, a broadcast (which plays a sound) or a system message. The bot always asks first. A new announcement replaces only the older reports published by the same character, never another elder's.
+
+Tick **Put each highland on its own line** to publish a gang announcement as a list: the title first, then a line for each camp and each highland, with a highland's turret and wall together ("highland 80: turret 95.0%, wall 98.0%"). The setting is kept for all your characters and also applies to a scheduled announcement. A script can choose for one line with `lines=yes` or `lines=no` after `publish=announcement` or `auto=announcement`. A broadcast and a system message turn a line break into a space, so they are always one line. The game's agent must be up to date; if it is too old, the announcement goes out as one line and the log says so.
 
 To do this automatically, open **Run, Schedules**, go to the **Tools** tab and add one of the three "scanning the constructions" tasks for your elder. At the set time the bot scans and publishes without asking. It publishes nothing when everything is at 100%, or when the report is the same as the last one this character sent that way.
 
@@ -1078,7 +1117,10 @@ in a line to put the player's name there ("Hi {name}, I'm away"); with "Call the
 ticked, a line without {name} starts with their name ("Kim, I'm busy right now").
 
 Trusted players can be listed by name or by the game's id, mixed ("Kim, 2001"): either works for
-commands, team invites and being read out.
+commands, team invites and being read out. An entry followed by `@` and a server, such as
+`Kim@S1` or `2001@S2`, is trusted on that server only; names and ids you add get the server of the
+character selected in the Games list. An entry without a server is trusted on every server, so add
+the server to the ones you listed before.
 
 While the game's own window is in front, you are in the game and read your messages there: Uncle
 Farmer doesn't read them out or play a tone (they still show in its log and Chat window), and sends
